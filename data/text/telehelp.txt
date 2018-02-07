@@ -1,0 +1,51 @@
+@LTBIntergate BBS help
+
+@YLWUser Functions ..
+@LTB/ACTION <ACTIONS>         @LGNPerform <action>                    @YLW...  @LTB/A 
+@LTB/WHISPER <WHO> <MESSAGE>  @LGNSend private message                @YLW...  @LTB/W
+
+@YLWSystem Commands ..
+@LTB/USERS                    @LGNWho is logged into the system       @YLW...  @LTB #
+@LTB/SCAN                     @LGNLocate chat users                   @YLW...  @LTB/S
+@LTB/CHANNELS                 @LGNShow available channels             @YLW...  @LTB/C
+@LTB/ONELINERS                @LGNWrite on the wall                   @YLW...  @LTB %
+@LTB/BULLETINS                @LGNRead System Bulletins               @YLW...  @LTB @
+
+@YLWRoom Commands ..
+@LTB/JOIN <ROOM>              @LGNJoins room <room>                   @YLW...  @LTB/J
+@LTB/BAN <USER>               @LGN(UN)Bans <user> from room           @YLW...  @LTB/B
+@LTB/HIDE                     @LGN(UN)Hides room from channel scan    @YLW...  @LTB/H
+@LTB/OP <USER>                @LGN(UN)Assign a user as a ChanOp       @YLW...  @LTB/O
+@LTB/SSL                      @LGN(UN)Enforce SSH on room             @YLW...  @LTB/E
+@LTB/PRIVATE                  @LGN(UN)Sets a room PRIVATE             @YLW...  @LTB/V
+@LTB/ALLOW <USER>             @LGN(UN)Allow <user(s)> in Private room @YLW...  @LTB/L
+@LTB/TOPIC <MESSAGE>          @LGN(UN)Set the channel topic           @YLW...  @LTB/T
+@LTB/STATUS                   @LGNShow room status                    @YLW...  @LTB/$
+
+@YLWUser Settings ..
+@LTB/INFO                     @LGNDisplay your user settings
+@LTB/SET <COMMAND>            @LGNSet user preferences (SEE BELOW)    @YLW...  @LTB/U
+@LGNCommands:
+  @LTBNAME                    @LGNSet your full name
+  @LTBPASSWORD                @LGNReset your password
+  @LTBEMAIL                   @LGNChange your email address
+  @LTBLOCATION                @LGNSet your call location
+  @LTBPHONE                   @LGNSet your phone number
+  @LTBDOB                     @LGNChange your DOB
+  @LTBSEX                     @LGNChange your Sex
+  @LTBANSI                    @LGNChange your ANSI preference
+  @LTBDEFAULT                 @LGNSets your default channel to the current channel
+  @LTBUNIXPWD                 @LGNChange your local unix password (LOCAL only)
+
+@YLWColor .. Add color to chatroom messages, topics, whispers, actions, etc!
+  @LTB~ATLGN @YLW... @LGNLight Green
+  @LTB~ATGRN @YLW... @LGNGreen
+  @LTB~ATRED @YLW... @LGNRed               @YLWExample:@LGN
+  @LTB~ATBRN @YLW... @LGNBrown             /a sent you a ~ATGRN---~ATLGN{~ATGRN-~ATLGN{~ATRED@
+  @LTB~ATPPL @YLW... @LGNPurple            @LGNbecomes
+  @LTB~ATLGR @YLW... @LGNLight Grey        @WHT@USER sent you a @GRN---@LGN{@GRN-@LGN{@RED@@LGN
+  @LTB~ATGRY @YLW... @LGNGrey
+  @LTB~ATYLW @YLW... @LGNYellow
+  @LTB~ATVLT @YLW... @LGNViolet            @LTB~ATWHT @YLW... @LGNWhite
+  @LTB~ATLTB @YLW... @LGNLight Blue        @LTB~ATPNK @YLW... @LGNPink
+  @LTB~ATBLU @YLW... @LGNBlue              @LTB~ATBLK @YLW... @LGNBlack

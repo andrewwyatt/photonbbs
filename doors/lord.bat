@@ -1,0 +1,5 @@
+@ECHO OFF
+C:
+CD \DOORS\LORD
+LORD %1 /DREW
+exitemu

@@ -1,0 +1,7 @@
+Place your door games here.
+Create links for dosemu
+
+ln -s /opt/photonbbs/doors /opt/photonbbs/.dosemu/drive_c/doors
+ln -s /opt/photonbbs/doors/nodes /opt/photonbbs/.dosemu/drive_c/nodeinfo
+
+** Lunatix will not work over a link, place luna in /opt/photonbbs/.dosemu/drive_c

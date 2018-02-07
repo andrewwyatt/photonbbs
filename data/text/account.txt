@@ -1,0 +1,12 @@
+\n@LGNShowing information for @LTB@USER@LGN [ID: @YLW@ID@LGN]
+
+@LTBReal Name [@RED@RNAME@LTB]
+@LTBPassword [@REDNot Shown@LTB]
+@LTBEmail Address [@RED@EMAIL@LTB]
+@LTBLocation [@RED@LOCAL@LTB]
+@LTBPhone Number [@RED@PHONE@LTB]
+@LTBDate of birth [@RED@DOB@LTB]
+@LTBSex [@RED@SEX@LTB]
+@LTBANSI [@RED@ANSI@LTB]
+@LTBBanned [@RED@BANNED@LTB]
+

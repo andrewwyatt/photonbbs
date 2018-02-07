@@ -1,0 +1,27 @@
+# External commands file - PIPE separated
+#
+# Fields:
+#
+# 1 - Command to execute (IE: what to type in chat to run)
+# 2 - Description to display in Whos Online
+# 3 - Action message to send to channel when run
+# 4 - Script to execute (must live in PhotonBBS home/sbin and be +x)
+# 5 - Minimum Security required to run command
+# 6 - Command Hidden (1) or not hidden (0)
+# 7 - Type of command (external, internal) use external for scripts,
+#     internal for functions
+# 8 - Number of Users allowed to run concurrently
+########################################################################
+# FIELD1|FIELD2|FIELD3|FIELD4|FIELD5|FIELD6|FIELD7|FIELD8
+########################################################################
+.USEREDIT|User Edit|is abusing their power!|useredit.pl|500|1|external|1
+.BULLEDIT|Bulletin Editor|updating the bulletins|bulledit.pl|500|1|external|1
+.DOSSHELL|ADMIN|performs admin tasks|dosemu.sh|900|1|external|1
+/1|Tradewars 2002|heads to the starport|tw2002.sh|10|0|external|100
+/2|LORD|heads off to chase skirts and kill dragons|lord.sh|10|0|external|100
+/3|Lunatix|has been drug off to the insane asylum|luna.sh|10|0|external|100
+/4|Barren Realms Elite|is off to become the ultimate baron|bre.sh|10|0|external|100
+/5|Operation Overkill II|leaves for the wasteland|ooii.sh|10|0|external|100
+/6|Simpsons|grabs a board and heads to town|simp.sh|10|0|external|100
+/7|Darkness|gets a torch and heads into the darkness|darkness.sh|10|0|external|33
+/8|Dopewars|takes a ride on the marikeesh express|dopewars.sh|10|0|external|100

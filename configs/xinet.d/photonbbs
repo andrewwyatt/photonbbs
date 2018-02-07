@@ -1,0 +1,11 @@
+service photonbbs
+{
+        disable = no
+        flags           = REUSE
+        socket_type     = stream
+        wait            = no
+        user            = chat
+        server          = /usr/sbin/in.telnetd
+        server_args     = -N -h -n -L /opt/photonbbs/bbs.pl
+        log_on_failure  += USERID
+}
