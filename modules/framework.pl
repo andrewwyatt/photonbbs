@@ -610,6 +610,9 @@ sub hi {
 
   cbreak(on);
   eval {
+    if ( $config{'clearlogin'} = "1" ) {
+       print "\e[2J\e[0H";
+    }
     @OPENING=split(//,"\n$sysinfo{'servername'}/$sysinfo{'os'} $sysinfo{'version'} - $sysinfo{'copyright'}\nAuto-sensing .");
     for (0..scalar(@OPENING)) {
      select(undef, undef, undef, 0.010);

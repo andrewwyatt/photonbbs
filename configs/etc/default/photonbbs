@@ -13,6 +13,7 @@ authretries="3";                ## Number of password retries
 passchr="*";			## Passchr to echo at password prompt
 theme="mbbs";			## Default Skin
 public="1";			## Public(1)/Private(0) BBS
+clearlogin="1";                 ## Clear the login screen on connection
 usefullname="1";		## Force Full Name Yes(1) / No (0)
 usephonenum="0";		## Force User's phone number Yes(1) / No (0)
 systemname="PhotonBBS";		## BBS's Name
