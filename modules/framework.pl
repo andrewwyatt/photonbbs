@@ -541,7 +541,7 @@ sub pause {
 sub hi {
   $ppid=getppid;
   logger("Connection established.");
-  if ( $ARGV[1] =~ /sftp/i  || $ARGV[1] =~ /scp/i ) {
+  if ( $ARGV[1] =~ /sftp/i  || $ARGV[1] =~ /scp/i || $ARGV[1] =~ /exec/i ) {
     writeline("Attempt reported.",1);
     logger("Connection attempt via SCP or SFTP from (@ARGV).");
     exit 0;
