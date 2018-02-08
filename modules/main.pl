@@ -312,18 +312,17 @@ sub teleconf {
     $private=$private." (".$PPL."ENC".$LGN.")";
   }
 
-  writeline ($LGN."You are in the ".$PPL.$channel.$LGN." channel".$private.".\n".$RST.$channelusers."\n");
-
-  if ($channel =~/$config{'defchannel'}/) {
-    writeline($YLW."Press \"".$LTB.$config{'help'}.$YLW."\" for a list of commands.\n");
-  }
-
   if (-e "$config{'home'}$config{'messages'}/teleconf/$channel/message") {
-    #writeline($YLW);
     $inteleconf=0;
     readfile("$config{'home'}$config{'messages'}/teleconf/$channel/message",1,1);
     $inteleconf=1;
     writeline($RST,1);
+  }
+
+  writeline ($LGN."You are in the ".$PPL.$channel.$LGN." channel".$private.".\n".$RST.$channelusers."\n");
+
+  if ($channel =~/$config{'defchannel'}/) {
+    writeline($YLW."Press \"".$LTB.$config{'help'}.$YLW."\" for a list of commands.\n");
   }
 
   telemain: {
