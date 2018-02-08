@@ -541,6 +541,11 @@ sub pause {
 sub hi {
   $ppid=getppid;
   logger("Connection established.");
+  if ( $ARGV[1] =~ /sftp/i  || $ARGV[1] =~ /scp/i ) {
+    writeline("Attempt reported.",1);
+    logger("Connection attempt via SCP or SFTP from (@ARGV).");
+    exit 0;
+  }
   unless ($info{'connect'} ne "") {
     if ($ARGV[1] ne "") {
       $info{'connect'}=$ARGV[1];
@@ -559,13 +564,6 @@ sub hi {
 
   $cli=join(' ',@ARGV);
   chomp ($cli);
-
-  if ($info{'connect'} =~/sftp/i || $info{'connect'} =~/scp/i) {
-    writeline("This attempt to copy files has been reported.\nDisconnecting.");
-    logger("Connection attempt via SCP or SFTP ($cli).");
-    logger("Disconnecting");
-    bye();
-  }
 
   unless ($info{'connect'} =~/\w\.\w/i || $info{'connect'} =~/\w{4,32}/i) {
      writeline("Dont know who you are, can not continue.");
