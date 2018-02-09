@@ -172,7 +172,7 @@ sub telechannel {
           }
         }
       }
-  
+
       if (-e "$config{'home'}$config{'messages'}/teleconf/$channel/ssh") {
         if ($info{'proto'} =~/SSH/) {
           $canjoin=1;
@@ -200,7 +200,7 @@ sub telechannel {
         } else {
           $canjoin=1;
         }
-  
+
         unless ($canjoin eq 1) {
           writeline ($WHT."You are not allowed to enter channel ".$YLW.$channel.$WHT." ..",1);
           $canjoin=0;
@@ -274,7 +274,7 @@ sub telechannel {
     }
     $leaving="1";
     unless ($rescan eq "1") {
-      logger($info{'handle'}." joined ".$channel);
+      logger("NOTICE: ".$info{'handle'}." joined ".$channel);
       iamat($info{'handle'},"Chat");
       telesend("just entered the room!");
     }
@@ -326,7 +326,7 @@ sub teleconf {
   }
 
   telemain: {
-    loaduser($info{'id'});  
+    loaduser($info{'id'});
     if ($info{'banned'} eq "Y") {
       $leaving="1";
       telesend("was banned from the system!");
@@ -381,7 +381,7 @@ sub teleconf {
           writeline ($WHT."Channel ".$YLW.$channel.$WHT." is no longer hidden ..",1);
           unlink ("$config{'home'}$config{'messages'}/teleconf/$channel/hidden");
           goto telemain;
-        }    
+        }
         goto telemain;
       } else {
         goto telemain;
@@ -456,7 +456,7 @@ sub teleconf {
       writeline($WHT."Unknown ".$YLW."SET".$WHT." command",1);
       goto telemain;
     }
-    
+
     if ($chatline =~/^\/[Bb][Aa][Nn]\ / || $chatline =~/^\/[Bb]\ /) {
       ($junk,$banuser)=split(/\s/,$chatline);
 
@@ -515,7 +515,7 @@ sub teleconf {
        goto telemain;
      }
 
-     
+
      writeline ($WHT."User ".$YLW.$banuser.$WHT." no longer banned from entering ".$YLW.$channel.$WHT." ..",1);
      lockfile("$config{'home'}$config{'messages'}/teleconf/$channel/banned");
      open (out,">>$config{'home'}$config{'messages'}/teleconf/$channel/banned");
@@ -650,7 +650,7 @@ sub teleconf {
         goto telemain;
       }
     }
-    
+
     if ($chatline =~/^\/[Pp][Rr][Ii][Vv][Aa][Tt][Ee]$/ || $chatline =~/^\/[Vv]$/) {
       if ($channel eq $config{'defchannel'}) {
         writeline ($WHT."Can not change the ".$YLW.$config{'defchannel'}.$WHT." channel ..",1);
@@ -886,7 +886,7 @@ sub teleconf {
         }
         $mchoice=$mchoice.$test;
       }
-      $chatline=join('',@parts);  
+      $chatline=join('',@parts);
       $chatline =~s/\@LGN/$LGN/g;     $chatline =~s/\@BLK/$BLK/g;
       $chatline =~s/\@RED/$RED/g;     $chatline =~s/\@GRN/$GRN/g;
       $chatline =~s/\@BRN/$BRN/g;     $chatline =~s/\@BLU/$BLU/g;
@@ -957,7 +957,7 @@ sub teleconf {
           iamat($info{'handle'},$mname);
         }
 
-        logger($info{'handle'}." executed ".$mexec);
+        logger("NOTICE: ".$info{'handle'}." executed ".$mexec);
 
         if ($mspecial =~/internal/) {
           &$mexec();
@@ -997,7 +997,7 @@ sub teleconf {
       #$rescan="0";
       loaduser($info{'id'});
       goto channel;
-; 
+;
       }
     }
     ### End door Stuff
@@ -1265,7 +1265,7 @@ $whonode,$whouser,$whowhere
     ($whonode,$whouser,$whowhere)=split(/\|/,$node);
     if (length($whonode) lt 2) {
       $whonode="0".$whonode;
-    } 
+    }
     if (length($whonode)  lt 3) {
       $whonode="0".$whonode;
     }

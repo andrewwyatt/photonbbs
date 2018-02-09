@@ -64,7 +64,7 @@ $whonode,$whoproto,$whouser,$whowhere
     ($whonode,$whouser,$whoproto,$whowhere)=split(/\|/,$node);
     if (length($whonode) lt 2) {
       $whonode="0".$whonode;
-    } 
+    }
     if (length($whonode)  lt 3) {
       $whonode="0".$whonode;
     }
@@ -115,7 +115,6 @@ sub bye {
        while (<in>) {
         chomp $_;
         if ($_ =~/$info{'connect'}/i) {
-          #logger("Unlinking IP ".$config{'connect'}." from list");
           next;
         } else {
            print out $_."\n";
@@ -134,7 +133,7 @@ sub bye {
     unlink("$config{'home'}$config{'messages'}/teleconf/TELEPUB_/$info{'node'}");
   }
 
-  logger($info{'handle'}." Logged off!");
+  logger("NOTICE: ".$info{'handle'}." Logged off!");
   @list=`find $config{'home'} -name $info{'node'} -print`;
   foreach $item(@list) {
     chomp $item;
@@ -213,7 +212,7 @@ sub lockfile {
     sleep 1;
   }
   if ($lockwait le 0) {
-    logger("$info{'handle'} forced unlock on: $tolock");
+    logger("ERROR: $info{'handle'} forced unlock on $tolock");
     unlink("$tolock.lock");
   }
   open(out,">$tolock.lock");
@@ -296,7 +295,7 @@ sub waitkey {
     } else {
       next;
     }
-  } 
+  }
   return $key;
 }
 
@@ -417,14 +416,14 @@ sub getline {
       }
       $result=$result.$key;
       if ($input{'type'} =~/chat/) {
-        if ($result eq "$config{'help'}") {  
+        if ($result eq "$config{'help'}") {
           $retmsg=$result;
           $result="";
           writeline("\n");
           return ($retmsg);
         }
       }
-      
+
     }
   }
 }
@@ -454,7 +453,7 @@ sub readfile {
   while (<file>) {
     s/\@LGN/$LGN/g;	s/\@BLK/$BLK/g;	s/\@RED/$RED/g;	s/\@GRN/$GRN/g;	s/\@BRN/$BRN/g;
     s/\@BLU/$BLU/g;	s/\@PPL/$PPL/g;	s/\@LGR/$LGN/g;	s/\@GRY/$GRY/g;	s/\@PNK/$PNK/g;
-    s/\@YLW/$YLW/g;	s/\@ALB/$ALB/g;	s/\@VLT/$VLT/g;	s/\@WHT/$WHT/g;	s/\@LTB/$LTB/g;  
+    s/\@YLW/$YLW/g;	s/\@ALB/$ALB/g;	s/\@VLT/$VLT/g;	s/\@WHT/$WHT/g;	s/\@LTB/$LTB/g;
     s/\@RST/$RST/g;	s/\@CLR/$CLR/g;	s/~AT/\@/g;
 
     s/\@SVRNM/$sysinfo{'servername'}/g;
@@ -475,7 +474,7 @@ sub readfile {
     s/\@DOB/$info{'dob'}/g;
     s/\@PHONE/$info{'phonenumber'}/g;
     s/\@LOCAL/$info{'location'}/g;
-    s/\@CREDITS/$info{'credits'}/g;	
+    s/\@CREDITS/$info{'credits'}/g;
     s/\@TLEFT/$info{'tlimit'}/g;
     s/\@ID/$info{'id'}/g;
     s/\@SEX/$info{'sex'}/g;
@@ -496,7 +495,7 @@ sub readfile {
       print $_;
     } else {
       chomp $_;
-      unless ($_ eq "") { 
+      unless ($_ eq "") {
         print "\e[80D\e[2K".$_."\n";
         $gotapage="1";
       }
@@ -540,10 +539,9 @@ sub pause {
 
 sub hi {
   $ppid=getppid;
-  logger("Connection established.");
   if ( $ARGV[1] =~ /sftp/i  || $ARGV[1] =~ /scp/i || $ARGV[1] =~ /exec/i ) {
     writeline("Attempt reported.",1);
-    logger("Connection attempt via SCP or SFTP from (@ARGV).");
+    logger("ERROR: Connection attempt via SCP or SFTP from (@ARGV).");
     exit 0;
   }
   unless ($info{'connect'} ne "") {
@@ -567,8 +565,7 @@ sub hi {
 
   unless ($info{'connect'} =~/\w\.\w/i || $info{'connect'} =~/\w{4,32}/i) {
      writeline("Dont know who you are, can not continue.");
-     logger ("Can't find IP address for connection ($cli)");
-     logger("Disconnecting");
+     logger ("ERROR: Can't find IP address for connection ($cli), disconnecting.");
      bye()
   }
 
@@ -587,10 +584,9 @@ sub hi {
         chomp $_;
         if ($_ =~/$info{'connect'}/i) {
           writeline ($WHT."\nIP ".$YLW.$info{'connect'}.$WHT." is already logged on ..",1);
-          logger("Duplicate IP: ".$info{'connect'}." connected");
           ($kpid,$kip)=split(/:/,$_);
-	  logger("Killed Process: ".$kpid);
-	  kill 15,$kpid;
+          logger("WARN: Duplicate IP ".$info{'connect'}." connected. Killing PID ".$kpid);
+	        kill 15,$kpid;
           bye();
         }
       }
@@ -682,8 +678,8 @@ sub hi {
         chomp $_;
           if ($info{'connect'} =~/$_/i) {
             writeline ($WHT."\nHost ".$YLW.$info{'connect'}.$WHT." has been @REDbanned@WHT, terminating connection ..",1);
-	    logger("Banned User connected from: ".$info{'connect'});
-	    close(in);
+	          logger("WARN: Banned User connected from: ".$info{'connect'});
+	          close(in);
             bye();
           }
       }
@@ -710,6 +706,13 @@ sub hi {
 
 sub logger {
   system ("logger -p $config{'facility'} -t \"$sysinfo{'servername'}\" \"$_[0]\"");
+  if ( $config{'slackintegration'} == 1 ) {
+    unless ( $config{'slackerrors'} == 1 && "$_[0]" =~ /^ERR/ )
+      unless ( $config{'slackwarnings'} == 1 && "$_[0]" =~ /^WARN/ )
+        system ('curl -X POST --data-urlencode "payload={\"channel\": \"'.$config{'slackchannel'}.'\", \"username\": \"'.$config{'slackuser'}.'\", \"text\": \"'.$_[0].'\", \"icon_emoji\": \"'.$config{'slackemoji'}.'\"}" "https://hooks.slack.com/services/'.$config{'slackapipath'}.'" >/dev/null 2>&1');
+      }
+    }
+  }
 }
 
 sub bulletins {
@@ -722,7 +725,7 @@ sub bulletins {
   }
   unlockfile("$bullidx");
   if (scalar(@bulls) > "0") {
-    writeline($LGN."Found ".$LTB.scalar(@bulls).$LGN." bulletin(s)!",1); 
+    writeline($LGN."Found ".$LTB.scalar(@bulls).$LGN." bulletin(s)!",1);
   } else {
     writeline($LGN."No new bulletins are available today.",1);
     return;
