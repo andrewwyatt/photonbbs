@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# User authentication module for PhotonBBS 
+# User authentication module for PhotonBBS
 #
 
 sub authenticate {
@@ -55,7 +55,7 @@ sub authenticate {
           $tstpassword=crypt($result,$pasptst);
           until ($tstpassword eq $info{'password'}) {
             writeline($theme{'mismatch'});
-            logger($info{'handle'}." incorrect password on node ".$info{'tty'}." via ".$info{'connect'});
+            logger("WARN: ".$info{'handle'}." incorrect password on node ".$info{'tty'}." via ".$info{'connect'});
             $tstpassword="";
             unless (defined($tries)) {
               $tries=1;
@@ -75,7 +75,7 @@ sub authenticate {
     unless ($info{'hidden'} eq "Y") {
       pageall("just logged in on node ".$info{'node'});		### Put in theme!
     }
-    logger($info{'handle'}." logged in on node ".$info{'tty'}." via ".$info{'connect'});
+    logger("NOTICE: ".$info{'handle'}." logged in on node ".$info{'tty'}." via ".$info{'connect'});
     $config{'idledisconnect'}=$defaultidle;
   }
 }
@@ -200,7 +200,7 @@ sub updateuser {
     }
 
   }
-  logger("Saved ".$info{'handle'}." to record number ".$info{'id'});
+  logger("NOTICE: Saved ".$info{'handle'}." to record number ".$info{'id'});
   close (out);
   unlockfile("$outto");
 }
@@ -210,7 +210,7 @@ sub newuser {
     writeline($theme{'nonewusers'});
     bye();
   }
-  logger("New user on Node ".$info{'tty'});
+  logger("NOTICE: New user on Node ".$info{'tty'});
   iamat("New User","Creating an account");
   $readit=0;
   if (-e $info{'home'}."/".$info{'text'}."/welcome.txt") {
@@ -315,7 +315,7 @@ sub newuser {
     writeline("\n");
     goto newid;
   }
-  setpassword: { 
+  setpassword: {
     writeline($theme{'setpassword'}.$theme{'setpasswordb'});
     $tmppass=getline(password,16,"",1);
     @paspts=split(//,$tmppass);
@@ -390,7 +390,7 @@ sub chhide {
     writeline($WHT."You are now invisible.",1);
     $info{'hidden'}="Y";
   }
-  
+
   iamat($info{'handle'},"Chat");
 
   if (-e "$config{'home'}$config{'messages'}/teleconf/TELEPUB_/$info{'node'}") {

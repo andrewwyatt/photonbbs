@@ -707,8 +707,8 @@ sub hi {
 sub logger {
   system ("logger -p $config{'facility'} -t \"$sysinfo{'servername'}\" \"$_[0]\"");
   if ( $config{'slackintegration'} == 1 ) {
-    unless ( $config{'slackerrors'} == 1 && "$_[0]" =~ /^ERR/ )
-      unless ( $config{'slackwarnings'} == 1 && "$_[0]" =~ /^WARN/ )
+    unless ( $config{'slackerrors'} == 1 && "$_[0]" =~ /^ERR/ ) {
+      unless ( $config{'slackwarnings'} == 1 && "$_[0]" =~ /^WARN/ ) {
         system ('curl -X POST --data-urlencode "payload={\"channel\": \"'.$config{'slackchannel'}.'\", \"username\": \"'.$config{'slackuser'}.'\", \"text\": \"'.$_[0].'\", \"icon_emoji\": \"'.$config{'slackemoji'}.'\"}" "https://hooks.slack.com/services/'.$config{'slackapipath'}.'" >/dev/null 2>&1');
       }
     }
