@@ -91,7 +91,7 @@ if ($os =~/Linux/) {
 
 require ($config{'home'}."/modules/framework.pl");
 require ($config{'home'}."/modules/usertools.pl");
-require ($config{'home'}."/modules/main.pl");	
+require ($config{'home'}."/modules/main.pl");
 require ($config{'home'}."/modules/doors.pl");
 require	($config{'home'}."/modules/lastcallers.pl");
 require ($config{'home'}."/modules/oneliners.pl");
@@ -106,7 +106,7 @@ main: {
 
   $debug=1;
   hi();
-  logger("Connection from ".$info{'connect'}." via ".$info{'proto'});
+  logger("NOTICE: Connection from ".$info{'connect'}." via ".$info{'proto'});
   colorize();
   applytheme($config{'theme'});
   cbreak(on);
@@ -118,10 +118,10 @@ main: {
     if (-e "$config{'home'}$config{'text'}/welcome.txt" && $readit ne "1") {
       readfile("welcome.txt");
       $readit=1;
-    }  
+    }
     authenticate();
     if ($info{'banned'} eq "Y") {
-        logger($info{'handle'}." is banned, terminating.");
+        logger("NOTICE: ".$info{'handle'}." is banned, terminating.");
         writeline($theme{'banned'});
         bye();
     }
@@ -147,8 +147,7 @@ main: {
   iamat($info{'handle'},"Logging in");
   whosonline();
   iamat($info{'handle'},"Chat");
-  logger($info{'handle'}." entered teleconference");
+  logger("NOTICE: ".$info{'handle'}." entered teleconference");
   teleconf();
   bye();
 }
-
