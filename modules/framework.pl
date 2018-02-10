@@ -134,7 +134,7 @@ sub bye {
     unlink("$config{'home'}$config{'messages'}/teleconf/TELEPUB_/$info{'node'}");
   }
 
-  if ($info{'handle'}) {}
+  if ($info{'handle'}) {
     logger("NOTICE: ".$info{'handle'}." Logged off!");
   }
   @list=`find $config{'home'} -name $info{'node'} -print`;
