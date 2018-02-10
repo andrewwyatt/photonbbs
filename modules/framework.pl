@@ -103,6 +103,7 @@ sub errorout {
 }
 
 sub bye {
+  if ($info{'handle'}) {}
   iamat($info{'handle'},"Logging off!");
   cbreak(off);
   writeline($theme{'goodbyemsg'}.$RST,1);
@@ -133,7 +134,9 @@ sub bye {
     unlink("$config{'home'}$config{'messages'}/teleconf/TELEPUB_/$info{'node'}");
   }
 
-  logger("NOTICE: ".$info{'handle'}." Logged off!");
+  if ($info{'handle'}) {}
+    logger("NOTICE: ".$info{'handle'}." Logged off!");
+  }
   @list=`find $config{'home'} -name $info{'node'} -print`;
   foreach $item(@list) {
     chomp $item;
@@ -706,12 +709,14 @@ sub hi {
 
 sub logger {
   system ("logger -p $config{'facility'} -t \"$sysinfo{'servername'}\" \"$_[0]\"");
-  if ( $config{'slackintegration'} == 1 ) {
-    unless ( $config{'slackerrors'} == 1 && "$_[0]" =~ /^ERR/ ) {
-      unless ( $config{'slackwarnings'} == 1 && "$_[0]" =~ /^WARN/ ) {
-        system ('curl -X POST --data-urlencode "payload={\"channel\": \"'.$config{'slackchannel'}.'\", \"username\": \"'.$config{'slackuser'}.'\", \"text\": \"'.$_[0].'\", \"icon_emoji\": \"'.$config{'slackemoji'}.'\"}" "https://hooks.slack.com/services/'.$config{'slackapipath'}.'" >/dev/null 2>&1');
-      }
+  if ( $config{'slackintegration'} eq "1" ) {
+    if ( $config{'slackerrors'} eq "0" && "$_[0]" =~ /^ERR/ ) {
+      return;
     }
+    if ( $config{'slackwarnings'} eq "0" && "$_[0]" =~ /^WARN/ ) {
+      return;
+    }
+    system ('curl -X POST --data-urlencode "payload={\"channel\": \"'.$config{'slackchannel'}.'\", \"username\": \"'.$config{'slackuser'}.'\", \"text\": \"'.$_[0].'\", \"icon_emoji\": \"'.$config{'slackemoji'}.'\"}" "https://hooks.slack.com/services/'.$config{'slackapipath'}.'" >/dev/null 2>&1');
   }
 }
 
