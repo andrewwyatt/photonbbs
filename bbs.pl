@@ -58,10 +58,10 @@ $config{'facility'}="daemon.notice";       ## Log facility for syslog messages
 $config{'slackintegration'}="0";           ## Send notifications to a Slack channel
 $config{'slackerrors'}="0";                ## Sends error messages to your slack channel
 $config{'slackwarnings'}="0";              ## Sends warning messages to your slack channel
-$config{'slackuser'}="PhotonBBS";          ## Send notifications from this user
+$config{'slackuser'}="Photon BBS";         ## Send notifications from this user
 $config{'slackchannel'}="";                ## Send notifications to this channel
 $config{'slackemoji'}="";                  ## Use this emoji for notifications
-$config{'slackapipath'}="";
+$config{'slackapipath'}="";                ## This is the Slack API token for your webhook
 
 
 if (-e "/etc/default/photonbbs") {

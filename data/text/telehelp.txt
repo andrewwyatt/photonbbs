@@ -1,4 +1,4 @@
-@LTBIntergate BBS help
+@LTB@SYSNM help
 
 @YLWUser Functions ..
 @LTB/ACTION <ACTIONS>         @LGNPerform <action>                    @YLW...  @LTB/A 
