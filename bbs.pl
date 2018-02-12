@@ -55,6 +55,14 @@ $config{'chanop'}="100";                   ## Teleconference Admin security leve
 $config{'buffer'}="255";                   ## Chat line buffer size (255 characters recommended)
 $config{'idledisconnect'}="900";           ## Idle time (in seconds) before being disconnected
 $config{'facility'}="daemon.notice";       ## Log facility for syslog messages
+$config{'slackintegration'}="0";           ## Send notifications to a Slack channel
+$config{'slackerrors'}="0";                ## Sends error messages to your slack channel
+$config{'slackwarnings'}="0";              ## Sends warning messages to your slack channel
+$config{'slackuser'}="PhotonBBS";          ## Send notifications from this user
+$config{'slackchannel'}="";                ## Send notifications to this channel
+$config{'slackemoji'}="";                  ## Use this emoji for notifications
+$config{'slackapipath'}="";
+
 
 if (-e "/etc/default/photonbbs") {
   open(in,"</etc/default/photonbbs");
