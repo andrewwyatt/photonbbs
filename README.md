@@ -265,5 +265,5 @@ for access to FreeDOS to troubleshoot and configure DOOR games.  The following e
 by default:
 
     .USEREDIT	- BBS User editor
-    .BULLEDIT   - BBS Bulletin editor
+    .BULLEDIT - BBS Bulletin editor
     .DOSSHELL	- FreeDOS Shell

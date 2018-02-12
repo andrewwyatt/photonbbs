@@ -680,9 +680,10 @@ sub hi {
       while(<in>) {
         chomp $_;
           if ($info{'connect'} =~/$_/i) {
-            writeline ($WHT."\nHost ".$YLW.$info{'connect'}.$WHT." has been @REDbanned@WHT, terminating connection ..",1);
+            writeline ($WHT."\nHost ".$YLW.$info{'connect'}.$WHT." has been ".$RED."banned".$WHT.", terminating connection ..",1);
 	          logger("WARN: Banned User connected from: ".$info{'connect'});
 	          close(in);
+            unlockfile("$config{'home'}$config{'data'}/banned_ip");
             bye();
           }
       }
