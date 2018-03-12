@@ -45,11 +45,11 @@ sub lastcallers{
         print lastcallers $caller;
       }
       close (lastcallers);
-      
+
       $ctime=$ctime;
       unless ($didcall eq 1) {
 format lastcallers =
-@<<<<<<< @<<<<<<<<<<<<  .....    @<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+@<<<<<<< @<<<<<<<<<<<<<<<  .....  @<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 $ctime,$whouser,$whowhere
 .
         open (lastcallers,">>$config{'home'}$config{'text'}/lastcallers");

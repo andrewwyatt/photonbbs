@@ -50,7 +50,7 @@ sub whosonline {
   writeline("\n");
 
 format whosonline =
-@<<<< @<<<<<< @<<<<<<<<<<<<   .....   @<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+@<<<< @<<<<<< @<<<<<<<<<<<<<<<  .....  @<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 $whonode,$whoproto,$whouser,$whowhere
 .
   $whonode="Node"; $whouser="User-ID"; $whoproto="Via";$whowhere="Location";
