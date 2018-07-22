@@ -264,6 +264,6 @@ available to anyone with proper security.  PhotonBBS ships with a user editor, a
 for access to FreeDOS to troubleshoot and configure DOOR games.  The following examples are available
 by default:
 
-    .USEREDIT	- BBS User editor
-    .BULLEDIT - BBS Bulletin editor
-    .DOSSHELL	- FreeDOS Shell
+    .USEREDIT  - BBS User editor
+    .BULLEDIT  - BBS Bulletin editor
+    .DOSSHELL  - FreeDOS Shell
