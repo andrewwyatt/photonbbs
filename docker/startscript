@@ -1,5 +1,24 @@
 #!/bin/bash
 
+
+###
+### Not optimal, but necessary.
+###
+
+service crond start
+service rsyslog start
+service fail2ban start
+
+###
+### Intercept other commands.
+###
+
+if [ "$*" ]
+then
+  $*
+  exit 0
+fi
+
 ###
 ### Set up the PhotonBBS data files to be persistent.
 ###
@@ -9,12 +28,7 @@ then
   rsync -av /opt/photonbbs/data/* /appdata
   touch /appdata/.installed
 fi
-
 chown -R bbs:bbs /appdata
-
-###
-### Run xinetd in a loop.
-###
 
 while [ true ]
 do

@@ -1,0 +1,58 @@
+###
+### Install the dependencies
+###
+
+yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm
+yum -y install tcp_wrappers xinetd telnet-server cronie perl git fail2ban rsyslog
+yum -y install http://download1.rpmfusion.org/free/el/updates/6/i386/dosemu-1.4.0.8-15.20130205git.el6.i686.rpm
+
+cd /opt && git clone https://github.com/andrewwyatt/photonbbs.git
+
+###
+### Install the PhotonBBS Configuration files.
+###
+
+cp /etc/skel/.* /opt/photonbbs ||:
+cp -rf /opt/photonbbs/configs/etc/cron.d/* /etc/cron.d
+cp -rf /opt/photonbbs/configs/etc/default/* /etc/default
+cp -rf /opt/photonbbs/configs/etc/xinetd.d/* /etc/xinetd.d
+
+###
+### Fail2ban
+###
+
+cp /opt/photonbbs/configs/etc/fail2ban/filter.d/photonbbs.conf /etc/fail2ban/filter.d
+cat /opt/photonbbs/configs/etc/fail2ban/add_to_jail.conf >> /etc/fail2ban/jail.conf
+
+###
+### For some reason dosemu doesn't create the paths from inside the container
+### but if they're created here, it works fine.
+###
+
+mkdir -p /opt/photonbbs/.dosemu/drive_c
+mkdir -p /opt/photonbbs/.dosemu/drives
+ln -s /opt/photonbbs/.dosemu/drive_c /opt/photonbbs/.dosemu/drives/c
+ln -s /usr/share/dosemu/drive_z /opt/photonbbs/.dosemu/drives/d
+
+###
+### Some configuration changes (xinetd)
+###
+
+sed -i 's#cps.*$#cps\t\t= 0 0#g' /etc/xinetd.conf
+sed -i 's#per_source.*$#per_source\t= 1#g' /etc/xinetd.conf
+
+###
+### Deviate from what's in the git repository until it can be updated.
+###
+
+chmod 0755 /opt
+/usr/sbin/useradd -d /opt/photonbbs -s /opt/photonbbs/bbs.pl bbs
+chown -R bbs:bbs /opt/photonbbs
+chmod -R 755 /opt/photonbbs
+sed -i "s#REUSE#REUSE NOLIBWRAP#g" /etc/xinetd.d/photonbbs
+sed -i "s#service.*photonbbs#service telnet#g" /etc/xinetd.d/photonbbs
+sed -i "s#photonbbs#telnet#g" /etc/fail2ban/filter.d/photonbbs.conf
+sed -i "s#chat#bbs#g" /etc/xinetd.d/photonbbs
+sed -i 's#/data#/appdata#g' /etc/default/photonbbs
+ln -s /appdata /opt/photonbbs
+
