@@ -38,7 +38,7 @@ RUN cp -rf /opt/photonbbs/configs/etc/fail2ban /etc/fail2ban
 
 RUN mkdir -p /opt/photonbbs/.dosemu/drive_c
 RUN mkdir -p /opt/photonbbs/.dosemu/drives
-RUN mkdir -p /opt/photonbbs/.dosemu/drive_c /opt/photonbbs/.dosemu/drives/c
+RUN ln -s /opt/photonbbs/.dosemu/drive_c /opt/photonbbs/.dosemu/drives/c
 RUN ln -s /usr/share/dosemu/drive_z /opt/photonbbs/.dosemu/drives/d
 
 ###
