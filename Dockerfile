@@ -52,4 +52,4 @@ RUN sed -i "s#REUSE#REUSE NOLIBWRAP#"g /etc/xinetd.d/photonbbs
 RUN sed -i "s#service.*photonbbs#service telnet#g" /etc/xinetd.d/photonbbs
 RUN sed -i "s#chat#bbs#g" /etc/xinetd.d/photonbbs
 
-ENTRYPOINT ["/usr/sbin/xinetd"]
+ENTRYPOINT ["/usr/sbin/xinetd", "-d"]
