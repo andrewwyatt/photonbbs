@@ -56,3 +56,4 @@ sed -i "s#chat#bbs#g" /etc/xinetd.d/photonbbs
 sed -i 's#/data#/appdata#g' /etc/default/photonbbs
 ln -s /appdata /opt/photonbbs
 
+chmod 755 /startscript
