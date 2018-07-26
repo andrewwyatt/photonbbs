@@ -19,6 +19,7 @@ sub authenticate {
     $fuser=$config{'home'}.$config{'data'}."/users.dat";
     unless ( -e "$fuser" ) {
       writeline($theme{'configfirstuser'});
+      $config{'defsecurity'} = $config{'sysopsecurity'};
       $info{'handle'}="NEW";
     }
     unless ( -d "$config{'home'}$config{'data'}/users") {

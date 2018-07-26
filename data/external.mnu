@@ -16,7 +16,8 @@
 ########################################################################
 .USEREDIT|User Edit|is abusing their power!|useredit.pl|500|1|external|1
 .BULLEDIT|Bulletin Editor|updating the bulletins|bulledit.pl|500|1|external|1
-.DOSSHELL|ADMIN|performs admin tasks|dosemu.sh|900|1|external|1
+.DOS|ADMIN|configuring the system|dosemu.sh|900|1|external|1
+.SHELL|ADMIN|configuring the system|shell.sh|900|1|external|1
 /1|Tradewars 2002|heads to the starport|tw2002.sh|10|0|external|100
 /2|LORD|heads off to chase skirts and kill dragons|lord.sh|10|0|external|100
 /3|Lunatix|has been drug off to the insane asylum|luna.sh|10|0|external|100

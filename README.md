@@ -266,4 +266,6 @@ by default:
 
     .USEREDIT  - BBS User editor
     .BULLEDIT  - BBS Bulletin editor
-    .DOSSHELL  - FreeDOS Shell
+    .DOS       - FreeDOS Shell
+    .SHELL     - BASH Shell
+

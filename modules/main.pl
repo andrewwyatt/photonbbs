@@ -871,6 +871,7 @@ sub teleconf {
       telechannel($channel);
       goto channel;
     }
+
     if ($chatline =~/^\/[Ww]\ / || $chatline =~/^\/[Ww][Hh][Ii][Ss][Pp][Ee][Rr]\ /) {
       ($jnk,$data)=split(/\s/,$chatline,2);
       telewhisper($data);
