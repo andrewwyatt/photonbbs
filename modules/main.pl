@@ -2,7 +2,10 @@
 
 sub pageall {
   $msg=$_[0];
-  @sendtonodes=`ls $config{'home'}$config{'nodes'}`;
+  unless ( -e "$config{'home'}$config{'nodes'}" ) {
+    mkdir "$config{'home'}$config{'nodes'}";
+  }
+  @sendtonodes=`ls $config{'home'}$config{'nodes'} 2>/dev/null`;
   foreach $snode(@sendtonodes) {
     chomp $snode;
     unless ($snode eq $info{'node'}) {

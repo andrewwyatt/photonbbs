@@ -1,22 +1,25 @@
 ### PhotonBBS Container
 ###
-### Building: docker image build -t photonbbs .
+### Building: docker volume create appdata
+###           docker image build -t photonbbs .
 ###
 ### Execution: docker container run -ti --net host --device=/dev/tty0 \
-###                   --privileged -p 23:23 photonbbs
+###                   -v appdata:/appdata:rw --privileged -p 23:23 photonbbs
 ###
-### TODO: Move /opt/photonbbs/data to a persistent volume.
-###       Create a start script to start fail2ban and xinetd.
+### TODO: Create a start script to start fail2ban and xinetd.
 ###       Figure out why libwrap isn't working in the container.
 ###
 
 FROM centos:centos6
 WORKDIR /
 
+###
+### Install the dependencies
+###
+
 RUN yum -y install tcp_wrappers xinetd telnet-server perl git fail2ban
 RUN yum -y install http://download1.rpmfusion.org/free/el/updates/6/i386/dosemu-1.4.0.8-15.20130205git.el6.i686.rpm
 
-RUN chmod 0755 /opt
 RUN cd /opt && git clone https://github.com/andrewwyatt/photonbbs.git
 
 ###
@@ -50,11 +53,17 @@ RUN sed -i 's#per_source.*$#per_source\t= 1#g' /etc/xinetd.conf
 ### Deviate from what's in the git repository until it can be updated.
 ###
 
+RUN chmod 0755 /opt
 RUN /usr/sbin/useradd -d /opt/photonbbs -s /opt/photonbbs/bbs.pl bbs
 RUN chown -R bbs:bbs /opt/photonbbs
 RUN chmod -R 755 /opt/photonbbs
 RUN sed -i "s#REUSE#REUSE NOLIBWRAP#"g /etc/xinetd.d/photonbbs
 RUN sed -i "s#service.*photonbbs#service telnet#g" /etc/xinetd.d/photonbbs
 RUN sed -i "s#chat#bbs#g" /etc/xinetd.d/photonbbs
+RUN sed -i 's#/data#/appdata#g' /etc/default/photonbbs
+RUN ln -s /appdata /opt/photonbbs
 
-ENTRYPOINT ["/usr/sbin/xinetd", "-dontfork"]
+COPY startscript /
+RUN chmod 755 /startscript
+
+ENTRYPOINT ["/startscript"]
