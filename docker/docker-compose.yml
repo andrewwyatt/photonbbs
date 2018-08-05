@@ -1,0 +1,21 @@
+version: '2'
+services:
+  photonbbs:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: bbs:photonbbs
+    hostname: photonbbs
+    devices:
+    - /dev:/dev:rwm
+    - /lib/modules:/lib/modules:rwm
+    ports:
+    - 23:23/tcp
+    privileged: true
+    tty: true
+    volumes:
+    - appdata:/appdata:rw
+
+volumes:
+  appdata:
+    driver: rancher-nfs
