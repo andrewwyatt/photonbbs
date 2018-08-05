@@ -1,7 +1,7 @@
 version: '2'
 services:
   photonbbs:
-    image: fewt:photonbbs
+    image: fewt/photonbbs
     hostname: photonbbs
     devices:
     - /dev:/dev:rwm
