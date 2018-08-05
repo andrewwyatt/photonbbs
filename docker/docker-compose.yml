@@ -1,10 +1,7 @@
 version: '2'
 services:
   photonbbs:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: bbs:photonbbs
+    image: fewt:photonbbs
     hostname: photonbbs
     devices:
     - /dev:/dev:rwm
