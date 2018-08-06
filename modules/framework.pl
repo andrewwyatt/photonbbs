@@ -130,6 +130,12 @@ sub bye {
     }
   }
 
+  if (-e "$config{'home'}$config{'servers'}/$info{'systemid'}" ) {
+    lockfile("$config{'home'}$config{'servers'}/$info{'systemid'}");
+    unlink("$config{'home'}$config{'servers'}/$info{'systemid'}");
+    unlockfile("$config{'home'}$config{'servers'}/$info{'systemid'}");
+  }
+
   if (-e "$config{'home'}$config{'messages'}/teleconf/TELEPUB_/$info{'node'}") {
     unlink("$config{'home'}$config{'messages'}/teleconf/TELEPUB_/$info{'node'}");
   }
@@ -659,7 +665,30 @@ sub hi {
   };
   print ".";
   chomp ($info{'tty'}=`tty | sed -e s#/##g -e s#[a-z]##g`);
-  $info{'node'}=$info{'tty'}+1;		### Determine node user is connected to from tty
+
+  unless ( -d "$config{'home'}$config{'servers'}" ) {
+    mkdir "$config{'home'}$config{'servers'}";
+  }
+
+  chomp ($info{'systemid'}=`sha256sum /proc/self/cgroup  | awk '{print \$1}'`);
+  if (-e "$config{'home'}$config{'servers'}/$info{'systemid'}") {
+    open (in,"<$config{'home'}$config{'servers'}/$info{'systemid'}");
+      $servercount=<in>;
+    close (in);
+  } else {
+    @servers=<"$config{'home'}$config{'servers'}/*">;
+    $servercount=scalar(@servers);
+    $servercount++;
+    $servercount = $servercount * 1000;
+    lockfile("$config{'home'}$config{'servers'}/$info{'systemid'}");
+    open (out,">$config{'home'}$config{'servers'}/$info{'systemid'}");
+     print out $servercount;
+    close (out);
+    unlockfile("$config{'home'}$config{'servers'}/$info{'systemid'}");
+  }
+
+  $info{'node'}=$info{'tty'}+$servercount+1;
+
   unless ($info{'tty'} =~/[0-9]/i) {
     @parts=split(//,$info{'tty'});
     $tty=pop(@parts);

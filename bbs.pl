@@ -23,6 +23,7 @@
 $config{'home'}="/opt/photonbbs";          ## Main BBS Path (many dependencies on this)
 $config{'bin'}="/bin";                     ## BBS Bin path (Future use)
 $config{'data'}="/data";                   ## BBS Data path
+$config{'servers'}="/data/servers";        ## Used by PhotonBBS to store the node sequence
 $config{'messages'}="/data/messages";      ## Pager / Teleconference message path
 $config{'nodes'}="/data/nodes";            ## Node information path
 $config{'text'}="/data/text";              ## Ansi & BBS text files
@@ -79,7 +80,7 @@ if (-e "/etc/default/photonbbs") {
 
 ### System Information used by @Codes
 $sysinfo{'servername'}="PhotonBBS";
-$sysinfo{'version'}="1.12";
+$sysinfo{'version'}="1.13";
 $sysinfo{'copyright'}="(C) 2002-2018 Andrew Wyatt";
 chomp ($sysinfo{'host'}=`hostname`);
 chomp ($sysinfo{'os'}=`uname -s`);
