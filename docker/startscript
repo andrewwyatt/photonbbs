@@ -15,8 +15,15 @@ service fail2ban start >/dev/null 2>&1
 if [ ! -e '/appdata/.installed' ]
 then
   rsync -av /opt/photonbbs/data/* /appdata
+  rm -rf /opt/photonbbs/sbin
+  ln -s /appdata/sbin /opt/photonbbs/sbin
+  rm -rf /opt/photonbbs/data
   touch /appdata/.installed
 fi
+
+###
+### Dosemu
+###
 
 if [ ! -e '/appdata/.dosemu/drive_c' ]
 then
@@ -31,7 +38,31 @@ fi
 ln -s /usr/share/dosemu/drive_z /appdata/.dosemu/drives/d 2>/dev/null
 ln -s /appdata/.dosemu/drive_c /appdata/.dosemu/drives/c 2>/dev/null
 ln -s /appdata/.dosemu /opt/photonbbs
+
 ln -s /appdata /opt/photonbbs 2>/dev/null
+
+###
+### Move /etc/default/photonbbs to /appdata
+###
+
+if [ ! -e "/etc/default/photonbbs" ]
+then
+  mkdir /appdata/default
+  mv /etc/default/photonbbs /appdata/default
+  ln -s /appdata/default/photonbbs /etc/default
+  sed -i 's#/data#/appdata#g' /appdata/default/photonbbs
+fi
+
+###
+### Adjust the door scripts
+###
+
+cd /appdata/sbin
+for script in *sh
+do
+  sed -i 's#export HOME="/opt/photonbbs"#export HOME="/appdata"#g' ${script} 2>/dev/null
+done
+cd -
 
 chown -R bbs:bbs /appdata
 
