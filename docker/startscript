@@ -12,15 +12,35 @@ service fail2ban start >/dev/null 2>&1
 ### Set up the PhotonBBS data files to be persistent.
 ###
 
-if [ ! -e '/appdata/.installed' ]
+if [ -d '/opt/photonbbs/data' ]
 then
-  rsync -av /opt/photonbbs/data/* /appdata
+  if [ ! -e '/appdata/.migrated' ]
+  then
+    rsync -av /opt/photonbbs/data/* /appdata
+  fi
+  rm -rf /opt/photonbbs/data
+  ln -s /appdata /opt/photonbbs/data
+  touch /appdata/.migrated
+fi
+
+if [ ! -h '/opt/photonbbs/sbin' ]
+then
+  if [ ! -d '/appdata/sbin' ]
+  then
+    mv /opt/photonbbs/sbin /appdata
+  fi
   rm -rf /opt/photonbbs/sbin
   ln -s /appdata/sbin /opt/photonbbs
+fi
+
+if [ ! -h '/opt/photonbbs/doors' ]
+then
+  if [ ! -d '/appdata/doors' ]
+  then
+    mv /opt/photonbbs/doors /appdata
+  fi
   rm -rf /opt/photonbbs/doors
   ln -s /appdata/doors /opt/photonbbs
-  rm -rf /opt/photonbbs/data
-  touch /appdata/.installed
 fi
 
 ###
@@ -37,11 +57,20 @@ then
   mkdir -p /appdata/.dosemu/drives
 fi
 
-ln -s /usr/share/dosemu/drive_z /appdata/.dosemu/drives/d 2>/dev/null
-ln -s /appdata/.dosemu/drive_c /appdata/.dosemu/drives/c 2>/dev/null
-ln -s /appdata/.dosemu /opt/photonbbs
+if [ ! -h '/appdata/.dosemu/drives/d' ]
+then
+  ln -s /usr/share/dosemu/drive_z /appdata/.dosemu/drives/d
+fi
 
-ln -s /appdata /opt/photonbbs 2>/dev/null
+if [ ! -h '/appdata/.dosemu/drives/c' ]
+then
+  ln -s /appdata/.dosemu/drive_c /appdata/.dosemu/drives/c 2>/dev/null
+fi
+
+if [ ! -h '/opt/photonbbs/.dosemu' ]
+then
+  ln -s /appdata/.dosemu /opt/photonbbs
+fi
 
 ###
 ### Move /etc/default/photonbbs to /appdata
