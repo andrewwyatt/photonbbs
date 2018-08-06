@@ -1,23 +1,12 @@
 #!/bin/bash
 
-
 ###
 ### Not optimal, but necessary.
 ###
 
-service crond start
-service rsyslog start
-service fail2ban start
-
-###
-### Intercept other commands.
-###
-
-if [ "$*" ]
-then
-  $*
-  exit 0
-fi
+service crond start >/dev/null 2>&1
+service rsyslog start >/dev/null 2>&1
+service fail2ban start >/dev/null 2>&1
 
 ###
 ### Set up the PhotonBBS data files to be persistent.
@@ -28,7 +17,33 @@ then
   rsync -av /opt/photonbbs/data/* /appdata
   touch /appdata/.installed
 fi
+
+if [ ! -e '/appdata/.dosemu/drive_c' ]
+then
+  mkdir -p /appdata/.dosemu/drive_c
+fi
+
+if [ ! -e '/appdata/.dosemu/drives' ]
+then
+  mkdir -p /appdata/.dosemu/drives
+fi
+
+ln -s /usr/share/dosemu/drive_z /appdata/.dosemu/drives/d 2>/dev/null
+ln -s /appdata/.dosemu/drive_c /appdata/.dosemu/drives/c 2>/dev/null
+ln -s /appdata/.dosemu /opt/photonbbs
+ln -s /appdata /opt/photonbbs 2>/dev/null
+
 chown -R bbs:bbs /appdata
+
+###
+### Intercept other commands.
+###
+
+if [ "$*" ]
+then
+  $*
+  exit 0
+fi
 
 while [ true ]
 do

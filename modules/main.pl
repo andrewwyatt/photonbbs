@@ -289,6 +289,9 @@ sub teleconf {
   $dndmode=$info{'dnd'};
   $info{'dnd'}="0";
 
+  unless ( -d "$config{'home'}$config{'messages'}" ) {
+    mkdir ("$config{'home'}$config{'messages'}");
+  }
   unless (-d "$config{'home'}$config{'messages'}/teleconf") {
     mkdir ("$config{'home'}$config{'messages'}/teleconf");
   }

@@ -1,6 +1,7 @@
 version: '2'
 services:
   photonbbs:
+    build: .
     image: fewt/photonbbs
     hostname: photonbbs
     devices:
@@ -16,3 +17,5 @@ services:
 volumes:
   appdata:
     driver: rancher-nfs
+    driver_opts:
+      onRemove: retain
