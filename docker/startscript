@@ -16,7 +16,9 @@ if [ ! -e '/appdata/.installed' ]
 then
   rsync -av /opt/photonbbs/data/* /appdata
   rm -rf /opt/photonbbs/sbin
-  ln -s /appdata/sbin /opt/photonbbs/sbin
+  ln -s /appdata/sbin /opt/photonbbs
+  rm -rf /opt/photonbbs/doors
+  ln -s /appdata/doors /opt/photonbbs
   rm -rf /opt/photonbbs/data
   touch /appdata/.installed
 fi
