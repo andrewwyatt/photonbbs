@@ -76,12 +76,12 @@ fi
 ### Move /etc/default/photonbbs to /appdata
 ###
 
-if [ ! -e "/etc/default/photonbbs" ]
+if [ ! -h "/appdata/default/photonbbs" ]
 then
-  mkdir /appdata/default
-  mv /etc/default/photonbbs /appdata/default
-  ln -s /appdata/default/photonbbs /etc/default
-  sed -i 's#/data#/appdata#g' /appdata/default/photonbbs
+  mkdir /appdata/default 2>/dev/null
+  mv /etc/default/photonbbs /appdata/default 2>/dev/null
+  ln -s /appdata/default/photonbbs /etc/default 2>/dev/null
+  sed -i 's#/data#/appdata#g' /appdata/default/photonbbs 2>/dev/null
 fi
 
 ###
