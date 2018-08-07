@@ -676,7 +676,7 @@ sub hi {
       $servercount=<in>;
     close (in);
   } else {
-    @servers=<"$config{'home'}$config{'servers'}/*">;
+    @servers=<$config{'home'}$config{'servers'}/*>;
     $servercount=scalar(@servers);
     $servercount++;
     $servercount = $servercount * 1000;
