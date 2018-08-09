@@ -81,19 +81,7 @@ then
   mkdir /appdata/default 2>/dev/null
   mv /etc/default/photonbbs /appdata/default 2>/dev/null
   ln -s /appdata/default/photonbbs /etc/default 2>/dev/null
-  sed -i 's#/data#/appdata#g' /appdata/default/photonbbs 2>/dev/null
 fi
-
-###
-### Adjust the door scripts
-###
-
-cd /appdata/sbin
-for script in *sh
-do
-  sed -i 's#export HOME="/opt/photonbbs"#export HOME="/appdata"#g' ${script} 2>/dev/null
-done
-cd -
 
 chown -R bbs:bbs /appdata
 

@@ -45,3 +45,5 @@ sed -i "s#photonbbs#telnet#g" /etc/fail2ban/filter.d/photonbbs.conf
 sed -i "s#chat#bbs#g" /etc/xinetd.d/photonbbs
 
 chmod 755 /startscript
+
+yum clean all

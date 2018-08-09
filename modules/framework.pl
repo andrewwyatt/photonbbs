@@ -148,6 +148,11 @@ sub bye {
     chomp $item;
     system ("rm -rf $item 2>/dev/null");
   }
+
+  if ( -e "$config{'doors'}/nodes/$info{'doornode'}") {
+    system ("rm -rf $config{'doors'}/nodes/$info{'doornode'} 2>/dev/null");
+  }
+
   unlink ("$config{'home'}$config{'nodes'}/$info{'node'}");
   kill getppid;
   exit(0);
