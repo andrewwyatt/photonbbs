@@ -349,12 +349,6 @@ sub getline {
       unless ($retmsg ne "") {
         print $RST;
       }
-      if ($input{'type'} =~/phone/ && length($retmsg) ne $input{'length'}) {
-        next;
-      }
-      if ($input{'type'} =~/dob/ && length($retmsg) ne $input{'length'}) {
-        next;
-      }
       cbreak(off);
       if ($input{'type'} =~/chat/) {
         print "\e[80D\e[2K";
@@ -372,66 +366,67 @@ sub getline {
       }
       next;
     }
-    if ($input{'type'} eq "dob") {
-      $input{'length'}=10;
-      unless ($key =~/[0-9]/) {
-        $key="";
-        next;
-      }
-      if (length($result) eq 1) {
-        $key=$key."/";
-      }
-      if (length($result) eq 2) {
-        $key="/".$key;
-      }
-      if (length($result) eq 4) {
-        $key=$key."/";
-      }
-      if (length($result) eq 5) {
-        $key="/".$key;
-      }
-    }
-    if ($input{'type'} eq "phone") {
-      $input{'length'}=14;
-      unless ($key =~/[0-9]/) {
-        $key="";
-        next;
-      }
-      if (length($result) lt 1) {
-        $key="(".$key;
-      }
-      if (length($result) eq 3) {
-        $key=$key.")";
-      }
-      if (length($result) eq 4) {
-        $key=")".$key;
-      }
-      if (length($result) eq 5) {
-        $key=" ".$key;
-      }
-      if (length($result) eq 8) {
-        $key=$key."-";
-      }
-      if (length($result) eq 9) {
-        $key="-".$key;
-      }
-    }
-    unless (length($result) eq $input{'length'}) {
-      unless ($input{'type'} =~/password/) {
-        print $key;
-      } elsif ($key ne "") {
-        print $config{'passchr'};
-      }
-      $result=$result.$key;
-      if ($input{'type'} =~/chat/) {
-        if ($result eq "$config{'help'}") {
-          $retmsg=$result;
-          $result="";
-          writeline("\n");
-          return ($retmsg);
+    if (ord($key) >= "32" && ord($key) <= "126") {
+      if ($input{'type'} eq "dob") {
+        $input{'length'}=10;
+        unless ($key =~/[0-9]/) {
+          $key="";
+          next;
+        }
+        if (length($result) eq 1) {
+          $key=$key."/";
+        }
+        if (length($result) eq 2) {
+          $key="/".$key;
+        }
+        if (length($result) eq 4) {
+          $key=$key."/";
+        }
+        if (length($result) eq 5) {
+          $key="/".$key;
         }
       }
-
+      if ($input{'type'} eq "phone") {
+        $input{'length'}=14;
+        unless ($key =~/[0-9]/) {
+          $key="";
+          next;
+        }
+        if (length($result) lt 1) {
+          $key="(".$key;
+        }
+        if (length($result) eq 3) {
+          $key=$key.")";
+        }
+        if (length($result) eq 4) {
+          $key=")".$key;
+        }
+        if (length($result) eq 5) {
+          $key=" ".$key;
+        }
+        if (length($result) eq 8) {
+          $key=$key."-";
+        }
+        if (length($result) eq 9) {
+          $key="-".$key;
+        }
+      }
+      unless (length($result) eq $input{'length'}) {
+        unless ($input{'type'} =~/password/) {
+          print $key;
+        } elsif ($key ne "") {
+          print $config{'passchr'};
+        }
+        $result=$result.$key;
+        if ($input{'type'} =~/chat/) {
+          if ($result eq "$config{'help'}") {
+            $retmsg=$result;
+            $result="";
+            writeline("\n");
+            return ($retmsg);
+          }
+        }
+      }
     }
   }
 }
