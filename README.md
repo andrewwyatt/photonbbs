@@ -1,7 +1,6 @@
-PhotonBBS
-=========
+# PhotonBBS
 Simple chat server for Unix / Linux
-Copyright (C) 2002-2013, Andrew Wyatt
+Copyright (C) 2002-2018, Andrew Wyatt
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -21,14 +20,13 @@ The latest version of this software can be downloaded from:
 
 https://github.com/andrewwyatt/photonbbs
 
-About
------
+## About
 
 PhotonBBS is a simple UNIX / Linux multi-node chat server written in Perl
 with support for BBS door games.  It was designed to be modular and provides
 a built in set of functions that allow the BBS to be extended very simply.
 
-**Obligatory Screenshot**
+### Obligatory Screenshot
 
 ![alt tag](http://i.imgur.com/cSOsYyz.png)
 
@@ -37,14 +35,14 @@ begin immediately communicating with other users or they are free to create
 channels of their own.  The following describes system commands available
 to all users:
 
-**User Functions**
+### User Functions
 
     /ACTION <ACTIONS>         Perform <action>                    ...  /A
     /WHISPER <WHO> <MESSAGE>  Send private message                ...  /W
     /INV                      Become Invisible                    ...   !
     /QUIT                     Log off the system                  ...   x
 
-**System Commands**
+### System Commands
 
     /USERS                    Who is logged into the system       ...   #
     /SCAN                     Locate chat users                   ...  /S
@@ -52,7 +50,7 @@ to all users:
     /ONELINERS                Write on the wall                   ...   %
     /BULLETINS                System Bulletins                    ...   @
 
-**Room Commands**
+### Room Commands
 
     /JOIN <ROOM>              Joins room <room>                   ...  /J
     /BAN <USER>               (UN)Bans <user> from room           ...  /B
@@ -64,7 +62,7 @@ to all users:
     /TOPIC <MESSAGE>          (UN)Set the channel topic           ...  /T
     /STATUS                   Show room status                    ...  /$
 
-**User Settings**
+### User Settings
 
     /INFO                     Display your user settings
     /SET <COMMAND>            Set user preferences (SEE BELOW)    ...  /U
@@ -84,8 +82,21 @@ In addition to system commands, a set of @CODES are available to users
 which add color to text, or provide system information.  A description of @CODES
 appears below.
 
-Installation
-------------
+## Installation
+
+### Docker
+
+PhotonBBS can be deployed from Docker Hub with a single command.
+
+    docker container run -dti --net host --device=/dev/tty0 -v appdata:/appdata:rw -v /dev:/dev -v /lib/modules:/lib/modules --privileged -p 23:23/tcp fewt/photonbbs
+
+The BBS will be started and listening on port 23 within a minute or two.  
+
+### Shared Storage
+
+PhotonBBS is capable of multinode support across multiple hosts or containers.  If deploying PhotonBBS using NFS for shared storage, caching must be disabled on the NFS client using mount options lookupcache=none and noac.  If this is a shared mountpoint, these options could degrade performance of other applications.
+
+### Manual Installation
 
 To install PhotonBBS, clone the repository and move the folder it creates
 to /opt/photonbbs. Copy config/etc/defaults/photonbbs to /etc/defaults,
@@ -144,10 +155,9 @@ yourself administrative rights to the BBS.
 
 Change the security level to 500 or higher.  Be sure to not add any additional whitespace to the file.
 
-Customizing the BBS
--------------------
+## Customizing the BBS
 
-**Text Files**
+### Text Files
 
   * banned_ip - List of IP addresses not allowed on the system
   * ip_list - List of IP addresses allowed to log into a private system
@@ -165,7 +175,7 @@ An informational message can be left in the main channel for users by editing th
 
 The BBS software will detect ANSI (.ans) and ASCII (.asc) files of the same name as any .txt used by the system, and use the ANSI or ASCII variant first if available.  ANSI, ASCII, and TEXT files as well as any message sent by users of the system may contain @CODES which are converted by the BBS.  A description of available @CODES is as follows:
 
-**Action Colors**
+### Action Colors
 
     @RST Reset to terminal color
     @CLR Clear screen
@@ -184,7 +194,7 @@ The BBS software will detect ANSI (.ans) and ASCII (.asc) files of the same name
     @BLU Blue              
     @BLK Black
 
-**System Variables**
+### System Variables
 
     @SYSNM       - BBS name
     @SVRNM       - BBS software name
@@ -210,16 +220,14 @@ The BBS software will detect ANSI (.ans) and ASCII (.asc) files of the same name
     @BANNED      - Account ban flag
     ~AT          - Provides @ Symbol - @RED~ATRED
 
-System Bulletins
-----------------
+## System Bulletins
 
 System Bulletins are a simple way to communicate news and information to
 your users.  PhotonBBS ships with a bulletin editor (.BULLEDIT) to help
 create and manage system bulletins.  Bulletins even support @CODES in the
 title, and in the bulletin itself.
 
-BBS Door Support
-----------------
+## BBS Door Support
 
 PhotonBBS v1.5 and later provide support for BBS doors. The following drop file formats
 are supported:
