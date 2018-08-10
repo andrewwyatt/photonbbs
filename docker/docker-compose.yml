@@ -4,6 +4,7 @@ services:
     build: .
     image: fewt/photonbbs
     hostname: photonbbs
+    network_mode: bridge
     devices:
     - /dev:/dev:rwm
     - /lib/modules:/lib/modules:rwm
