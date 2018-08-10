@@ -987,7 +987,7 @@ sub teleconf {
               unlockfile($numuserslock);
             }
           }
-          $run=$config{'home'}.$config{'sbin'}."/".$mexec." ".$config{'home'}." ".$info{'doornode'}." \"".$info{'handle'}."\"";
+          $run=$config{'home'}.$config{'sbin'}."/".$mexec." ".$config{'home'}." ".$info{'node'}." \"".$info{'handle'}."\"";
           system ($run);
           if (-e $numuserslock) {
            lockfile($numuserslock);

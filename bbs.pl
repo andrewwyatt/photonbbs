@@ -23,7 +23,6 @@
 $config{'home'}="/opt/photonbbs";          ## Main BBS Path (many dependencies on this)
 $config{'bin'}="/bin";                     ## BBS Bin path (Future use)
 $config{'data'}="/data";                   ## BBS Data path
-$config{'servers'}="/data/servers";        ## Used by PhotonBBS to store the node sequence
 $config{'messages'}="/data/messages";      ## Pager / Teleconference message path
 $config{'nodes'}="/data/nodes";            ## Node information path
 $config{'text'}="/data/text";              ## Ansi & BBS text files
@@ -50,6 +49,7 @@ $config{'defsecurity'}="10";               ## Default Sec level for new users
 $config{'sysopsecurity'}="500";            ## Level to become a sysop
 $config{'defchannel'}="MAIN";              ## Default Teleconference Channel
 $config{'deftheme'}="mbbs";                ## Default User selected skin
+$config{'totalnodes'}="99";                ## Support this many nodes.
 $config{'rows'}="24";                      ## Number of rows before prompting to continue / quit
 $config{'buffer'}="255";                   ## Chat line buffer size (255 characters recommended)
 $config{'chanop'}="100";                   ## Teleconference Admin security level (System wide ChanOP)

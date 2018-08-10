@@ -130,12 +130,6 @@ sub bye {
     }
   }
 
-  if (-e "$config{'home'}$config{'servers'}/$info{'systemid'}" ) {
-    lockfile("$config{'home'}$config{'servers'}/$info{'systemid'}");
-    unlink("$config{'home'}$config{'servers'}/$info{'systemid'}");
-    unlockfile("$config{'home'}$config{'servers'}/$info{'systemid'}");
-  }
-
   if (-e "$config{'home'}$config{'messages'}/teleconf/TELEPUB_/$info{'node'}") {
     unlink("$config{'home'}$config{'messages'}/teleconf/TELEPUB_/$info{'node'}");
   }
@@ -149,8 +143,8 @@ sub bye {
     system ("rm -rf $item 2>/dev/null");
   }
 
-  if ( -e "$config{'doors'}/nodes/$info{'doornode'}") {
-    system ("rm -rf $config{'doors'}/nodes/$info{'doornode'} 2>/dev/null");
+  if ( -e "$config{'doors'}/nodes/$info{'node'}") {
+    system ("rm -rf $config{'doors'}/nodes/$info{'node'} 2>/dev/null");
   }
 
   unlink ("$config{'home'}$config{'nodes'}/$info{'node'}");
@@ -671,28 +665,19 @@ sub hi {
   print ".";
   chomp ($info{'tty'}=`tty | sed -e s#/##g -e s#[a-z]##g`);
 
-  unless ( -d "$config{'home'}$config{'servers'}" ) {
-    mkdir "$config{'home'}$config{'servers'}";
-  }
+  ###
+  ### Multinode support requires generating the node number without the tty, and
+  ### doors support requires the node number to be less than 100 for most.  So..
+  ### support a total of 99 nodes (configurable)
+  ###
 
-  chomp ($info{'systemid'}=`sha256sum /proc/self/cgroup  | awk '{print \$1}'`);
-  if (-e "$config{'home'}$config{'servers'}/$info{'systemid'}") {
-    open (in,"<$config{'home'}$config{'servers'}/$info{'systemid'}");
-      $servercount=<in>;
-    close (in);
-  } else {
-    @servers=<$config{'home'}$config{'servers'}/*>;
-    $servercount=scalar(@servers);
-    $servercount++;
-    $servercount = $servercount * 1000;
-    lockfile("$config{'home'}$config{'servers'}/$info{'systemid'}");
-    open (out,">$config{'home'}$config{'servers'}/$info{'systemid'}");
-     print out $servercount;
-    close (out);
-    unlockfile("$config{'home'}$config{'servers'}/$info{'systemid'}");
+  for (1..$config{'totalnodes'}) {
+    $info{'node'}=$_;
+    unless (-e "$config{'home'}$config{'nodes'}/$info{'node'}") {
+     iamat("CONNECT","Logging on");
+     last;
+    }
   }
-
-  $info{'node'}=$info{'tty'}+$servercount+1;
 
   unless ($info{'tty'} =~/[0-9]/i) {
     @parts=split(//,$info{'tty'});
@@ -701,8 +686,6 @@ sub hi {
     $node=$node-96;
     $info{'node'}=$node;
   }
-
-  iamat("CONNECT","Logging on");
 
   if (-e "$config{'home'}$config{'messages'}/$info{'node'}.page") {
     unlink("$config{'home'}$config{'messages'}/$info{'node'}.page");
