@@ -102,7 +102,7 @@ sub telechannel {
       @rlchan=split(/\//,$rchan);
       $lchan=pop(@rlchan);
       chomp $lchan;
-      if ($lchan =~/$channel/i) {
+      if ($lchan eq $channel) {
         $channel=$lchan;
         last;
       }
@@ -123,7 +123,7 @@ sub telechannel {
       writeline($WHT."Assigned ".$YLW.$info{'handle'}.$WHT." as channel owner ..",1);
     }
 
-    unless ($channel =~/$config{'defchannel'}/) {
+    unless ($channel eq $config{'defchannel'}) {
 
       if (-e "$config{'home'}$config{'messages'}/teleconf/$channel/owner") {
         lockfile("$config{'home'}$config{'messages'}/teleconf/$channel/owner");
@@ -149,7 +149,7 @@ sub telechannel {
         unlockfile("$config{'home'}$config{'messages'}/teleconf/$channel/ops");
         foreach $item(@chanops) {
           chomp $item;
-          if ($item =~/$info{'handle'}/) {
+          if ($item eq $info{'handle'}) {
             $canjoin = 1;
             $op = 1;
             last;
@@ -166,7 +166,7 @@ sub telechannel {
           unlockfile("$config{'home'}$config{'messages'}/teleconf/$channel/banned");
           foreach $item(@chanban) {
             chomp $item;
-            if ($item =~/$info{'handle'}/) {
+            if ($item eq $info{'handle'}) {
               writeline ($WHT."You are not allowed to join ".$YLW.$channel.$WHT." ..",1);
               writeline($WHT."Entering channel ".$YLW.$config{'defchannel'},1);
               unlink ("$config{'home'}$config{'messages'}/teleconf/$channel/users/$info{'node'}");
@@ -467,7 +467,6 @@ sub teleconf {
       ($junk,$banuser)=split(/\s/,$chatline);
 
       $banuser=lc($banuser);
-      $banuser=ucfirst($banuser);
 
       if ($banuser eq "") {
         writeline ($WHT."Action cancelled ..",1);
@@ -720,7 +719,6 @@ sub teleconf {
       ($junk,$opuser)=split(/\s/,$chatline);
 
       $opuser=lc($opuser);
-      $opuser=ucfirst($opuser);
 
       if ($opuser =~/$info{'handle'}/) {
         writeline ($WHT."You can not un-op yourself ".$info{'handle'}." ..",1);
@@ -784,7 +782,6 @@ sub teleconf {
       ($junk,$alluser)=split(/\s/,$chatline);
 
       $alluser=lc($alluser);
-      $alluser=ucfirst($alluser);
 
       if ($alluser =~/$info{'handle'}/) {
         writeline ($WHT."You can not unallow yourself ".$info{'handle'}." ..",1);
@@ -998,17 +995,12 @@ sub teleconf {
           doevents();
        }
       writeline($RST."\n",1);
-      #$rescan="1";
       unlink ("$config{'home'}$config{'messages'}/teleconf/$mname/users/$info{'node'}");
       telechannel($prevchan);
-      #$rescan="0";
       loaduser($info{'id'});
       goto channel;
-;
       }
     }
-    ### End door Stuff
-    #
     telesend();
   }
   goto telemain;
