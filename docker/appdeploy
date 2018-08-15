@@ -3,7 +3,7 @@
 ###
 
 yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm
-yum -y install tcp_wrappers xinetd telnet-server cronie perl git fail2ban rsyslog
+yum -y install tcp_wrappers xinetd telnet-server cronie perl git fail2ban rsyslog nano
 yum -y install http://download1.rpmfusion.org/free/el/updates/6/i386/dosemu-1.4.0.8-15.20130205git.el6.i686.rpm
 
 cd /opt && git clone https://github.com/andrewwyatt/photonbbs.git
