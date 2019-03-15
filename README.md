@@ -203,6 +203,7 @@ The BBS software will detect ANSI (.ans) and ASCII (.asc) files of the same name
     @USERS       - Number of users online now
     @CONNECT     - IP address you are connecting from
     @HOST        - BBS hostname
+    @IP          - BBS IP Address
     @TIME        - The current time
     @DATE        - The current date
     @TOTALCALLS  - Total number of calls to the BBS

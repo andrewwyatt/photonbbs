@@ -61,7 +61,7 @@ $whonode,$whoproto,$whouser,$whowhere
   writeline($LTB);
   foreach $node(@whosonline) {
     chomp ($node);
-    ($whonode,$whouser,$whoproto,$whowhere)=split(/\|/,$node);
+    ($ip,$whonode,$pid,$time,$whouser,$whoproto,$whowhere)=split(/\|/,$node);
     if (length($whonode) lt 2) {
       $whonode="0".$whonode;
     }
@@ -89,7 +89,7 @@ sub iamat {
    $whofile=$config{'home'}.$config{'nodes'}."/".$info{'node'};
    lockfile("$whofile");
    open (who,">$whofile");
-    print who $info{'node'}."|".$who."|".$info{'proto'}."|".$location."\n";
+    print who $sysinfo{'ip'}."|".$info{'node'}."|".$$."|".time."|".$who."|".$info{'proto'}."|".$location;
    close (who);
    unlockfile("$whofile");
 }
@@ -465,6 +465,7 @@ sub readfile {
     s/\@CONNECT/$info{'connect'}/g;
 
     s/\@HOST/$sysinfo{'host'}/g;
+    s/\@IP/$sysinfo{'ip'}/g;
     s/\@USERS/$sysinfo{'users'}/g;
     s/\@TIME/$ctime/g;	s/\@DATE/$cdate/g;
 
