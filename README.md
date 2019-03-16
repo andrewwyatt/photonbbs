@@ -39,6 +39,7 @@ to all users:
 
     /ACTION <ACTIONS>         Perform <action>                    ...  /A
     /WHISPER <WHO> <MESSAGE>  Send private message                ...  /W
+    /BROADCAST <MESSAGE>      Send message to all users           ...  /R
     /INV                      Become Invisible                    ...   !
     /QUIT                     Log off the system                  ...   x
 
@@ -59,7 +60,7 @@ to all users:
     /SSL                      (UN)Enforce SSH on room             ...  /E
     /PRIVATE                  (UN)Sets a room PRIVATE             ...  /V
     /ALLOW <USER>             (UN)Allow <user(s)> in Private room ...  /L
-    /TOPIC <MESSAGE>          (UN)Set the channel topic           ...  /T
+    /TOPIC                    Set the channel topic               ...  /T
     /STATUS                   Show room status                    ...  /$
 
 ### User Settings
