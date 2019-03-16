@@ -1013,7 +1013,6 @@ sub telewhisper {
      chomp ($user);
      $pguser=uc($pguser);
      $user=uc($user);
-     writeline("[$user][$pguser]",1);
      if ($user eq "$pguser") {
         $found=1;
         $pmsg=join(' ',@parts);
