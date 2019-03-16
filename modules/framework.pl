@@ -75,6 +75,9 @@ $whonode,$whoproto,$whouser,$whowhere
 
 
 sub iamat {
+  unless (-d "$config{'home'}$config{'nodes'}") {
+    mkdir "$config{'home'}$config{'nodes'}";
+  }
   unless ($info{'hidden'} eq "Y") {
    $who=$_[0];
   } else {
@@ -606,7 +609,7 @@ sub hi {
     if ( $config{'clearlogin'} = "1" ) {
        print "\e[2J\e[0H";
     }
-    @OPENING=split(//,"\n$sysinfo{'servername'}/$sysinfo{'os'} $sysinfo{'version'} - $sysinfo{'copyright'}\nAuto-sensing .");
+    @OPENING=split(//,"\n$sysinfo{'servername'} v$sysinfo{'version'}\n$sysinfo{'copyright'}\n\nAuto-sensing .");
     for (0..scalar(@OPENING)) {
      select(undef, undef, undef, 0.010);
      print shift(@OPENING);
