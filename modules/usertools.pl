@@ -73,9 +73,6 @@ sub authenticate {
       writeline($theme{'fstwelcome'});
     }
     $result="";
-    unless ($info{'hidden'} eq "Y") {
-      pageall("just logged in on node ".$info{'node'});		### Put in theme!
-    }
     logger("NOTICE: ".$info{'handle'}." logged in on node ".$info{'tty'}." via ".$info{'connect'});
     $config{'idledisconnect'}=$defaultidle;
   }

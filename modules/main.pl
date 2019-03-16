@@ -96,7 +96,6 @@ sub telechannel {
       $canjoin = 1;
       $op = 1;
     }
-
     if (-e "$config{'home'}$config{'messages'}/teleconf/$chanid/ops") {
       lockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/ops");
       open (in,"<$config{'home'}$config{'messages'}/teleconf/$chanid/ops");
@@ -113,7 +112,8 @@ sub telechannel {
       }
     }
 
-    unless ($ops eq 1 || $info{'security'} ge $config{'chanop'}) {
+
+  unless ($ops eq 1 || $info{'security'} ge $config{'chanop'}) {
     if (-e "$config{'home'}$config{'messages'}/teleconf/$chanid/banned") {
       lockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/banned");
       open (in,"<$config{'home'}$config{'messages'}/teleconf/$chanid/banned");
@@ -132,110 +132,111 @@ sub telechannel {
     }
   }
 
-    if (-e "$config{'home'}$config{'messages'}/teleconf/$chanid/ssh") {
-      if ($info{'proto'} =~/SSH/) {
-        $canjoin=1;
-      } else {
-        $canjoin=0;
+  if (-e "$config{'home'}$config{'messages'}/teleconf/$chanid/ssh") {
+    if ($info{'proto'} =~/SSH/) {
+      $canjoin=1;
+    } else {
+      $canjoin=0;
+    }
+  } else {
+    $canjoin=1;
+  }
+  unless ($op eq 1 || $info{'security'} ge $config{'chanop'}) {
+    if (-e "$config{'home'}$config{'messages'}/teleconf/$chanid/allow") {
+      $canjoin=0;
+      lockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/allow");
+      open (in,"<$config{'home'}$config{'messages'}/teleconf/$chanid/allow");
+       @chanallow=<in>;
+      close (in);
+      unlockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/allow");
+      foreach $citem(@chanallow) {
+        chomp $citem;
+        if ($info{'handle'} =~/$citem/) {
+          $canjoin=1;
+          last;
+        }
       }
     } else {
       $canjoin=1;
     }
-    unless ($op eq 1 || $info{'security'} ge $config{'chanop'}) {
-      if (-e "$config{'home'}$config{'messages'}/teleconf/$chanid/allow") {
-        $canjoin=0;
-        lockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/allow");
-        open (in,"<$config{'home'}$config{'messages'}/teleconf/$chanid/allow");
-         @chanallow=<in>;
-        close (in);
-        unlockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/allow");
-        foreach $citem(@chanallow) {
-          chomp $citem;
-          if ($info{'handle'} =~/$citem/) {
-            $canjoin=1;
-            last;
-          }
-        }
-      } else {
-        $canjoin=1;
-      }
 
-      unless ($canjoin eq 1) {
-        writeline ($WHT."You are not allowed to enter channel ".$YLW.$channel.$WHT." ..",1);
-        $canjoin=0;
-        writeline($WHT."Entering channel ".$YLW.$config{'defchannel'},1);
-        telechannel($config{'defchannel'});
-      }
+    unless ($canjoin eq 1) {
+      writeline ($WHT."You are not allowed to enter channel ".$YLW.$channel.$WHT." ..",1);
+      $canjoin=0;
+      writeline($WHT."Entering channel ".$YLW.$config{'defchannel'},1);
+      telechannel($config{'defchannel'});
     }
+  }
 
-    lockfile("$config{'home'}$config{'messages'}/teleconf/TELEPUB_/$info{'node'}");
-    open (out,">$config{'home'}$config{'messages'}/teleconf/TELEPUB_/$info{'node'}");
-    unless ($info{'hidden'} eq "Y") {
-     print out $info{'node'}."|".$info{'handle'}."|".$channel."\n";
-    } else {
-     print out $info{'node'}."|*** HIDDEN ***|".$channel."\n";
-    }
-    close (out);
-    unlockfile("$config{'home'}$config{'messages'}/teleconf/TELEPUB_/$info{'node'}");
+  lockfile("$config{'home'}$config{'messages'}/teleconf/TELEPUB_/$info{'node'}");
+  open (out,">$config{'home'}$config{'messages'}/teleconf/TELEPUB_/$info{'node'}");
+  unless ($info{'hidden'} eq "Y") {
+   print out $info{'node'}."|".$info{'handle'}."|".$channel."\n";
+  } else {
+   print out $info{'node'}."|*** HIDDEN ***|".$channel."\n";
+  }
+  close (out);
+  unlockfile("$config{'home'}$config{'messages'}/teleconf/TELEPUB_/$info{'node'}");
 
-    lockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/users/$info{'node'}");
-    open (out,">$config{'home'}$config{'messages'}/teleconf/$chanid/users/$info{'node'}");
-     print out $info{'handle'};
-    close (out);
-    unlockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/users/$info{'node'}");
+  lockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/users/$info{'node'}");
+  open (out,">$config{'home'}$config{'messages'}/teleconf/$chanid/users/$info{'node'}");
+   print out $info{'handle'};
+  close (out);
+  unlockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/users/$info{'node'}");
 
-    $channelusers="";
-    @teleusers=<$config{'home'}$config{'messages'}/teleconf/$chanid/users/*>;
-    $telelen=scalar(@teleusers);
-    @teleusers=sort @teleusers;
-    $tlucount=scalar(@teleusers);
-    if (scalar(@teleusers) gt "1") {
-      foreach $teleuser(@teleusers) {
-        chomp ($teleuser);
-        lockfile("$teleuser");
-        open (in,"<$teleuser");
-        $line=(<in>);
-        close (in);
-        unlockfile("$teleuser");
-        chomp ($line);
+  $channelusers="";
+  @teleusers=<$config{'home'}$config{'messages'}/teleconf/$chanid/users/*>;
+  $telelen=scalar(@teleusers);
+  @teleusers=sort @teleusers;
+  $tlucount=scalar(@teleusers);
+  if (scalar(@teleusers) gt "1") {
+    foreach $teleuser(@teleusers) {
+      chomp ($teleuser);
+      lockfile("$teleuser");
+      open (in,"<$teleuser");
+      $line=(<in>);
+      close (in);
+      unlockfile("$teleuser");
+      chomp ($line);
 
-        unless ($line eq $info{'handle'}) {
-          if (scalar(@teleusers) gt 2) {
-            $channelusers=$channelusers.", ".$line;
-          } else {
-            if (scalar(@teleusers) eq 2) {
-              $channelusers=$channelusers.$line;
-            }
+      unless ($line eq $info{'handle'}) {
+        if (scalar(@teleusers) gt 2) {
+          $channelusers=$channelusers.", ".$line;
+        } else {
+        if (scalar(@teleusers) eq 2) {
+            $channelusers=$channelusers.$line;
           }
         }
       }
     }
+  }
 
-    if ($channelusers =~/\,/i) {
-      @channeluserlist=split(/\,\s/,$channelusers);
-      $lastchanneluser=pop(@channeluserlist);
-      $channeluserlist=join(', ',@channeluserlist);
-      $channelusers=$channeluserlist.", and ".$lastchanneluser;
-      @channeluserlist=();
-    } else {
-      $channelusers="There is nobody else here with you.";
-    }
+  if ($channelusers =~/\,/i) {
+    @channeluserlist=split(/\,\s/,$channelusers);
+    $lastchanneluser=pop(@channeluserlist);
+    $channeluserlist=join(', ',@channeluserlist);
+    $channelusers=$channeluserlist.", and ".$lastchanneluser;
+    @channeluserlist=();
+  } else {
+    $channelusers="There is nobody else here with you.";
+  }
 
-    if (scalar(@teleusers) gt 2) {
-      $channelusers=~s/^,\s//;
-      $channelusers=$channelusers." are here with you.";
-    } else {
-      if (scalar(@teleusers) eq 2) {
-        $channelusers=$channelusers." is here with you.";
-      }
+  if (scalar(@teleusers) gt 2) {
+    $channelusers=~s/^,\s//;
+    $channelusers=$channelusers." are here with you.";
+  } else {
+    if (scalar(@teleusers) eq 2) {
+      $channelusers=$channelusers." is here with you.";
     }
-    $leaving="1";
-    unless ($rescan eq "1") {
-      logger("NOTICE: ".$info{'handle'}." joined ".$channel);
-      iamat($info{'handle'},"Chat");
-      telesend("just entered the room!");
-    }
-    $leaving="0";
+  }
+
+  $leaving="1";
+  unless ($rescan eq "1") {
+    logger("NOTICE: ".$info{'handle'}." joined ".$chanid);
+    iamat($info{'handle'},"Chat");
+    telesend("just entered the room!");
+  }
+  $leaving="0";
 }
 
 sub teleconf {
@@ -1156,7 +1157,7 @@ sub telescan {
   writeline("\n");
 
 format telescan =
-@<<< @<<<<<<<<<<<<<<<  .....  @<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+@<<< @<<<<<<<<<<<<<<<  .....  @<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 $whonode,$whouser,$whowhere
 .
 
