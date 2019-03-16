@@ -20,7 +20,7 @@
 @LTB/SSL                      @LGN(UN)Enforce SSH on room             @YLW...  @LTB/E
 @LTB/PRIVATE                  @LGN(UN)Sets a room PRIVATE             @YLW...  @LTB/V
 @LTB/ALLOW <USER>             @LGN(UN)Allow <user(s)> in Private room @YLW...  @LTB/L
-@LTB/TOPIC <MESSAGE>          @LGN(UN)Set the channel topic           @YLW...  @LTB/T
+@LTB/TOPIC                    @LGN(UN)Set a channel topic             @YLW...  @LTB/T
 @LTB/STATUS                   @LGNShow room status                    @YLW...  @LTB/$
 
 @YLWUser Settings ..

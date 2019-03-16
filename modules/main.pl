@@ -27,8 +27,6 @@ sub getpages {
 
 sub telechannel {
     $channel=$_[0];
-    #$channel=~s/\s/_/g;
-    #$channel=~s/\W//g;
     $op=0;
     $chanexists=0;
     $canjoin=0;
@@ -61,9 +59,9 @@ sub telechannel {
     foreach $chan(@channels) {
       chomp ($chan);
       ($chanid,$chanown,$channelname) = split(/\|/,$chan);
-      if ($channelname eq $channel) {
+      if ("$channelname" eq "$channel") {
         $chanexists=1;
-        $last;
+        last;
       }
     }
 
@@ -171,9 +169,9 @@ sub telechannel {
   lockfile("$config{'home'}$config{'messages'}/teleconf/TELEPUB_/$info{'node'}");
   open (out,">$config{'home'}$config{'messages'}/teleconf/TELEPUB_/$info{'node'}");
   unless ($info{'hidden'} eq "Y") {
-   print out $info{'node'}."|".$info{'handle'}."|".$channel."\n";
+   print out $info{'node'}."|".$info{'handle'}."|".$chanid."\n";
   } else {
-   print out $info{'node'}."|*** HIDDEN ***|".$channel."\n";
+   print out $info{'node'}."|*** HIDDEN ***|".$chanid."\n";
   }
   close (out);
   unlockfile("$config{'home'}$config{'messages'}/teleconf/TELEPUB_/$info{'node'}");
@@ -563,30 +561,17 @@ sub teleconf {
       }
     }
 
-    if ($chatline =~/^\/[Tt][Oo][Pp][Ii][Cc]\ / || $chatline =~/^\/[Tt]\ /) {
-      @parts=split(/\s/,$chatline);
-      $junk=shift(@parts);
-      $chanmsg=join(' ',@parts);
-      chomp($chanmsg);
-
+    if ($chatline =~/^\/[Tt][Oo][Pp][Ii][Cc]/ || $chatline =~/^\/[Tt]/) {
       if ($channel eq $config{'defchannel'}) {
         writeline ($WHT."Can not change the ".$YLW.$config{'defchannel'}.$WHT." channel ..",1);
         goto telemain;
       }
 
-      if ($info{'handle'} eq $chanown) {
-        if ($chanmsg eq "") {
-          unlink("$config{'home'}$config{'messages'}/teleconf/$chanid/message");
-          writeline ($WHT."Removed Channel message ..",1);
-        } else {
-          lockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/message");
-          open(out,">$config{'home'}$config{'messages'}/teleconf/$chanid/message");
-          print out "\@LGNTopic: \@YLW".$chanmsg;
-          close(out);
-          unlockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/message");
-          writeline($WHT."Set Channel message ..",1);
-        }
-        writeline("",1);
+      if ($info{'handle'} eq $chanown || $info{'security'} ge $config{'chanop'}) {
+        lockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/message");
+        system("nano -R $config{'home'}$config{'messages'}/teleconf/$chanid/message");
+        unlockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/message");
+        writeline($WHT."Set Channel message ..",1);
         goto channel;
       } else {
         goto telemain;
@@ -824,8 +809,8 @@ sub teleconf {
       if ($info{'security'} ge $config{'chanop'}) {
         ($jnk,$data)=split(/\s/,$chatline,2);
         pageall($data);
-        goto telemain;
       }
+      goto telemain;
     }
 
     if ($chatline =~/^\/[Aa]\ / || $chatline =~/^\/[Aa][Cc][Tt][Ii][Oo][Nn]\ / || $chatline =~/^\/[Mm][Ee]\ /) {
@@ -1087,11 +1072,11 @@ sub chanscan {
   writeline("",1);
 
 format chanscan =
-@<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<  .....  @<<<<<<<< @<<<<<<< @<<<<< @<<<<<<<
-$channelname,$chanenc,$chanstat,$chanusers,$exstat
+@<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<  .....  @<<<<<<<<<<< @<<<<<
+$channelname,$chanstat,$chanusers
 .
 
-  $channelname="Channel .....";$chanenc="Protocol";$chanstat="Status";$chanusers="Users";$exstat="";
+  $channelname="Channel .....";$chanstat="Status";$chanusers="Users";
   writeline($YLW);
   $~="chanscan";
   write;
@@ -1101,24 +1086,18 @@ $channelname,$chanenc,$chanstat,$chanusers,$exstat
   foreach $chan(@channels) {
    $chanenc="";
    $chanstat="";
-   $exstat="";
    chomp ($chan);
    ($chanid,$chanown,$channelname) = split(/\|/,$chan);
    if (-e "$config{'home'}$config{'messages'}/teleconf/$chanid/hidden") {
      unless ($info{'security'} ge $config{'chanop'}) {
        next;
      }
-     $exstat="(HIDDEN)";
-   }
-   if (-e "$config{'home'}$config{'messages'}/teleconf/$chanid/ssh") {
-     $chanenc="SSH";
-   } else {
-     $chanenc="ANY";
+     $chanstat=" (H)";
    }
    if (-e "$config{'home'}$config{'messages'}/teleconf/$chanid/allow") {
-     $chanstat="PRIVATE";
+     $chanstat="PRIVATE".$chanstat;
    } else {
-     $chanstat="PUBLIC";
+     $chanstat="PUBLIC".$chanstat;
    }
    @scanchanusr=<$config{'home'}$config{'messages'}/teleconf/$chanid/users/*>;
    $chanusers=scalar(@scanchanusr);
@@ -1162,16 +1141,29 @@ $whonode,$whouser,$whowhere
   foreach $node(@whosonline) {
     chomp ($node);
     ($whonode,$whouser,$whowhere)=split(/\|/,$node);
-    if (length($whonode) lt 2) {
-      $whonode="0".$whonode;
-    }
-    if (length($whonode)  lt 3) {
-      $whonode="0".$whonode;
-    }
+    $whonode=sprintf("%03D",$whonode);
     $~="telescan";
+    lockfile("$config{'home'}$config{'messages'}/teleconf/channels");
+    if ( -e "$config{'home'}$config{'messages'}/teleconf/channels" ) {
+      open (in,"<$config{'home'}$config{'messages'}/teleconf/channels");
+      @channels=<in>;
+      close(in);
+    }
+    unlockfile("$config{'home'}$config{'messages'}/teleconf/channels");
+
     if (-e "$config{'home'}$config{'messages'}/teleconf/$whowhere/hidden") {
       $whowhere="*******"
+    } else {
+      foreach $channel(@channels) {
+        chomp ($channel);
+        ($schanid,$schanowner,$schanname)=split(/\|/,$channel);
+        if ($schanid eq $whowhere) {
+          $whowhere = $schanname;
+          last;
+        }
+      }
     }
+    @channels=();
     write;
     $~="stdout";
   }

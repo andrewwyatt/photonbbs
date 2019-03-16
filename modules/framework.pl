@@ -62,12 +62,7 @@ $whonode,$whoproto,$whouser,$whowhere
   foreach $node(@whosonline) {
     chomp ($node);
     ($ip,$whonode,$pid,$time,$whouser,$whoproto,$whowhere)=split(/\|/,$node);
-    if (length($whonode) lt 2) {
-      $whonode="0".$whonode;
-    }
-    if (length($whonode)  lt 3) {
-      $whonode="0".$whonode;
-    }
+    $whonode=sprintf("%03D",$whonode);
     $~="whosonline";
     write;
     $~="stdout";
