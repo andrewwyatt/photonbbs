@@ -25,13 +25,14 @@ sub sendpage {
    $pguser=shift(@parts);
    $found=0;
    @usersonline=();
-   @wholst=<$config{'home'}$config{'nodes'}/*>;
-   foreach $whoon(@wholst) {
-     lockfile("$whoon");
-     open(in,"<$whoon");
-     $person=<in>;
+   @activenodes=<$config{'home'}$config{'nodes'}/*>;
+   foreach $node(@activenodes) {
+     lockfile("$node");
+     open(in,"<$node");
+     $nodeinfo=<in>;
      close(in);
      unlockfile("$whoon");
+     ($discard,$discard,$discard,$discard,$person,$discard,$discard)=split(/\|/,$nodeinfo);
      push(@usersonline,$person);
    }
 
@@ -245,7 +246,7 @@ sub telechannel {
     unlockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/users/$info{'node'}");
 
     $channelusers="";
-    @teleusers="<$config{'home'}$config{'messages'}/teleconf/$chanid/users/*>";
+    @teleusers=<$config{'home'}$config{'messages'}/teleconf/$chanid/users/*>;
     $telelen=scalar(@teleusers);
     @teleusers=sort @teleusers;
     $tlucount=scalar(@teleusers);
@@ -1070,13 +1071,14 @@ sub telewhisper {
    $pguser=shift(@parts);
    $found=0;
    @usersonline=();
-   @wholst=<$config{'home'}$config{'nodes'}/*>;
-   foreach $whoon(@wholst) {
-     lockfile("$whoon");
-     open(in,"<$whoon");
-     $person=<in>;
+   @activenodes=<$config{'home'}$config{'nodes'}/*>;
+   foreach $node(@activenodes) {
+     lockfile("$node");
+     open(in,"<$node");
+     $nodeinfo=<in>;
      close(in);
      unlockfile("$whoon");
+     ($discard,$discard,$discard,$discard,$person,$discard,$discard)=split(/\|/,$nodeinfo);
      push(@usersonline,$person);
    }
 
