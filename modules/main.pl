@@ -186,10 +186,10 @@ sub telechannel {
 
   $channelusers="";
   @teleusers=<$config{'home'}$config{'messages'}/teleconf/$chanid/users/*>;
-  $telelen=scalar(@teleusers);
   @teleusers=sort @teleusers;
-  $tlucount=scalar(@teleusers);
-  if (scalar(@teleusers) gt "1") {
+  $usercount=0;
+
+  if (scalar(@teleusers) gt 1) {
     foreach $teleuser(@teleusers) {
       chomp ($teleuser);
       lockfile("$teleuser");
@@ -198,36 +198,28 @@ sub telechannel {
       close (in);
       unlockfile("$teleuser");
       chomp ($line);
-
-      unless ($line eq $info{'handle'}) {
-        if (scalar(@teleusers) gt 2) {
-          $channelusers=$channelusers.", ".$line;
-        } else {
-        if (scalar(@teleusers) eq 2) {
-            $channelusers=$channelusers.$line;
-          }
-        }
+      if ($line eq $info{'handle'}) {
+        next;
+      }
+      ++$usercount;
+      if ($usercount gt 1) {
+        $channelusers=$channelusers.", ".$line;
+      } else {
+        $channelusers=$channelusers.$line;
       }
     }
-  }
-
-  if ($channelusers =~/\,/i) {
-    @channeluserlist=split(/\,\s/,$channelusers);
-    $lastchanneluser=pop(@channeluserlist);
-    $channeluserlist=join(', ',@channeluserlist);
-    $channelusers=$channeluserlist.", and ".$lastchanneluser;
-    @channeluserlist=();
-  } else {
-    $channelusers="There is nobody else here with you.";
-  }
-
-  if (scalar(@teleusers) gt 2) {
-    $channelusers=~s/^,\s//;
-    $channelusers=$channelusers." are here with you.";
-  } else {
-    if (scalar(@teleusers) eq 2) {
+    if ($usercount ge 2) {
+      @channeluserlist=split(/\,\s/,$channelusers);
+      $lastchanneluser=pop(@channeluserlist);
+      $channeluserlist=join(', ',@channeluserlist);
+      $channelusers=$channeluserlist.", and ".$lastchanneluser;
+      @channeluserlist=();
+      $channelusers=$channelusers." are here with you.";
+    } else {
       $channelusers=$channelusers." is here with you.";
     }
+  } else {
+    $channelusers="There is nobody else here with you.";
   }
 
   $leaving="1";
