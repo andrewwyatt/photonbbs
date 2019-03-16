@@ -5,76 +5,15 @@ sub pageall {
   unless ( -e "$config{'home'}$config{'nodes'}" ) {
     mkdir "$config{'home'}$config{'nodes'}";
   }
-  @sendtonodes=`ls $config{'home'}$config{'nodes'} 2>/dev/null`;
+  @sendtonodes=<$config{'home'}$config{'nodes'}/*>;
   foreach $snode(@sendtonodes) {
     chomp $snode;
-    unless ($snode eq $info{'node'}) {
-      lockfile("$config{'home'}$config{'messages'}/$snode.page");
-      open(out,">>$config{'home'}$config{'messages'}/$snode.page");
-      print out "\n\@LTB[\@YLW".$info{'handle'}."\@LTB] \@WHT".$msg."\n";
-      close (out);
-      unlockfile("$config{'home'}$config{'messages'}/$snode.page");
-    }
-  }
-}
-
-sub sendpage {
-   $page=$_[0];
-   chomp ($page);
-   @parts=split(/\s/,$page);
-   $pguser=shift(@parts);
-   $found=0;
-   @usersonline=();
-   @activenodes=<$config{'home'}$config{'nodes'}/*>;
-   foreach $node(@activenodes) {
-     lockfile("$node");
-     open(in,"<$node");
-     $nodeinfo=<in>;
-     close(in);
-     unlockfile("$whoon");
-     ($discard,$discard,$discard,$discard,$person,$discard,$discard)=split(/\|/,$nodeinfo);
-     push(@usersonline,$person);
-   }
-
-   foreach $rec(@usersonline) {
-     chomp ($rec);
-     ($pnode,$user,$pproto,$where)=split(/\|/,$rec);
-     $pguser=uc($pguser);
-     $user=uc($user);
-     if ($user eq "$pguser") {
-        $found=1;
-        $pmsg=join(' ',@parts);
-     }
-     $parts[0]=uc($parts[0]);
-     if ($user eq "$pguser $parts[0]") {
-        $pguser=$pguser.$parts[0];
-        $junk=shift(@parts);
-        $found=1;
-        $pmsg=join(' ',@parts);
-     }
-     $parts[1]=uc($parts[1]);
-     if ($user eq "$pguser $parts[0] $parts[1]") {
-       $pguser=$pguser.$parts[0].$parts[1];
-       $junk=shift(@parts);
-       $junk=shift(@parts);
-       $found=1;
-       $pmsg=join(' ',@parts);
-     }
-
-     if ($found eq "1") {
-       ($pnode,$user,$where)=split(/\|/,$rec);
-       writeline($LGN."Paging ".$user."..",1);
-       lockfile("$config{'home'}$config{'messages'}/$pnode.page");
-       open (out,">>$config{'home'}$config{'messages'}/$pnode.page");
-       print out "\n\@LTB[\@YLW".$info{'handle'}."\@LTB]\@WHT is paging you from the @PRED".$_[1]."\@WHT ..\n";
-       print out "\@WHT".$pmsg."\n\@RST";
-       close (out);
-       unlockfile("$config{'home'}$config{'messages'}/$pnode.page");
-       last;
-     }
-  }
-  if ($found ne "1") {
-    writeline($LTB.$pguser.$PPL." is not online",1);
+    $snode=~s/^\/.*\///g;
+    lockfile("$config{'home'}$config{'messages'}/$snode.page");
+    open(out,">>$config{'home'}$config{'messages'}/$snode.page");
+    print out "\n\@LTB[\@YLW".$info{'handle'}."\@LTB] \@WHT".$msg."\n";
+    close (out);
+    unlockfile("$config{'home'}$config{'messages'}/$snode.page");
   }
 }
 
@@ -887,6 +826,15 @@ sub teleconf {
       telewhisper($data);
       goto telemain;
     }
+
+    if ($chatline =~/^\/[Rr]\ / || $chatline =~/^\/[Bb][Rr][Oo][Aa][Dd][Cc][Aa][Ss][Tt]\ /) {
+      if ($info{'security'} ge $config{'chanop'}) {
+        ($jnk,$data)=split(/\s/,$chatline,2);
+        pageall($data);
+        goto telemain;
+      }
+    }
+
     if ($chatline =~/^\/[Aa]\ / || $chatline =~/^\/[Aa][Cc][Tt][Ii][Oo][Nn]\ / || $chatline =~/^\/[Mm][Ee]\ /) {
       @parts=split(//,$chatline);
       $mchoice="";
@@ -1077,16 +1025,17 @@ sub telewhisper {
      open(in,"<$node");
      $nodeinfo=<in>;
      close(in);
-     unlockfile("$whoon");
+     unlockfile("$node");
+     chomp ($nodeinfo);
      ($discard,$discard,$discard,$discard,$person,$discard,$discard)=split(/\|/,$nodeinfo);
      push(@usersonline,$person);
    }
 
-   foreach $rec(@usersonline) {
-     chomp ($rec);
-     ($pnode,$user,$pproto,$where)=split(/\|/,$rec);
+   foreach $user(@usersonline) {
+     chomp ($user);
      $pguser=uc($pguser);
      $user=uc($user);
+     writeline("[$user][$pguser]",1);
      if ($user eq "$pguser") {
         $found=1;
         $pmsg=join(' ',@parts);

@@ -1,8 +1,9 @@
 @LTB@SYSNM help
 
 @YLWUser Functions ..
-@LTB/ACTION <ACTIONS>         @LGNPerform <action>                    @YLW...  @LTB/A 
+@LTB/ACTION <ACTIONS>         @LGNPerform <action>                    @YLW...  @LTB/A
 @LTB/WHISPER <WHO> <MESSAGE>  @LGNSend private message                @YLW...  @LTB/W
+@LTB/BROADCAST <MESSAGE>      @LGNSend a message to all (ChanOp Only) @YLW...  @LTB/R
 
 @YLWSystem Commands ..
 @LTB/USERS                    @LGNWho is logged into the system       @YLW...  @LTB #
