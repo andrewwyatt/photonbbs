@@ -87,129 +87,144 @@ sub getpages {
 
 sub telechannel {
     $channel=$_[0];
-    $channel=~s/\s/_/g;
-    $channel=~s/\W//g;
+    #$channel=~s/\s/_/g;
+    #$channel=~s/\W//g;
     $op=0;
+    $chanexists=0;
     $canjoin=0;
+
+    ###
+    ### Users by channel.
+    ###
 
     unless (-d "$config{'home'}$config{'messages'}/teleconf/TELEPUB_") {
       mkdir ("$config{'home'}$config{'messages'}/teleconf/TELEPUB_");
     }
 
-    ### Watch this code for a while..
-    @chanlist=<$config{'home'}$config{'messages'}/teleconf/*>;
-    foreach $rchan(@chanlist) {
-      @rlchan=split(/\//,$rchan);
-      $lchan=pop(@rlchan);
-      chomp $lchan;
-      if ($lchan eq $channel) {
-        $channel=$lchan;
-        last;
-      }
-    }
-    @rlchan=();
-    @chanlist=();
+    ###
+    ### If the channel list exists, read it in.
+    ###
+    ### Schema: UUID|owner|Channel Name
+    ###
 
-    unless (-d "$config{'home'}$config{'messages'}/teleconf/$channel") {
-      mkdir ("$config{'home'}$config{'messages'}/teleconf/$channel");
-      mkdir ("$config{'home'}$config{'messages'}/teleconf/$channel/users");
-      mkdir ("$config{'home'}$config{'messages'}/teleconf/$channel/messages");
-      writeline($WHT."\nCreated channel ".$YLW.$channel.$WHT." ..",1);
-      lockfile("$config{'home'}$config{'messages'}/teleconf/$channel/owner");
-      open (out,">$config{'home'}$config{'messages'}/teleconf/$channel/owner");
-       print out $info{'handle'};
-      close (out);
-      unlockfile("$config{'home'}$config{'messages'}/teleconf/$channel/owner");
-      writeline($WHT."Assigned ".$YLW.$info{'handle'}.$WHT." as channel owner ..",1);
+    lockfile("$config{'home'}$config{'messages'}/teleconf/channels");
+    if ( -e "$config{'home'}$config{'messages'}/teleconf/channels" ) {
+      open (in,"<$config{'home'}$config{'messages'}/teleconf/channels");
+      @channels=<in>;
+      close(in);
     }
 
-    unless ($channel eq $config{'defchannel'}) {
+    ###
+    ### Does our channel exist? if not create it.
+    ###
 
-      if (-e "$config{'home'}$config{'messages'}/teleconf/$channel/owner") {
-        lockfile("$config{'home'}$config{'messages'}/teleconf/$channel/owner");
-        open (in,"<$config{'home'}$config{'messages'}/teleconf/$channel/owner");
-          @chanown=<in>;
+    foreach $chan(@channels) {
+      chomp ($chan);
+      ($chanid,$chanown,$channelname) = split(/\|/,$chan);
+      if ($channelname eq $channel) {
+        $chanexists=1;
+        $last;
+      }
+    }
+
+    if ($chanexists eq 0) {
+      chomp ($chanid=`uuidgen`);
+      open (out,">>$config{'home'}$config{'messages'}/teleconf/channels");
+      print out "$chanid|$info{'handle'}|$channel\n";
+      close(out);
+
+      $chanown=$info{'handle'};
+
+      unless (-d "$config{'home'}$config{'messages'}/teleconf/$chanid") {
+        mkdir ("$config{'home'}$config{'messages'}/teleconf/$chanid");
+        mkdir ("$config{'home'}$config{'messages'}/teleconf/$chanid/users");
+        mkdir ("$config{'home'}$config{'messages'}/teleconf/$chanid/messages");
+      }
+
+      writeline($WHT."\nCreating channel ".$YLW.$channel.$WHT." ..",1);
+      writeline($WHT."Assigned ".$YLW.$info{'handle'}.$WHT." as owner ..",1);
+    }
+
+    unlockfile("$config{'home'}$config{'messages'}/teleconf/channels");
+    @channels=();
+
+    ###
+    ### Channel owners can always join any channel
+    ###
+
+    if ($chanown eq $info{'handle'}) {
+      $canjoin = 1;
+      $op = 1;
+    }
+
+    if (-e "$config{'home'}$config{'messages'}/teleconf/$chanid/ops") {
+      lockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/ops");
+      open (in,"<$config{'home'}$config{'messages'}/teleconf/$chanid/ops");
+        @chanops=<in>;
+      close (in);
+      unlockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/ops");
+      foreach $item(@chanops) {
+        chomp $item;
+        if ($item eq $info{'handle'}) {
+          $canjoin = 1;
+          $op = 1;
+          last;
+        }
+      }
+    }
+
+    unless ($ops eq 1 || $info{'security'} ge $config{'chanop'}) {
+    if (-e "$config{'home'}$config{'messages'}/teleconf/$chanid/banned") {
+      lockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/banned");
+      open (in,"<$config{'home'}$config{'messages'}/teleconf/$chanid/banned");
+       @chanban=<in>;
+      close (in);
+      unlockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/banned");
+      foreach $item(@chanban) {
+        chomp $item;
+        if ($item eq $info{'handle'}) {
+          writeline ($WHT."You are not allowed to join ".$YLW.$channel.$WHT." ..",1);
+          writeline($WHT."Entering channel ".$YLW.$config{'defchannel'},1);
+          unlink ("$config{'home'}$config{'messages'}/teleconf/$chanid/users/$info{'node'}");
+          telechannel($config{'defchannel'});
+        }
+      }
+    }
+  }
+
+    if (-e "$config{'home'}$config{'messages'}/teleconf/$chanid/ssh") {
+      if ($info{'proto'} =~/SSH/) {
+        $canjoin=1;
+      } else {
+        $canjoin=0;
+      }
+    } else {
+      $canjoin=1;
+    }
+    unless ($op eq 1 || $info{'security'} ge $config{'chanop'}) {
+      if (-e "$config{'home'}$config{'messages'}/teleconf/$chanid/allow") {
+        $canjoin=0;
+        lockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/allow");
+        open (in,"<$config{'home'}$config{'messages'}/teleconf/$chanid/allow");
+         @chanallow=<in>;
         close (in);
-        unlockfile("$config{'home'}$config{'messages'}/teleconf/$channel/owner");
-        foreach $item(@chanown) {
-          chomp $item;
-          if ($item =~/$info{'handle'}/) {
-            $canjoin = 1;
-            $op = 1;
+        unlockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/allow");
+        foreach $citem(@chanallow) {
+          chomp $citem;
+          if ($info{'handle'} =~/$citem/) {
+            $canjoin=1;
             last;
           }
-        }
-      }
-
-      if (-e "$config{'home'}$config{'messages'}/teleconf/$channel/ops") {
-        lockfile("$config{'home'}$config{'messages'}/teleconf/$channel/ops");
-        open (in,"<$config{'home'}$config{'messages'}/teleconf/$channel/ops");
-          @chanops=<in>;
-        close (in);
-        unlockfile("$config{'home'}$config{'messages'}/teleconf/$channel/ops");
-        foreach $item(@chanops) {
-          chomp $item;
-          if ($item eq $info{'handle'}) {
-            $canjoin = 1;
-            $op = 1;
-            last;
-          }
-        }
-      }
-
-      unless ($ops eq 1) {
-        if (-e "$config{'home'}$config{'messages'}/teleconf/$channel/banned") {
-          lockfile("$config{'home'}$config{'messages'}/teleconf/$channel/banned");
-          open (in,"<$config{'home'}$config{'messages'}/teleconf/$channel/banned");
-           @chanban=<in>;
-          close (in);
-          unlockfile("$config{'home'}$config{'messages'}/teleconf/$channel/banned");
-          foreach $item(@chanban) {
-            chomp $item;
-            if ($item eq $info{'handle'}) {
-              writeline ($WHT."You are not allowed to join ".$YLW.$channel.$WHT." ..",1);
-              writeline($WHT."Entering channel ".$YLW.$config{'defchannel'},1);
-              unlink ("$config{'home'}$config{'messages'}/teleconf/$channel/users/$info{'node'}");
-              telechannel($config{'defchannel'});
-            }
-          }
-        }
-      }
-
-      if (-e "$config{'home'}$config{'messages'}/teleconf/$channel/ssh") {
-        if ($info{'proto'} =~/SSH/) {
-          $canjoin=1;
-        } else {
-          $canjoin=0;
         }
       } else {
         $canjoin=1;
       }
-      unless ($op eq 1) {
-        if (-e "$config{'home'}$config{'messages'}/teleconf/$channel/allow") {
-          $canjoin=0;
-          lockfile("$config{'home'}$config{'messages'}/teleconf/$channel/allow");
-          open (in,"<$config{'home'}$config{'messages'}/teleconf/$channel/allow");
-           @chanallow=<in>;
-          close (in);
-          unlockfile("$config{'home'}$config{'messages'}/teleconf/$channel/allow");
-          foreach $citem(@chanallow) {
-            chomp $citem;
-            if ($info{'handle'} =~/$citem/) {
-              $canjoin=1;
-              last;
-            }
-          }
-        } else {
-          $canjoin=1;
-        }
 
-        unless ($canjoin eq 1) {
-          writeline ($WHT."You are not allowed to enter channel ".$YLW.$channel.$WHT." ..",1);
-          $canjoin=0;
-          writeline($WHT."Entering channel ".$YLW.$config{'defchannel'},1);
-          telechannel($config{'defchannel'});
-        }
+      unless ($canjoin eq 1) {
+        writeline ($WHT."You are not allowed to enter channel ".$YLW.$channel.$WHT." ..",1);
+        $canjoin=0;
+        writeline($WHT."Entering channel ".$YLW.$config{'defchannel'},1);
+        telechannel($config{'defchannel'});
       }
     }
 
@@ -223,14 +238,14 @@ sub telechannel {
     close (out);
     unlockfile("$config{'home'}$config{'messages'}/teleconf/TELEPUB_/$info{'node'}");
 
-    lockfile("$config{'home'}$config{'messages'}/teleconf/$channel/users/$info{'node'}");
-    open (out,">$config{'home'}$config{'messages'}/teleconf/$channel/users/$info{'node'}");
+    lockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/users/$info{'node'}");
+    open (out,">$config{'home'}$config{'messages'}/teleconf/$chanid/users/$info{'node'}");
      print out $info{'handle'};
     close (out);
-    unlockfile("$config{'home'}$config{'messages'}/teleconf/$channel/users/$info{'node'}");
+    unlockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/users/$info{'node'}");
 
     $channelusers="";
-    @teleusers=`ls $config{'home'}$config{'messages'}/teleconf/$channel/users/* 2>/dev/null`;
+    @teleusers="<$config{'home'}$config{'messages'}/teleconf/$chanid/users/*>";
     $telelen=scalar(@teleusers);
     @teleusers=sort @teleusers;
     $tlucount=scalar(@teleusers);
@@ -254,20 +269,19 @@ sub telechannel {
           }
         }
       }
+    }
+
     if ($channelusers =~/\,/i) {
       @channeluserlist=split(/\,\s/,$channelusers);
       $lastchanneluser=pop(@channeluserlist);
       $channeluserlist=join(', ',@channeluserlist);
       $channelusers=$channeluserlist.", and ".$lastchanneluser;
       @channeluserlist=();
-    }
     } else {
       $channelusers="There is nobody else here with you.";
     }
 
-
-
-     if (scalar(@teleusers) gt 2) {
+    if (scalar(@teleusers) gt 2) {
       $channelusers=~s/^,\s//;
       $channelusers=$channelusers." are here with you.";
     } else {
@@ -308,19 +322,19 @@ sub teleconf {
     writeline ("\n\n");
   }
  channel: {
-  if (-e "$config{'home'}$config{'messages'}/teleconf/$channel/allow") {
+  if (-e "$config{'home'}$config{'messages'}/teleconf/$chanid/allow") {
     $private=" (".$PPL."PRIVATE".$LGN.")";
   } else {
     $private="";
   }
 
-  if (-e "$config{'home'}$config{'messages'}/teleconf/$channel/ssh") {
+  if (-e "$config{'home'}$config{'messages'}/teleconf/$chanid/ssh") {
     $private=$private." (".$PPL."ENC".$LGN.")";
   }
 
-  if (-e "$config{'home'}$config{'messages'}/teleconf/$channel/message") {
+  if (-e "$config{'home'}$config{'messages'}/teleconf/$chanid/message") {
     $inteleconf=0;
-    readfile("$config{'home'}$config{'messages'}/teleconf/$channel/message",1,1);
+    readfile("$config{'home'}$config{'messages'}/teleconf/$chanid/message",1,1);
     $inteleconf=1;
     writeline($RST,1);
   }
@@ -341,7 +355,7 @@ sub teleconf {
       $atmenu="0";
       $inteleconf="0";
       $info{'dnd'}=$dndmode;
-      unlink ("$config{'home'}$config{'messages'}/teleconf/$channel/users/$info{'node'}");
+      unlink ("$config{'home'}$config{'messages'}/teleconf/$chanid/users/$info{'node'}");
       goto leave;
     }
 
@@ -375,17 +389,17 @@ sub teleconf {
         writeline ($WHT."Can not hide the ".$YLW.$config{'defchannel'}.$WHT." channel ..",1);
         goto telemain;
       }
-      if (teleowner()) {
-        unless (-e "$config{'home'}$config{'messages'}/teleconf/$channel/hidden") {
+      if ($info{'handle'} eq $chanown) {
+        unless (-e "$config{'home'}$config{'messages'}/teleconf/$chanid/hidden") {
           writeline ($WHT."Channel ".$YLW.$channel.$WHT." hidden ..",1);
-          lockfile("$config{'home'}$config{'messages'}/teleconf/$channel/hidden");
-          open (out,">$config{'home'}$config{'messages'}/teleconf/$channel/hidden");
+          lockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/hidden");
+          open (out,">$config{'home'}$config{'messages'}/teleconf/$chanid/hidden");
            print out "1";
           close (out);
-          unlockfile("$config{'home'}$config{'messages'}/teleconf/$channel/hidden");
+          unlockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/hidden");
         } else {
           writeline ($WHT."Channel ".$YLW.$channel.$WHT." is no longer hidden ..",1);
-          unlink ("$config{'home'}$config{'messages'}/teleconf/$channel/hidden");
+          unlink ("$config{'home'}$config{'messages'}/teleconf/$chanid/hidden");
           goto telemain;
         }
         goto telemain;
@@ -478,17 +492,17 @@ sub teleconf {
         goto telemain;
       }
 
-      if (teleowner()) {
+      if ($info{'handle'} eq $chanown) {
        $unallned=0;
        if ($banuser eq $info{'handle'}) {
          writeline ($WHT."You can not ban yourself from a channel ..", 1);
          goto telemain;
        }
-       if (-e "$config{'home'}$config{'messages'}/teleconf/$channel/banned") {
-         lockfile("$config{'home'}$config{'messages'}/teleconf/$channel/banned");
-         open (in,"<$config{'home'}$config{'messages'}/teleconf/$channel/banned");
-         lockfile("$config{'home'}$config{'messages'}/teleconf/$channel/banned_");
-         open (out,">$config{'home'}$config{'messages'}/teleconf/$channel/banned_");
+       if (-e "$config{'home'}$config{'messages'}/teleconf/$chanid/banned") {
+         lockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/banned");
+         open (in,"<$config{'home'}$config{'messages'}/teleconf/$chanid/banned");
+         lockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/banned_");
+         open (out,">$config{'home'}$config{'messages'}/teleconf/$chanid/banned_");
          while (<in>) {
            chomp $_;
            if ($_ eq $banuser) {
@@ -501,20 +515,20 @@ sub teleconf {
          }
          close(out);
          close(in);
-         unlink ("$config{'home'}$config{'messages'}/teleconf/$channel/banned");
-         rename ("$config{'home'}$config{'messages'}/teleconf/$channel/banned_","$config{'home'}$config{'messages'}/teleconf/$channel/banned");
-         unlockfile("$config{'home'}$config{'messages'}/teleconf/$channel/banned");
-         unlockfile("$config{'home'}$config{'messages'}/teleconf/$channel/banned_");
+         unlink ("$config{'home'}$config{'messages'}/teleconf/$chanid/banned");
+         rename ("$config{'home'}$config{'messages'}/teleconf/$chanid/banned_","$config{'home'}$config{'messages'}/teleconf/$chanid/banned");
+         unlockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/banned");
+         unlockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/banned_");
          unless ($unallned eq 0) {
            goto telemain;
          }
        }
        writeline ($WHT."User ".$YLW.$banuser.$WHT." now banned from ".$YLW.$channel.$WHT." ..",1);
-       lockfile("$config{'home'}$config{'messages'}/teleconf/$channel/banned");
-       open (out,">>$config{'home'}$config{'messages'}/teleconf/$channel/banned");
+       lockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/banned");
+       open (out,">>$config{'home'}$config{'messages'}/teleconf/$chanid/banned");
         print out $banuser."\n";
        close (out);
-       unlockfile("$config{'home'}$config{'messages'}/teleconf/$channel/banned");
+       unlockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/banned");
        goto telemain;
      } else {
        goto telemain;
@@ -522,32 +536,24 @@ sub teleconf {
 
 
      writeline ($WHT."User ".$YLW.$banuser.$WHT." no longer banned from entering ".$YLW.$channel.$WHT." ..",1);
-     lockfile("$config{'home'}$config{'messages'}/teleconf/$channel/banned");
-     open (out,">>$config{'home'}$config{'messages'}/teleconf/$channel/banned");
+     lockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/banned");
+     open (out,">>$config{'home'}$config{'messages'}/teleconf/$chanid/banned");
       print out $banuser."\n";
      close (out);
-     unlockfile("$config{'home'}$config{'messages'}/teleconf/$channel/banned");
+     unlockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/banned");
      goto telemain;
     }
 
     if ($chatline =~/^\/[Ss][Tt][Aa][Tt][Uu][Ss]$/i || $chatline =~/^\/\$$/ || $chatline =~/^\$$/) {
-      if ($op eq 1) {
+      if ($op eq 1 || $info{'security'} ge $config{'chanop'}) {
         writeline($WHT."\nSystem report for channel: ".$PPL.$channel.$WHT."\n",1);
-        if (-e "$config{'home'}$config{'messages'}/teleconf/$channel/owner") {
-          lockfile("$config{'home'}$config{'messages'}/teleconf/$channel/owner");
-          open(in,"<$config{'home'}$config{'messages'}/teleconf/$channel/owner");
-            $rep=<in>;
-          close(in);
-          unlockfile("$config{'home'}$config{'messages'}/teleconf/$channel/owner");
-          chomp $rep;
-          writeline($LTB."Channel Owner: ".$LGN.$rep,1)
-        }
-        if (-e "$config{'home'}$config{'messages'}/teleconf/$channel/banned") {
-          lockfile("$config{'home'}$config{'messages'}/teleconf/$channel/banned");
-          open(in,"<$config{'home'}$config{'messages'}/teleconf/$channel/banned");
+        writeline($LTB."Channel Owner: ".$LGN.$chanown,1);
+        if (-e "$config{'home'}$config{'messages'}/teleconf/$chanid/banned") {
+          lockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/banned");
+          open(in,"<$config{'home'}$config{'messages'}/teleconf/$chanid/banned");
             @rep=<in>;
           close(in);
-          unlockfile("$config{'home'}$config{'messages'}/teleconf/$channel/banned");
+          unlockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/banned");
           writeline($LTB."Banned users: ");
           if (scalar(@rep) gt 0) {
             foreach $brep(@rep) {
@@ -562,13 +568,13 @@ sub teleconf {
           }
         }
 
-        if (-e "$config{'home'}$config{'messages'}/teleconf/$channel/allow") {
+        if (-e "$config{'home'}$config{'messages'}/teleconf/$chanid/allow") {
           writeline($LTB."Room is ".$LGN."PRIVATE".$RST,1);
-          lockfile("$config{'home'}$config{'messages'}/teleconf/$channel/allow");
-          open(in,"<$config{'home'}$config{'messages'}/teleconf/$channel/allow");
+          lockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/allow");
+          open(in,"<$config{'home'}$config{'messages'}/teleconf/$chanid/allow");
             @rep=<in>;
           close(in);
-          unlockfile("$config{'home'}$config{'messages'}/teleconf/$channel/allow");
+          unlockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/allow");
           writeline($LTB."Allowed users: ");
           if (scalar(@rep) gt 1) {
             foreach $brep(@rep) {
@@ -585,19 +591,17 @@ sub teleconf {
           writeline($LTB."Room is ".$LGN."PUBLIC",1);
         }
 
-        if (-e "$config{'home'}$config{'messages'}/teleconf/$channel/ops") {
-          lockfile("$config{'home'}$config{'messages'}/teleconf/$channel/ops");
-          open(in,"<$config{'home'}$config{'messages'}/teleconf/$channel/ops");
+        if (-e "$config{'home'}$config{'messages'}/teleconf/$chanid/ops") {
+          lockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/ops");
+          open(in,"<$config{'home'}$config{'messages'}/teleconf/$chanid/ops");
             @rep=<in>;
           close(in);
-          unlockfile("$config{'home'}$config{'messages'}/teleconf/$channel/ops");
+          unlockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/ops");
           writeline($LTB."Channel Operators: ");
           if (scalar(@rep) gt 0) {
             foreach $brep(@rep) {
               chomp $brep;
-              unless ($brep =~/$info{'handle'}/) {
-                writeline($LGN.$brep." ");
-              }
+              writeline($LGN.$brep." ");
             }
             writeline($RST,1);
           } else {
@@ -607,13 +611,13 @@ sub teleconf {
           writeline($LTB."There are no channel ops other than its owner",1);
         }
 
-        if (-e "$config{'home'}$config{'messages'}/teleconf/$channel/hidden") {
+        if (-e "$config{'home'}$config{'messages'}/teleconf/$chanid/hidden") {
           writeline($LTB."This room is ".$LGN."HIDDEN FROM".$LTB." channel scans",1);
         } else {
           writeline($LTB."This room is ".$LGN."SHOWN IN".$LTB." channel scans",1);
         }
 
-        if (-e "$config{'home'}$config{'messages'}/teleconf/$channel/ssh") {
+        if (-e "$config{'home'}$config{'messages'}/teleconf/$chanid/ssh") {
           writeline($LTB."This room requires ".$LGN."SSH".$LTB." connections",1);
         } else {
           writeline($LTB."This room is open to ".$LGN."UNENCRYPTED".$LTB." connections",1);
@@ -637,16 +641,16 @@ sub teleconf {
         goto telemain;
       }
 
-      if (teleowner()) {
+      if ($info{'handle'} eq $chanown) {
         if ($chanmsg eq "") {
-          unlink("$config{'home'}$config{'messages'}/teleconf/$channel/message");
+          unlink("$config{'home'}$config{'messages'}/teleconf/$chanid/message");
           writeline ($WHT."Removed Channel message ..",1);
         } else {
-          lockfile("$config{'home'}$config{'messages'}/teleconf/$channel/message");
-          open(out,">$config{'home'}$config{'messages'}/teleconf/$channel/message");
+          lockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/message");
+          open(out,">$config{'home'}$config{'messages'}/teleconf/$chanid/message");
           print out "\@LGNTopic: \@YLW".$chanmsg;
           close(out);
-          unlockfile("$config{'home'}$config{'messages'}/teleconf/$channel/message");
+          unlockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/message");
           writeline($WHT."Set Channel message ..",1);
         }
         writeline("",1);
@@ -662,17 +666,17 @@ sub teleconf {
         goto telemain;
       }
 
-      if (teleowner()) {
-        if (-e "$config{'home'}$config{'messages'}/teleconf/$channel/allow") {
+      if ($info{'handle'} eq $chanown) {
+        if (-e "$config{'home'}$config{'messages'}/teleconf/$chanid/allow") {
           writeline ($WHT."Channel ".$YLW.$channel.$WHT." is now ".$LTB."PUBLIC".$WHT."..",1);
-          unlink ("$config{'home'}$config{'messages'}/teleconf/$channel/allow");
+          unlink ("$config{'home'}$config{'messages'}/teleconf/$chanid/allow");
         } else {
   	 writeline ($WHT."Channel ".$YLW.$channel.$WHT." is now ".$LTB."PRIVATE".$WHT."..",1);
-          lockfile("$config{'home'}$config{'messages'}/teleconf/$channel/allow");
-          open (out,">$config{'home'}$config{'messages'}/teleconf/$channel/allow");
+          lockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/allow");
+          open (out,">$config{'home'}$config{'messages'}/teleconf/$chanid/allow");
           print out $info{'handle'}."\n";
           close (out);
-          unlockfile("$config{'home'}$config{'messages'}/teleconf/$channel/allow");
+          unlockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/allow");
         }
         writeline("",1);
         goto channel;
@@ -687,10 +691,10 @@ sub teleconf {
         goto telemain;
       }
 
-      if (teleowner()) {
-        if (-e "$config{'home'}$config{'messages'}/teleconf/$channel/ssh") {
+      if ($info{'handle'} eq $chanown) {
+        if (-e "$config{'home'}$config{'messages'}/teleconf/$chanid/ssh") {
           writeline ($WHT."Channel ".$YLW.$channel.$WHT." is now ".$LTB."UNENCRYPTED OK".$WHT."..",1);
-          unlink ("$config{'home'}$config{'messages'}/teleconf/$channel/ssh");
+          unlink ("$config{'home'}$config{'messages'}/teleconf/$chanid/ssh");
         } else {
          unless ($info{'proto'} =~/SSH/) {
            writeline ($RED."Warning: Can not change channel properties; you are connected via ".$LTB.$info{'proto'}.$RED."..",1);
@@ -698,11 +702,11 @@ sub teleconf {
            goto channel;
          }
          writeline ($WHT."Channel ".$YLW.$channel.$WHT." is now ".$LTB."ENCRYPT ONLY".$WHT."..",1);
-          lockfile("$config{'home'}$config{'messages'}/teleconf/$channel/ssh");
-          open (out,">$config{'home'}$config{'messages'}/teleconf/$channel/ssh");
+          lockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/ssh");
+          open (out,">$config{'home'}$config{'messages'}/teleconf/$chanid/ssh");
           print out $info{'handle'}."\n";
           close (out);
-          unlockfile("$config{'home'}$config{'messages'}/teleconf/$channel/ssh");
+          unlockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/ssh");
         }
         writeline("",1);
         goto channel;
@@ -720,7 +724,7 @@ sub teleconf {
 
       $opuser=lc($opuser);
 
-      if ($opuser =~/$info{'handle'}/) {
+      if ($opuser =~/$info{'handle'}/ && $info{'security'} ge $config{'chanop'}) {
         writeline ($WHT."You can not un-op yourself ".$info{'handle'}." ..",1);
         $opuser = "";
       }
@@ -730,22 +734,22 @@ sub teleconf {
         goto telemain;
       }
 
-      if ($channel eq $config{'defchannel'}) {
+      if ($channel eq $config{'defchannel'} || $info{'security'} lt $config{'sysopsecurity'}) {
         writeline ($WHT."Can not change ChanOP users in the ".$YLW.$config{'defchannel'}.$WHT." channel ..",1);
         goto telemain;
       }
 
-      if (teleowner()) {
+      if ($info{'handle'} eq $chanown) {
         $unallned=0;
         if ($opuser eq $info{'handle'}) {
           writeline ($WHT."You can not remove ChanOP from yourself ..", 1);
           goto telemain;
         }
-        if (-e "$config{'home'}$config{'messages'}/teleconf/$channel/ops") {
-          lockfile("$config{'home'}$config{'messages'}/teleconf/$channel/ops");
-          open (in,"<$config{'home'}$config{'messages'}/teleconf/$channel/ops");
-          lockfile("$config{'home'}$config{'messages'}/teleconf/$channel/ops_");
-          open (out,">$config{'home'}$config{'messages'}/teleconf/$channel/ops_");
+        if (-e "$config{'home'}$config{'messages'}/teleconf/$chanid/ops") {
+          lockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/ops");
+          open (in,"<$config{'home'}$config{'messages'}/teleconf/$chanid/ops");
+          lockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/ops_");
+          open (out,">$config{'home'}$config{'messages'}/teleconf/$chanid/ops_");
           while (<in>) {
             chomp $_;
             if ($_ eq $opuser) {
@@ -758,20 +762,20 @@ sub teleconf {
           }
           close(out);
           close(in);
-          unlink ("$config{'home'}$config{'messages'}/teleconf/$channel/ops");
-          rename ("$config{'home'}$config{'messages'}/teleconf/$channel/ops_","$config{'home'}$config{'messages'}/teleconf/$channel/ops");
-          unlockfile("$config{'home'}$config{'messages'}/teleconf/$channel/ops");
-          unlockfile("$config{'home'}$config{'messages'}/teleconf/$channel/ops_");
+          unlink ("$config{'home'}$config{'messages'}/teleconf/$chanid/ops");
+          rename ("$config{'home'}$config{'messages'}/teleconf/$chanid/ops_","$config{'home'}$config{'messages'}/teleconf/$chanid/ops");
+          unlockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/ops");
+          unlockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/ops_");
           unless ($unallned eq 0) {
             goto telemain;
           }
         }
         writeline ($WHT."User ".$YLW.$opuser.$WHT." ChanOP of channel ".$YLW.$channel.$WHT." ..",1);
-        lockfile("$config{'home'}$config{'messages'}/teleconf/$channel/ops");
-        open (out,">>$config{'home'}$config{'messages'}/teleconf/$channel/ops");
+        lockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/ops");
+        open (out,">>$config{'home'}$config{'messages'}/teleconf/$chanid/ops");
          print out $opuser."\n";
         close (out);
-        unlockfile("$config{'home'}$config{'messages'}/teleconf/$channel/ops");
+        unlockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/ops");
         goto telemain;
       } else {
         goto telemain;
@@ -798,17 +802,17 @@ sub teleconf {
         goto telemain;
       }
 
-      if (teleowner()) {
+      if ($info{'handle'} eq $chanown) {
         $unallned=0;
         if ($alluser eq $info{'handle'}) {
           writeline ($WHT."You can not unallow yourself from a channel ..", 1);
           goto telemain;
         }
-        if (-e "$config{'home'}$config{'messages'}/teleconf/$channel/allow") {
-          lockfile("$config{'home'}$config{'messages'}/teleconf/$channel/allow");
-          open (in,"<$config{'home'}$config{'messages'}/teleconf/$channel/allow");
-          lockfile("$config{'home'}$config{'messages'}/teleconf/$channel/allow_");
-          open (out,">$config{'home'}$config{'messages'}/teleconf/$channel/allow_");
+        if (-e "$config{'home'}$config{'messages'}/teleconf/$chanid/allow") {
+          lockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/allow");
+          open (in,"<$config{'home'}$config{'messages'}/teleconf/$chanid/allow");
+          lockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/allow_");
+          open (out,">$config{'home'}$config{'messages'}/teleconf/$chanid/allow_");
           while (<in>) {
             chomp $_;
             if ($_ eq $alluser) {
@@ -821,20 +825,20 @@ sub teleconf {
           }
           close(out);
           close(in);
-          unlink ("$config{'home'}$config{'messages'}/teleconf/$channel/allow");
-          rename ("$config{'home'}$config{'messages'}/teleconf/$channel/allow_","$config{'home'}$config{'messages'}/teleconf/$channel/allow");
-          unlockfile("$config{'home'}$config{'messages'}/teleconf/$channel/allow");
-          unlockfile("$config{'home'}$config{'messages'}/teleconf/$channel/allow_");
+          unlink ("$config{'home'}$config{'messages'}/teleconf/$chanid/allow");
+          rename ("$config{'home'}$config{'messages'}/teleconf/$chanid/allow_","$config{'home'}$config{'messages'}/teleconf/$chanid/allow");
+          unlockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/allow");
+          unlockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/allow_");
           unless ($unallned eq 0) {
             goto telemain;
           }
         }
         writeline ($WHT."User ".$YLW.$alluser.$WHT." now allowed to enter ".$YLW.$channel.$WHT." ..",1);
-        lockfile("$config{'home'}$config{'messages'}/teleconf/$channel/allow");
-        open (out,">>$config{'home'}$config{'messages'}/teleconf/$channel/allow");
+        lockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/allow");
+        open (out,">>$config{'home'}$config{'messages'}/teleconf/$chanid/allow");
          print out $alluser."\n";
         close (out);
-        unlockfile("$config{'home'}$config{'messages'}/teleconf/$channel/allow");
+        unlockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/allow");
         goto telemain;
       } else {
         goto telemain;
@@ -865,8 +869,10 @@ sub teleconf {
       $leaving="1";
       telesend("just left the channel!");
       $leaving="0";
-      unlink ("$config{'home'}$config{'messages'}/teleconf/$channel/users/$info{'node'}");
-      ($junk,$channel)=split(/\s/,$chatline);
+      unlink ("$config{'home'}$config{'messages'}/teleconf/$chanid/users/$info{'node'}");
+      @parts=split(/\s/,$chatline);
+      $junk=shift(@parts);
+      $channel=join(" ",@parts);
       if ($channel eq "") {
         $channel=$config{'defchannel'};
       }
@@ -913,7 +919,7 @@ sub teleconf {
         $atmenu="0";
         $inteleconf="0";
         $info{'dnd'}=$dndmode;
-        unlink ("$config{'home'}$config{'messages'}/teleconf/$channel/users/$info{'node'}");
+        unlink ("$config{'home'}$config{'messages'}/teleconf/$chanid/users/$info{'node'}");
         goto leave;
       } else {
         writeline ("",1);
@@ -950,11 +956,11 @@ sub teleconf {
         unlink ("$config{'home'}$config{'messages'}/teleconf/$prevchan/users/$info{'node'}");
         telechannel($mname);
         if ( $mhidden eq 1) {
-          lockfile("$config{'home'}$config{'messages'}/teleconf/$channel/hidden");
-          open (out,">$config{'home'}$config{'messages'}/teleconf/$channel/hidden");
+          lockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/hidden");
+          open (out,">$config{'home'}$config{'messages'}/teleconf/$chanid/hidden");
            print out "1";
           close (out);
-          unlockfile("$config{'home'}$config{'messages'}/teleconf/$channel/hidden");
+          unlockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/hidden");
         }
         $rescan="0";
         if ($mhidden eq 0) {
@@ -1011,61 +1017,9 @@ sub teleconf {
  }
 }
 
-sub teleowner {
-  if (-e "$config{'home'}$config{'messages'}/teleconf/$channel/owner") {
-    lockfile("$config{'home'}$config{'messages'}/teleconf/$channel/owner");
-    open (in,"<$config{'home'}$config{'messages'}/teleconf/$channel/owner");
-    chomp ($chanowner=<in>);
-    close (in);
-    unlockfile("$config{'home'}$config{'messages'}/teleconf/$channel/owner");
-  } else {
-    unless ($channel eq $config{'defchannel'}) {
-      writeline ($WHT."You are the new owner of the ".$YLW.$channel.$WHT." channel ..",1);
-      lockfile("$config{'home'}$config{'messages'}/teleconf/$channel/owner");
-      open (out,">$config{'home'}$config{'messages'}/teleconf/$channel/owner");
-        print out $info{'handle'};
-      close (out);
-      unlockfile("$config{'home'}$config{'messages'}/teleconf/$channel/owner");
-      lockfile("$config{'home'}$config{'messages'}/teleconf/$channel/allow");
-      open (out,">>$config{'home'}$config{'messages'}/teleconf/$channel/allow");
-      print out $info{'handle'}."\n";
-      close (out);
-      unlockfile("$config{'home'}$config{'messages'}/teleconf/$channel/allow");
-      $chanowner=$info{'handle'};
-      if ($alluser eq $info{'handle'}) {
-        return 1;
-      }
-    }
-  }
-
-  unless ($chanowner eq $info{'handle'}) {
-    if (-e "$config{'home'}$config{'messages'}/teleconf/$channel/ops") {
-      lockfile("$config{'home'}$config{'messages'}/teleconf/$channel/ops");
-      open (in,"<$config{'home'}$config{'messages'}/teleconf/$channel/ops");
-      chomp (@chanops=<in>);
-      close (in);
-      unlockfile("$config{'home'}$config{'messages'}/teleconf/$channel/ops");
-      foreach $cops(@chanops) {
-        chomp $cops;
-        if ($cops =~/$info{'handle'}/) {
-          return 1;
-        }
-      }
-    }
-
-    writeline ($WHT."You do not own the ".$YLW.$channel.$WHT." channel ..",1);
-    unless ($info{'security'} ge $config{'chanop'}) {
-      return 0;
-    } else {
-      writeline ($WHT."Channel OP override ..",1);
-    }
-  }
-  return 1;
-}
-
 sub telesend {
   $sendmessage=$_[0];
-  @telesendto=`ls $config{'home'}$config{'messages'}/teleconf/$channel/users 2>/dev/null`;
+  @telesendto=`ls $config{'home'}$config{'messages'}/teleconf/$chanid/users 2>/dev/null`;
   if (scalar(@telesendto) eq 1) {
     unless ($leaving eq 1) {
       writeline ($LGN."There is no one here with you!",1);
@@ -1177,50 +1131,52 @@ sub telewhisper {
 }
 
 sub chanscan {
-  #iamat($info{'handle'},"Channel List");
-  @whosonline=();
-  @wholst=<$config{'home'}$config{'messages'}/teleconf/*>;
+  @channels=();
+  lockfile("$config{'home'}$config{'messages'}/teleconf/channels");
+  if ( -e "$config{'home'}$config{'messages'}/teleconf/channels" ) {
+    open (in,"<$config{'home'}$config{'messages'}/teleconf/channels");
+    @channels=<in>;
+    close(in);
+  }
+  unlockfile("$config{'home'}$config{'messages'}/teleconf/channels");
+
   writeline("",1);
 
 format chanscan =
-@<<<<<<<<<<<<<<<<<<<<<<<<<<<   .....   @<<<<<<<< @<<<<<<< @<<<<< @<<<<<<<
-$scannedchan,$chanenc,$chanstat,$chanusers,$exstat
+@<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<  .....  @<<<<<<<< @<<<<<<< @<<<<< @<<<<<<<
+$channelname,$chanenc,$chanstat,$chanusers,$exstat
 .
 
-  $scannedchan="Channel .....";$chanenc="Protocol";$chanstat="Status";$chanusers="Users";$exstat="";
+  $channelname="Channel .....";$chanenc="Protocol";$chanstat="Status";$chanusers="Users";$exstat="";
   writeline($YLW);
   $~="chanscan";
   write;
   $~="stdout";
   writeline($LTB);
 
-  foreach $whoon(@wholst) {
+  foreach $chan(@channels) {
    $chanenc="";
    $chanstat="";
    $exstat="";
-   chomp ($whoon);
-   if ($whoon =~/TELEPUB_/i) {
-     next;
-   }
-   @thischan=split(/\//,$whoon);
-   $scannedchan=pop(@thischan);
-   if (-e "$whoon/hidden") {
+   chomp ($chan);
+   ($chanid,$chanown,$channelname) = split(/\|/,$chan);
+   if (-e "$config{'home'}$config{'messages'}/teleconf/$chanid/hidden") {
      unless ($info{'security'} ge $config{'chanop'}) {
        next;
      }
      $exstat="(HIDDEN)";
    }
-   if (-e "$whoon/ssh") {
+   if (-e "$config{'home'}$config{'messages'}/teleconf/$chanid/ssh") {
      $chanenc="SSH";
    } else {
      $chanenc="ANY";
    }
-   if (-e "$whoon/allow") {
+   if (-e "$config{'home'}$config{'messages'}/teleconf/$chanid/allow") {
      $chanstat="PRIVATE";
    } else {
      $chanstat="PUBLIC";
    }
-   @scanchanusr=<$whoon/users/*>;
+   @scanchanusr=<$config{'home'}$config{'messages'}/teleconf/$chanid/users/*>;
    $chanusers=scalar(@scanchanusr);
 
   writeline($LTB);

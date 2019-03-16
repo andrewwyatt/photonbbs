@@ -47,7 +47,7 @@ sub authenticate {
       colorize();
       testpasswd: {
           writeline($theme{'passwordprompt'});
-          $result=getline(password,20);
+          $result=getline(password,$config{'passlength'});
           @paspts=split(//,$result);
           $pasptst=1;
           foreach $pasprt(@paspts) {
@@ -318,7 +318,7 @@ sub newuser {
   }
   setpassword: {
     writeline($theme{'setpassword'}.$theme{'setpasswordb'});
-    $tmppass=getline(password,16,"",1);
+    $tmppass=getline(password,$config{'passlength'},"",1);
     @paspts=split(//,$tmppass);
     $pasptst=1;
     foreach $pasprt(@paspts) {
@@ -327,7 +327,7 @@ sub newuser {
     $info{'password'}=crypt($tmppass,$pasptst);
     $tmppass="";
     writeline($theme{'setpasswordc'});
-    $tmppass=getline(password,16,"",1);
+    $tmppass=getline(password,$config{'passlength'},"",1);
     $comppass=crypt($tmppass,$pasptst);
     if ($comppass ne $info{'password'}) {
       writeline($theme{'passmatch'});
@@ -445,7 +445,7 @@ sub chrealname {
 sub chpassword {
   passwordch: {
     writeline($theme{'newpassa'});
-    $tmppass=getline(password,16,"",1);
+    $tmppass=getline(password,$config{'passlength'},"",1);
     @paspts=split(//,$tmppass);
     $pasptst=1;
     foreach $pasprt(@paspts) {
@@ -454,7 +454,7 @@ sub chpassword {
     $info{'password'}=crypt($tmppass,$pasptst);
     $tmppass="";
     writeline($theme{'newpassb'});
-    $tmppass=getline(password,16,"",1);
+    $tmppass=getline(password,$config{'passlength'},"",1);
     $comppass=crypt($tmppass,$pasptst);
     if ($comppass ne $info{'password'}) {
       writeline($theme{'passmatch'});

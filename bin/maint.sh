@@ -23,18 +23,21 @@ do
     ps ${NPID} >/dev/null 2>&1
     if [ ! $? = 0 ]
     then
-      rm /opt/photonbbs/data/{nodes,messages}/${node} >/dev/null 2>&1
-    fi
-
-    ### Has the process exceeded the timeout period?
-    TIMECHK=$( expr ${TIME} - ${NTIME} )
-    if (( ${TIMECHK} > ${TIMEOUT} ))
-    then
-      kill -HUP $NPID
-      rm /opt/photonbbs/data/{nodes,messages}/${node} >/dev/null 2>&1
+      rm -f /opt/photonbbs/data/nodes/${NODE}
+      rm -f /opt/photonbbs/data/messages/${NODE}.page
+      rm -f /opt/photonbbs/data/messages/TELEPUB_/${NODE}
+      rm -f $(find /opt/photonbbs/data/messages/teleconf -type f -name ${NODE})
+    else
+      ### Has the process exceeded the timeout period?
+      TIMECHK=$( expr ${TIME} - ${NTIME} )
+      if (( ${TIMECHK} > ${TIMEOUT} ))
+      then
+        kill -HUP $NPID
+        rm -f /opt/photonbbs/data/nodes/${NODE}
+        rm -f /opt/photonbbs/data/messages/${NODE}.page
+        rm -f /opt/photonbbs/data/messages/TELEPUB_/${NODE}
+        rm -f $(find /opt/photonbbs/data/messages/teleconf -type f -name ${NODE})
+      fi
     fi
   fi
 done
-
-### If nobody is logged in, remove node and message data
-(ps -ef | grep [b]bs.pl) || rm /opt/photonbbs/data/{nodes,messages}/* >/dev/null 2>&1

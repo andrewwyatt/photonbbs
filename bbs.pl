@@ -32,6 +32,7 @@ $config{'sbin'}="/sbin";                   ## Script bin -> Path to door scripts
 $config{'doors'}="/opt/photonbbs/doors";   ## Node info -> Drop files etc
 $config{'help'}="?";                       ## Key to press for help
 $config{'authretries'}="3";                ## Number of password retries
+$config{'passlength'}="32";                ## Password length
 $config{'passchr'}="*";                    ## Passchr to echo at password prompt
 $config{'theme'}="mbbs";                   ## Default Skin
 $config{'public'}="1";                     ## Public(1)/Private(0) BBS
@@ -65,7 +66,6 @@ $config{'slackchannel'}="";                ## Send notifications to this channel
 $config{'slackemoji'}="";                  ## Use this emoji for notifications
 $config{'slackapipath'}="";                ## This is the Slack API token for your webhook
 
-
 if (-e "/etc/default/photonbbs") {
   open(in,"</etc/default/photonbbs");
   while (<in>) {
@@ -81,7 +81,7 @@ if (-e "/etc/default/photonbbs") {
 
 ### System Information used by @Codes
 $sysinfo{'servername'}="PhotonBBS";
-$sysinfo{'version'}="1.14";
+$sysinfo{'version'}="1.15";
 $sysinfo{'copyright'}="(C) 2002-2019 Andrew Wyatt";
 
 unless ( $config{'host'} ne "" ) {
@@ -92,16 +92,7 @@ chomp ($sysinfo{'ip'}=`hostname -i`);
 ###
 
 $|=1;
-
-chomp($os=`uname`);
-if ($os =~/Linux/) {
-  $BSD_STYLE=1;
-} elsif ($os =~/HP-UX/) {
-  $BSD_STYLE=0;
-} else {
-  $BSD_STYLE=1;
-}
-
+$BSD_STYLE=1;
 
 require ($config{'home'}."/modules/framework.pl");
 require ($config{'home'}."/modules/usertools.pl");
