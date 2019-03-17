@@ -47,7 +47,7 @@ if ($config{'oneliners'} ne "0") {
     } else {
       writeline($theme{'onelemp'},1);
     }
-    writeline($theme{'onelcol'});
+    writeline($theme{'onelcol'}." ");
     $oneliner{'yn'}=waitkey("N");
     if (uc($oneliner{'yn'}) eq "Y") {
       $oneliner{'blah'}=getline(text,50,$theme{'onelask'});
@@ -72,7 +72,7 @@ if ($config{'oneliners'} ne "0") {
           @oneliners=<in>;
         close(in);
         unlockfile("$config{'home'}$config{'text'}/oneliner");
-         
+
         $onlkeep=$config{'onelinerrows'};
         --$onlkeep;
         unless (scalar(@oneliners) <= "$onlkeep") {
@@ -80,7 +80,7 @@ if ($config{'oneliners'} ne "0") {
             $junk=shift(@oneliners);
           }
         }
-      } 
+      }
       if (uc($oneliner{'sign'}) =~/Y/) {
         push (@oneliners,$info{'id'}."|".$oneliner{'blah'});
       } else {

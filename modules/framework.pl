@@ -527,7 +527,7 @@ sub readfile {
 }
 
 sub pause {
-  writeline ($theme{'pause'}.$RST);
+  writeline ($theme{'pause'}." ".$RST);
   $noevents=1;
   $key=waitkey();
   $noevents="";
@@ -612,7 +612,7 @@ sub hi {
     if ($config{'headers'} eq 1) {
       @OPENING=split(//,"\n$sysinfo{'servername'} $sysinfo{'version'}\n$sysinfo{'copyright'}")
     }
-    push (@OPENING,"\n\nAuto-sensing ");
+    push (@OPENING,"\n\nAuto-sensing .");
     for (0..scalar(@OPENING)) {
      select(undef, undef, undef, 0.010);
      print shift(@OPENING);
@@ -800,7 +800,7 @@ sub bullmenu {
       }
     }
 
-    writeline($LGN."\nEnter Option, or \"".$LTB."Q".$LGN."\" to quit: ");
+    writeline($LGN."\nEnter Option, or \"".$LTB."Q".$LGN."\" to quit:");
     $result=getline(text,,1);
     unless ($result =~/^[Qq]$/ || $result eq "") {
       iamat($info{'handle'},"Reading a bulletin");
