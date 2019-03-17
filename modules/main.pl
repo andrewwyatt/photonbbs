@@ -220,10 +220,11 @@ sub telechannel {
     $channelusers="There is nobody else here with you.";
   }
 
+  iamat($info{'handle'},"Chat");
+
   $leaving="1";
   unless ($rescan eq "1") {
     logger("NOTICE: ".$info{'handle'}." joined ".$chanid);
-    iamat($info{'handle'},"Chat");
     telesend("just entered the room!");
   }
   $leaving="0";
