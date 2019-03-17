@@ -28,7 +28,7 @@ a built in set of functions that allow the BBS to be extended very simply.
 
 ### Obligatory Screenshot
 
-![alt tag](http://i.imgur.com/cSOsYyz.png)
+![alt tag](https://imgur.com/Sd4Izqj.png)
 
 Users using PhotonBBS land in a primary "channel" upon logging in and can
 begin immediately communicating with other users or they are free to create
