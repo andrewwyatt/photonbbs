@@ -836,7 +836,7 @@ sub teleconf {
       goto telemain;
     }
     if ($chatline =~/^[Xx]$/ || $chatline =~/^\/[Qq][Uu][Ii][Tt]$/ || $chatline =~/^[Ee][Xx][Ii][Tt]$/) {
-      writeline($theme{'exita'}.$theme{'exitb'});
+      writeline($theme{'exita'}.$theme{'exitb'}." ");
       $choice=waitkey("N");
       if ($choice =~/[Yy]/) {
         writeline ($WHT."\nLogging off..",1);
