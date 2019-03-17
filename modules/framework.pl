@@ -327,7 +327,7 @@ sub getline {
     }
     print "\e[".$input{'length'}."D";
   }
-  print $input{'text'};
+  print $input{'text'}." ";
   for (;;) {
     start: {
     eval {
@@ -609,7 +609,10 @@ sub hi {
     if ( $config{'clearlogin'} = "1" ) {
        print "\e[2J\e[0H";
     }
-    @OPENING=split(//,"\n$sysinfo{'servername'} v$sysinfo{'version'}\n$sysinfo{'copyright'}\n\nAuto-sensing .");
+    if ($config{'headers'} eq 1) {
+      @OPENING=split(//,"\n$sysinfo{'servername'} $sysinfo{'version'}\n$sysinfo{'copyright'}")
+    }
+    push (@OPENING,"\n\nAuto-sensing ");
     for (0..scalar(@OPENING)) {
      select(undef, undef, undef, 0.010);
      print shift(@OPENING);

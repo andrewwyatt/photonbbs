@@ -39,6 +39,7 @@ $config{'public'}="1";                     ## Public(1)/Private(0) BBS
 $config{'usefullname'}="1";                ## Force Full Name Yes(1) / No (0)
 $config{'usephonenum'}="0";                ## Force User's phone number Yes(1) / No (0)
 $config{'systemname'}="Photon BBS";        ## BBS's Name
+$config{'headers'}="1";                    ## Display BBS title and copyright
 $config{'sysop'}="SysOp";                  ## Sysop's Name
 $config{'host'}="";                        ## Override SysInfo Hostname with cname
 $config{'oneliners'}="1";                  ## Enable Oneliners
@@ -81,8 +82,8 @@ if (-e "/etc/default/photonbbs") {
 
 ### System Information used by @Codes
 $sysinfo{'servername'}="PhotonBBS";
-$sysinfo{'version'}="1.15.2";
-$sysinfo{'copyright'}="Copyright 2019, Andrew Wyatt";
+$sysinfo{'version'}="v1.15.2";
+$sysinfo{'copyright'}="Copyright 2019 - Andrew Wyatt";
 
 unless ( $config{'host'} ne "" ) {
   chomp ($sysinfo{'host'}=`hostname -f`);
