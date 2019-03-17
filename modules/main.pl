@@ -1012,8 +1012,7 @@ sub telewhisper {
    foreach $user(@usersonline) {
      chomp ($user);
      if ($user eq "CONNECT") {
-       $found=0;
-       last;
+       next;
      }
 
      $pguser=uc($pguser);
