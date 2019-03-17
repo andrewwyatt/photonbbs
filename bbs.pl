@@ -81,8 +81,8 @@ if (-e "/etc/default/photonbbs") {
 
 ### System Information used by @Codes
 $sysinfo{'servername'}="PhotonBBS";
-$sysinfo{'version'}="1.15";
-$sysinfo{'copyright'}="(C) 2002-2019 Andrew Wyatt";
+$sysinfo{'version'}="1.15.2";
+$sysinfo{'copyright'}="Copyright 2019, Andrew Wyatt";
 
 unless ( $config{'host'} ne "" ) {
   chomp ($sysinfo{'host'}=`hostname -f`);

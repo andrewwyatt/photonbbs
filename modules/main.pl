@@ -1011,27 +1011,18 @@ sub telewhisper {
 
    foreach $user(@usersonline) {
      chomp ($user);
+     if ($user eq "CONNECT") {
+       $found=0;
+       last;
+     }
+
      $pguser=uc($pguser);
      $user=uc($user);
-     if ($user eq "$pguser") {
+     if ($pguser eq $user) {
         $found=1;
         $pmsg=join(' ',@parts);
      }
-     $parts[0]=uc($parts[0]);
-     if ($user eq "$pguser $parts[0]") {
-        $pguser=$pguser.$parts[0];
-        $junk=shift(@parts);
-        $found=1;
-        $pmsg=join(' ',@parts);
-     }
-     $parts[1]=uc($parts[1]);
-     if ($user eq "$pguser $parts[0] $parts[1]") {
-       $pguser=$pguser.$parts[0].$parts[1];
-       $junk=shift(@parts);
-       $junk=shift(@parts);
-       $found=1;
-       $pmsg=join(' ',@parts);
-     }
+
      if ($found eq "1") {
 
       $pmsg =~s/\@LGN/$LGN/g;     $pmsg =~s/\@BLK/$BLK/g;
@@ -1043,14 +1034,14 @@ sub telewhisper {
       $pmsg =~s/\@VLT/$VLT/g;     $pmsg =~s/\@WHT/$WHT/g;
       $pmsg =~s/\@LTB/$LTB/g;     $pmsg =~s/\@RST/$RST/g;
 
-       writeline($YLW."whispered: ".$pmsg,1);
-       ($pnode,$user,$where)=split(/\|/,$rec);
-       lockfile("$config{'home'}$config{'messages'}/$pnode.page");
-       open (out,">>$config{'home'}$config{'messages'}/$pnode.page");
-        print out "\@YLW".$info{'handle'}."\@YLW whispers \@LTB: \@WHT".$pmsg."\n";
-       close (out);
-       unlockfile("$config{'home'}$config{'messages'}/$pnode.page");
-       last;
+      ($discard,$pnode,$discard,$discard,$person,$discard,$discard)=split(/\|/,$nodeinfo);
+      writeline($YLW."You whispered to $person: ".$pmsg,1);
+      lockfile("$config{'home'}$config{'messages'}/$pnode.page");
+      open (out,">>$config{'home'}$config{'messages'}/$pnode.page");
+      print out "\@YLW".$info{'handle'}."\@YLW whispers\@LTB: \@WHT".$pmsg."\n";
+      close (out);
+      unlockfile("$config{'home'}$config{'messages'}/$pnode.page");
+      last;
     }
   }
   if ($found ne "1") {
