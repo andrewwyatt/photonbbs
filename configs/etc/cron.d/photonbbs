@@ -1,2 +1,2 @@
-* * * * * chat /opt/photonbbs/bin/maint.sh >/dev/null 2>&1
-00 00 * * * chat mv -f /opt/photonbbs/data/text/lastcallers /opt/photonbbs/data/text/lastcallers.last >/dev/null 2>&1
+* * * * * bbs /opt/photonbbs/bin/maint.sh >/dev/null 2>&1
+00 00 * * * bbs mv -f /opt/photonbbs/data/text/lastcallers /opt/photonbbs/data/text/lastcallers.last >/dev/null 2>&1

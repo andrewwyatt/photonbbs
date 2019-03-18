@@ -5,7 +5,7 @@ service photonbbs
         socket_type     = stream
         per_source      = 1
         wait            = no
-        user            = chat
+        user            = bbs
         server          = /usr/sbin/in.telnetd
         server_args     = -N -h -n -L /opt/photonbbs/bbs.pl
         log_on_failure  += USERID

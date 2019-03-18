@@ -65,22 +65,27 @@ sub telechannel {
       }
     }
 
-    if ($chanexists eq 0) {
-      chomp ($chanid=`uuidgen`);
-      open (out,">>$config{'home'}$config{'messages'}/teleconf/channels");
-      print out "$chanid|$info{'handle'}|$channel\n";
-      close(out);
+    if ($info{'security'} > $config{'sec_createchan'}) {
+      if ($chanexists eq 0) {
+        chomp ($chanid=`uuidgen`);
+        open (out,">>$config{'home'}$config{'messages'}/teleconf/channels");
+        print out "$chanid|$info{'handle'}|$channel\n";
+        close(out);
 
-      $chanown=$info{'handle'};
+        $chanown=$info{'handle'};
 
-      unless (-d "$config{'home'}$config{'messages'}/teleconf/$chanid") {
-        mkdir ("$config{'home'}$config{'messages'}/teleconf/$chanid");
-        mkdir ("$config{'home'}$config{'messages'}/teleconf/$chanid/users");
-        mkdir ("$config{'home'}$config{'messages'}/teleconf/$chanid/messages");
+        unless (-d "$config{'home'}$config{'messages'}/teleconf/$chanid") {
+          mkdir ("$config{'home'}$config{'messages'}/teleconf/$chanid");
+          mkdir ("$config{'home'}$config{'messages'}/teleconf/$chanid/users");
+          mkdir ("$config{'home'}$config{'messages'}/teleconf/$chanid/messages");
+        }
+
+        writeline($WHT."\nCreating channel ".$YLW.$channel.$WHT." ..",1);
+        writeline($WHT."Assigned ".$YLW.$info{'handle'}.$WHT." as owner ..",1);
       }
-
-      writeline($WHT."\nCreating channel ".$YLW.$channel.$WHT." ..",1);
-      writeline($WHT."Assigned ".$YLW.$info{'handle'}.$WHT." as owner ..",1);
+    } else {
+      writeline($WHT."\nYou are not authorized to create channels.");
+      return;
     }
 
     unlockfile("$config{'home'}$config{'messages'}/teleconf/channels");
@@ -653,7 +658,7 @@ sub teleconf {
         goto telemain;
       }
 
-      if ($channel eq $config{'defchannel'} || $info{'security'} lt $config{'sysopsecurity'}) {
+      if ($channel eq $config{'defchannel'} || $info{'security'} lt $config{'sec_sysop'}) {
         writeline ($WHT."Can not change ChanOP users in the ".$YLW.$config{'defchannel'}.$WHT." channel ..",1);
         goto telemain;
       }

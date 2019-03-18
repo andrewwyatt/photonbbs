@@ -19,7 +19,7 @@ sub authenticate {
     $fuser=$config{'home'}.$config{'data'}."/users.dat";
     unless ( -e "$fuser" ) {
       writeline($theme{'configfirstuser'});
-      $config{'defsecurity'} = $config{'sysopsecurity'};
+      $config{'sec_user'} = $config{'sec_sysop'};
       $info{'handle'}="NEW";
     }
     unless ( -d "$config{'home'}$config{'data'}/users") {
@@ -332,9 +332,9 @@ sub newuser {
     }
   }
   if ( $info{'id'} eq 0 ) {
-    $info{'security'}=$config{'sysopsecurity'};
+    $info{'security'}=$config{'sec_sysop'};
   } else {
-    $info{'security'}=$config{'defsecurity'};
+    $info{'security'}=$config{'sec_user'};
   }
   $info{'theme'}=$config{'deftheme'};;
   $info{'dnd'}="0";
