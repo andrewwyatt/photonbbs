@@ -327,7 +327,7 @@ sub getline {
     }
     print "\e[".$input{'length'}."D";
   }
-  print $input{'text'}." ";
+  print $input{'text'};
   for (;;) {
     start: {
     eval {
@@ -800,7 +800,7 @@ sub bullmenu {
       }
     }
 
-    writeline($LGN."\nEnter Option, or \"".$LTB."Q".$LGN."\" to quit:");
+    writeline($LGN."\nEnter Option, or \"".$LTB."Q".$LGN."\" to quit: ");
     $result=getline(text,,1);
     unless ($result =~/^[Qq]$/ || $result eq "") {
       iamat($info{'handle'},"Reading a bulletin");

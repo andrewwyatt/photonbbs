@@ -26,7 +26,7 @@ sub authenticate {
       mkdir ("$config{'home'}$config{'data'}/users");
     }
     unless ($info{'handle'} ne "") {
-      writeline($theme{'login'});
+      writeline($theme{'login'}." ");
       $info{'handle'}=getline(text,20);
       chomp ($info{'handle'});
       if ($info{'handle'} eq "") {
@@ -231,7 +231,7 @@ sub newuser {
   }
   $readit="";
   writeline($theme{'newprompta'});
-  writeline($theme{'ansiprompt'});
+  writeline($theme{'ansiprompt'}." ");
   $noevents=1;
   $result=waitkey("Y");
   $noevents="";
@@ -272,7 +272,7 @@ sub newuser {
   writeline($theme{'dobprompt'});
   $info{'dob'}=getline(dob,10,"",1);
   until ($info{'sex'} =~/[M|F]/) {
-    writeline("\n".$theme{'mfprompt'});
+    writeline("\n".$theme{'mfprompt'}." ");
     $info{'sex'}=waitkey("M");
     $info{'sex'}=uc($info{'sex'});
   }
@@ -307,14 +307,14 @@ sub newuser {
      }
   }
   applytheme($config{'theme'});
-  writeline($theme{'idokprompt'});
+  writeline($theme{'idokprompt'}." ");
   $result=waitkey("Y");
   unless ($result =~/[Yy]/) {
     writeline("\n");
     goto newid;
   }
   setpassword: {
-    writeline($theme{'setpassword'}.$theme{'setpasswordb'});
+    writeline($theme{'setpassword'}.$theme{'setpasswordb'}." ");
     $tmppass=getline(password,$config{'passlength'},"",1);
     @paspts=split(//,$tmppass);
     $pasptst=1;
@@ -323,7 +323,7 @@ sub newuser {
     }
     $info{'password'}=crypt($tmppass,$pasptst);
     $tmppass="";
-    writeline($theme{'setpasswordc'});
+    writeline($theme{'setpasswordc'}." ");
     $tmppass=getline(password,$config{'passlength'},"",1);
     $comppass=crypt($tmppass,$pasptst);
     if ($comppass ne $info{'password'}) {
