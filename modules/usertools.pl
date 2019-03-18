@@ -277,7 +277,7 @@ sub newuser {
     $info{'sex'}=uc($info{'sex'});
   }
   newid: {
-    writeline($theme{'useridprompt'});
+    writeline($theme{'useridprompt'}." ");
     $info{'handle'}=getline(text,16,"",1);
     #$info{'handle'}=ucfirst($info{'handle'});
     chomp ($info{'handle'});
@@ -292,9 +292,8 @@ sub newuser {
     }
     until ($test =~/invalid/i) {
       writeline($theme{'usedidprompt'});
-      writeline($theme{'useridprompt'});
+      writeline($theme{'useridprompt'}." ");
       $info{'handle'}=getline(text,16,"",1);
-      #$info{'handle'}=ucfirst($info{'handle'});
       $handletest=uc($info{'handle'});
       if ($handletest =~/New/gi) {
         $test=" ";
