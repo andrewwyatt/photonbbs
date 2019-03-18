@@ -1,12 +1,6 @@
 #!/usr/bin/perl
-if ( ! $ARGV[0] ) {
-  print "Usage: ./newpass {password}\n";
+if ( ! $ARGV[1] ) {
+  print "Usage: ./newpass {handle} {password}\n";
   exit 1;
 }
-
-@paspts=split(//,$ARGV[0]);
-$pasptst=1;
-foreach $pasprt(@paspts) {
-  $pasptst=$pasptst+ord($pasprt);
-}
-print crypt($ARGV[0],$pasptst)."\n";
+print crypt($ARGV[1],$ARGV[0].$ARGV[1])."\n";

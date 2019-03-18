@@ -48,12 +48,7 @@ sub authenticate {
       testpasswd: {
           writeline($theme{'passwordprompt'});
           $result=getline(password,$config{'passlength'});
-          @paspts=split(//,$result);
-          $pasptst=1;
-          foreach $pasprt(@paspts) {
-            $pasptst=$pasptst+ord($pasprt);
-          }
-          $tstpassword=crypt($result,$pasptst);
+          $tstpassword=crypt($result,$info{'handle'}.$result);
           until ($tstpassword eq $info{'password'}) {
             writeline($theme{'mismatch'});
             logger("WARN: ".$info{'handle'}." incorrect password on node ".$info{'tty'}." via ".$info{'connect'});
@@ -314,21 +309,14 @@ sub newuser {
   }
   setpassword: {
     writeline($theme{'setpassword'}.$theme{'setpasswordb'}." ");
-    $tmppass=getline(password,$config{'passlength'},"",1);
-    @paspts=split(//,$tmppass);
-    $pasptst=1;
-    foreach $pasprt(@paspts) {
-      $pasptst=$pasptst+ord($pasprt);
-    }
-    $info{'password'}=crypt($tmppass,$pasptst);
-    $tmppass="";
+    $passa=getline(password,$config{'passlength'},"",1);
     writeline($theme{'setpasswordc'}." ");
-    $tmppass=getline(password,$config{'passlength'},"",1);
-    $comppass=crypt($tmppass,$pasptst);
-    if ($comppass ne $info{'password'}) {
+    $passb=getline(password,$config{'passlength'},"",1);
+    if ($passa ne $passb) {
       writeline($theme{'passmatch'});
       goto setpassword;
     }
+    $info{'password'}=crypt($passa,$info{'handle'}.$passa);
   }
   if ( $info{'id'} eq 0 ) {
     $info{'security'}=$config{'sec_sysop'};
@@ -439,23 +427,16 @@ sub chrealname {
 }
 
 sub chpassword {
-  passwordch: {
-    writeline($theme{'newpassa'});
-    $tmppass=getline(password,$config{'passlength'},"",1);
-    @paspts=split(//,$tmppass);
-    $pasptst=1;
-    foreach $pasprt(@paspts) {
-      $pasptst=$pasptst+ord($pasprt);
-    }
-    $info{'password'}=crypt($tmppass,$pasptst);
-    $tmppass="";
-    writeline($theme{'newpassb'});
-    $tmppass=getline(password,$config{'passlength'},"",1);
-    $comppass=crypt($tmppass,$pasptst);
-    if ($comppass ne $info{'password'}) {
+  setpassword: {
+    writeline($theme{'setpassword'}.$theme{'setpasswordb'}." ");
+    $passa=getline(password,$config{'passlength'},"",1);
+    writeline($theme{'setpasswordc'}." ");
+    $passb=getline(password,$config{'passlength'},"",1);
+    if ($passa ne $passb) {
       writeline($theme{'passmatch'});
-      goto passwordch;
+      goto setpassword;
     }
+    $info{'password'}=crypt($passa,$info{'handle'}.$passa);
   }
   updateuser();
 }
