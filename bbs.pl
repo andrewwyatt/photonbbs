@@ -83,7 +83,7 @@ if (-e "/etc/default/photonbbs") {
 
 ### System Information used by @Codes
 $sysinfo{'servername'}="Photon BBS";
-$sysinfo{'version'}="v1.15.2";
+$sysinfo{'version'}="v1.15.3";
 $sysinfo{'copyright'}="Copyright (C) 2002-2019 Andrew Wyatt";
 
 unless ( $config{'host'} ne "" ) {
