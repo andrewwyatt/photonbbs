@@ -46,7 +46,7 @@ sub authenticate {
       $tries="";
       colorize();
       testpasswd: {
-          writeline($theme{'passwordprompt'});
+          writeline($theme{'passwordprompt'}." ");
           $result=getline(password,$config{'passlength'});
           $tstpassword=crypt($result,$info{'handle'}.$result);
           until ($tstpassword eq $info{'password'}) {
