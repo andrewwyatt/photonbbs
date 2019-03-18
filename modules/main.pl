@@ -65,8 +65,8 @@ sub telechannel {
       }
     }
 
-    if ($info{'security'} > $config{'sec_createchan'}) {
-      if ($chanexists eq 0) {
+    if ($chanexists eq 0) {
+      if ($info{'security'} ge $config{'sec_createchan'}) {
         chomp ($chanid=`uuidgen`);
         open (out,">>$config{'home'}$config{'messages'}/teleconf/channels");
         print out "$chanid|$info{'handle'}|$channel\n";
@@ -82,10 +82,13 @@ sub telechannel {
 
         writeline($WHT."\nCreating channel ".$YLW.$channel.$WHT." ..",1);
         writeline($WHT."Assigned ".$YLW.$info{'handle'}.$WHT." as owner ..",1);
+      } else {
+        writeline($WHT."\nYou are not authorized to create channels.",1);
+        unlockfile("$config{'home'}$config{'messages'}/teleconf/channels");
+        $canjoin=0;
+        writeline($WHT."Entering channel ".$YLW.$config{'defchannel'},1);
+        telechannel($config{'defchannel'});
       }
-    } else {
-      writeline($WHT."\nYou are not authorized to create channels.");
-      return;
     }
 
     unlockfile("$config{'home'}$config{'messages'}/teleconf/channels");
@@ -116,7 +119,7 @@ sub telechannel {
     }
 
 
-  unless ($ops eq 1 || $info{'security'} ge $config{'chanop'}) {
+  unless ($ops eq 1 || $info{'security'} ge $config{'sec_chanop'}) {
     if (-e "$config{'home'}$config{'messages'}/teleconf/$chanid/banned") {
       lockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/banned");
       open (in,"<$config{'home'}$config{'messages'}/teleconf/$chanid/banned");
@@ -144,7 +147,7 @@ sub telechannel {
   } else {
     $canjoin=1;
   }
-  unless ($op eq 1 || $info{'security'} ge $config{'chanop'}) {
+  unless ($op eq 1 || $info{'security'} ge $config{'sec_chanop'}) {
     if (-e "$config{'home'}$config{'messages'}/teleconf/$chanid/allow") {
       $canjoin=0;
       lockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/allow");
@@ -482,7 +485,7 @@ sub teleconf {
     }
 
     if ($chatline =~/^\/[Ss][Tt][Aa][Tt][Uu][Ss]$/i || $chatline =~/^\/\$$/ || $chatline =~/^\$$/) {
-      if ($op eq 1 || $info{'security'} ge $config{'chanop'}) {
+      if ($op eq 1 || $info{'security'} ge $config{'sec_chanop'}) {
         writeline($WHT."\nSystem report for channel: ".$PPL.$channel.$WHT."\n",1);
         writeline($LTB."Channel Owner: ".$LGN.$chanown,1);
         if (-e "$config{'home'}$config{'messages'}/teleconf/$chanid/banned") {
@@ -573,7 +576,7 @@ sub teleconf {
         goto telemain;
       }
 
-      if ($info{'handle'} eq $chanown || $info{'security'} ge $config{'chanop'}) {
+      if ($info{'handle'} eq $chanown || $info{'security'} ge $config{'sec_chanop'}) {
         lockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/message");
         system("nano -R $config{'home'}$config{'messages'}/teleconf/$chanid/message");
         unlockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/message");
@@ -648,7 +651,7 @@ sub teleconf {
 
       $opuser=lc($opuser);
 
-      if ($opuser =~/$info{'handle'}/ && $info{'security'} ge $config{'chanop'}) {
+      if ($opuser =~/$info{'handle'}/ && $info{'security'} ge $config{'sec_chanop'}) {
         writeline ($WHT."You can not un-op yourself ".$info{'handle'}." ..",1);
         $opuser = "";
       }
@@ -812,7 +815,7 @@ sub teleconf {
     }
 
     if ($chatline =~/^\/[Rr]\ / || $chatline =~/^\/[Bb][Rr][Oo][Aa][Dd][Cc][Aa][Ss][Tt]\ /) {
-      if ($info{'security'} ge $config{'chanop'}) {
+      if ($info{'security'} ge $config{'sec_chanop'}) {
         ($jnk,$data)=split(/\s/,$chatline,2);
         pageall($data);
       }
@@ -1084,7 +1087,7 @@ $channelname,$chanstat,$chanusers
    chomp ($chan);
    ($chanid,$chanown,$channelname) = split(/\|/,$chan);
    if (-e "$config{'home'}$config{'messages'}/teleconf/$chanid/hidden") {
-     unless ($info{'security'} ge $config{'chanop'}) {
+     unless ($info{'security'} ge $config{'sec_chanop'}) {
        next;
      }
      $chanstat=" (H)";
