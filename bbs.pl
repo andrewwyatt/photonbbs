@@ -34,13 +34,22 @@ $config{'help'}="?";                       ## Key to press for help
 $config{'authretries'}="3";                ## Number of password retries
 $config{'passlength'}="30";                ## Password length
 $config{'passchr'}="*";                    ## Passchr to echo at password prompt
-$config{'theme'}="mbbs";                   ## Default Skin
+$config{'promptchr'}=":";                  ## Conference prompt character
+$config{'theme'}="photon";                 ## Default Skin
 $config{'public'}="1";                     ## Public(1)/Private(0) BBS
+$config{'systemcolor'}='@WHT';             ## System text color
+$config{'usercolor'}='@BWH';               ## User notification color
+$config{'inputcolor'}='@WHT';              ## User input color
+$config{'themecolor'}='@BBL';              ## Prompt text color
+$config{'promptcolor'}='@WHT';             ## Prompt text color
+$config{'errorcolor'}='@RED';              ## Color for error messages
+$config{'datacolor'}='@BWH';               ## Generated data color
+$config{'linecolor'}='@BLU';               ## Line color (Oneliners, etc)
 $config{'usefullname'}="1";                ## Force Full Name Yes(1) / No (0)
 $config{'usephonenum'}="0";                ## Force User's phone number Yes(1) / No (0)
 $config{'systemname'}="Photon BBS";        ## BBS's Name
 $config{'clearlogin'}="0";                 ## Clear screen before displaying header
-$config{'headers'}="1";                    ## Display BBS title and copyright
+$config{'headers'}="1";                    ## Display BBS name on connect
 $config{'sysop'}="SysOp";                  ## Sysop's Name
 $config{'host'}="";                        ## Override SysInfo Hostname with cname
 $config{'oneliners'}="1";                  ## Enable Oneliners
@@ -48,13 +57,13 @@ $config{'bulletins'}="1";                  ## Enable System Bulletins
 $config{'onelinerrows'}="15";              ## Number of oneliners to keep
 $config{'lastcallers'}="25";               ## Keep this many last callers in the list
 $config{'lastcallenable'}="1";             ## Last Callers Enable (1) / Disable (0)
-$config{'unixuser'}="bbs";                ## User account the application runs as
+$config{'unixuser'}="bbs";                 ## User account the application runs as
 $config{'sec_user'}="10";                  ## Default Sec level for new users
 $config{'sec_createchan'}="100";           ## Minimum security level to create new channels
 $config{'sec_chanop'}="100";               ## Teleconference Admin security level (System wide ChanOP)
 $config{'sec_sysop'}="500";                ## Level to become a sysop
 $config{'defchannel'}="MAIN";              ## Default Teleconference Channel
-$config{'deftheme'}="mbbs";                ## Default User selected skin
+$config{'deftheme'}="photon";              ## Default User selected skin
 $config{'totalnodes'}="99";                ## Support this many nodes.
 $config{'rows'}="24";                      ## Number of rows before prompting to continue / quit
 $config{'buffer'}="255";                   ## Chat line buffer size (255 characters recommended)
@@ -80,11 +89,6 @@ if (-e "/etc/default/photonbbs") {
   }
   close(in);
 }
-
-### System Information used by @Codes
-$sysinfo{'servername'}="Photon BBS";
-$sysinfo{'version'}="v1.15.3";
-$sysinfo{'copyright'}="Copyright (C) 2002-2019 Andrew Wyatt";
 
 unless ( $config{'host'} ne "" ) {
   chomp ($sysinfo{'host'}=`hostname -f`);

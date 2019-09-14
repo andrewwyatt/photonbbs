@@ -4,15 +4,16 @@
 #  (C) 2002-2013 Andrew Wyatt
 
 sub doevents {
-  ++$idle;
-  if ($idle >= $config{'idledisconnect'}/2) {
+  $currenttime=time;
+  $idletime=$currenttime-$idle;
+  $idlenotifycheck=$config{'idledisconnect'}/2;
+  if ($idletime >= $idlenotifycheck) {
     if ($idlenotified eq 0) {
-      $idletimeleft=$config{'idledisconnect'}-$idle;
-      writeline($VLT."\nWarning: Your session will be disconnected in ".$idletimeleft." seconds due to inactivity.");
+      writeline($config{'errorcolor'}."\e[s\nWarning: Your session will be disconnected in ".$idlenotifycheck." seconds due to inactivity.\e[u");
       $idlenotified=1;
     }
   }
-  if ($idle eq $config{'idledisconnect'}) {
+  if ($idletime >= $config{'idledisconnect'}) {
     errorout("idle session terminated.");
   }
   $cppid = getppid;
@@ -36,7 +37,7 @@ sub usersonline {
 }
 
 sub whosonline {
-  writeline($LGN."\nWho's Online:");
+  writeline($config{'themecolor'}."\nWho's Online".$config{'promptcolor'}.":");
 
   @whosonline=();
   @wholst=<$config{'home'}$config{'nodes'}/*>;
@@ -47,18 +48,16 @@ sub whosonline {
     push(@whosonline,$person);
   }
   @whosonline=sort {$a <=> $b} @whosonline;
-  writeline("\n");
-
+  writeline($config{'systemcolor'},1);
 format whosonline =
 @<<<< @<<<<<< @<<<<<<<<<<<<<<<  .....  @<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 $whonode,$whoproto,$whouser,$whowhere
 .
   $whonode="Node"; $whouser="User-ID"; $whoproto="Via";$whowhere="Location";
-  writeline($YLW);
   $~="whosonline";
   write;
   $~="stdout";
-  writeline($LTB);
+  writeline($config{'datacolor'});
   foreach $node(@whosonline) {
     chomp ($node);
     ($ip,$whonode,$pid,$time,$whouser,$whoproto,$whowhere)=split(/\|/,$node);
@@ -95,8 +94,8 @@ sub iamat {
 
 sub errorout {
   cbreak(off);
-  logger ("ERROR: ".$_[0]." ".$info{'handle'}." on node ".$info{'node'}." Exiting..");
-  writeline("\n".$RED."ERROR: ".$LTB.$_[0]."\nExiting..",1);
+  logger ("ERROR".$config{'promptcolor'}.": ".$_[0]." ".$info{'handle'}." on node ".$info{'node'}." Exiting..");
+  writeline("\n".$config{'errorcolor'}."ERROR".$config{'promptcolor'}.": ".$config{'datacolor'}.$_[0]."\nExiting..",1);
   bye();
 }
 
@@ -133,7 +132,7 @@ sub bye {
   }
 
   if ($info{'handle'}) {
-    logger("NOTICE: ".$info{'handle'}." Logged off!");
+    logger("NOTICE".$config{'promptcolor'}.": ".$info{'handle'}." Logged off!");
   }
   @list=`find $config{'home'} -name $info{'node'} -print`;
   foreach $item(@list) {
@@ -152,19 +151,43 @@ sub bye {
 
 sub colorize {
   if ($info{'ansi'} eq "1") {
-    $CLR="\e[2J\e[0H"; $RST="\e[0m"; $BLK="\e[0;30m"; $RED="\e[0;31m"; $GRN="\e[0;32m"; $BRN="\e[0;33m"; $BLU="\e[0;34m";
-    $PPL="\e[0;35m"; $LGR="\e[0;37m"; $GRY="\e[1;30m"; $PNK="\e[1;31m"; $LGN="\e[1;32m"; $YLW="\e[1;33m";
-    $ALB="\e[1;34m"; $VLT="\e[1;35m"; $LTB="\e[1;36m"; $WHT="\e[1;37m"; $PBLK="\e[0;30m"; $PRED="\e[0;31m";
-    $PGRN="\e[0;32m"; $PBRN="\e[0;33m"; $PBLU="\e[0;34m"; $PPPL="\e[0;35m"; $PLGR="\e[0;37m"; $PGRY="\e[1;30m";
-    $PPNK="\e[1;31m"; $PLGN="\e[1;32m"; $PYLW="\e[1;33m"; $PALB="\e[1;34m"; $PVLT="\e[1;35m";
-    $PBLU="\e[1;36m"; $PWHT="\e[1;37m";
+    $CLR="\e[2J\e[0H";
+    $RST="\e[0m";
+    $BLK="\e[0;30m"; #BLACK
+    $RED="\e[0;31m"; #RED
+    $GRN="\e[0;32m"; #GREEN
+    $YLW="\e[0;33m"; #YELLOW
+    $BLU="\e[0;34m"; #BLUE
+    $MAG="\e[0;35m"; #MAGENTA
+    $CYN="\e[0;36m"; #WHITE
+    $WHT="\e[0;37m"; #CYAN
+    $BBK="\e[1;30m"; #GREY
+    $BRD="\e[1;31m"; #BRIGHT RED
+    $BGN="\e[1;32m"; #BRIGHT GREEN
+    $BYL="\e[1;33m"; #BRIGHT YELLOW
+    $BBL="\e[1;34m"; #BRIGHT BLUE
+    $BMG="\e[1;35m"; #BRIGHT MAGENTA
+    $BCN="\e[1;36m"; #BRIGHT CYAN
+    $BWH="\e[1;37m"; #BRIGHT WHITE
   } else {
-    $CLR=""; $RST=""; $BLK=""; $RED=""; $GRN=""; $BRN=""; $BLU="";
-    $PPL=""; $LGR=""; $GRY=""; $PNK=""; $LGN=""; $YLW="";
-    $ALB=""; $VLT=""; $LTB=""; $WHT=""; $PBLK=""; $PRED="";
-    $PGRN=""; $PBRN=""; $PBLU=""; $PPPL=""; $PLGR=""; $PGRY="";
-    $PPNK=""; $PLGN=""; $PYLW=""; $PALB=""; $PVLT="";
-    $PBLU=""; $PWHT="";
+    $CLR="";
+    $RST="";
+    $BLK="";
+    $RED="";
+    $GRN="";
+    $YLW="";
+    $BLU="";
+    $MAG="";
+    $WHT="";
+    $CYN="";
+    $BBK="";
+    $BRD="";
+    $BGN="";
+    $BYL="";
+    $BBL="";
+    $BMG="";
+    $BCN="";
+    $BWH="";
     print "";
   }
 }
@@ -182,24 +205,48 @@ sub applytheme {
   }
   chomp ($ctime=`date +\%H:\%M`);
   chomp ($cdate=`date +\%Y-\%h-\%d`);
-  $menu=uc($menuname);
+  $menu=lc($menuname);
   foreach (@themein) {
     ($key,$value) = split(/\=/);
     chomp $value;
     unless ($value eq "") {
       $$key = $value;
-      $$key =~s/\@LGN/$LGN/g; $$key =~s/\@BLK/$BLK/g; $$key =~s/\@RED/$RED/g; $$key =~s/\@GRN/$GRN/g;
-      $$key =~s/\@BRN/$BRN/g; $$key =~s/\@BLU/$BLU/g; $$key =~s/\@PPL/$PPL/g; $$key =~s/\@LGR/$LGR/g;
-      $$key =~s/\@GRY/$GRY/g; $$key =~s/\@PNK/$PNK/g; $$key =~s/\@YLW/$YLW/g; $$key =~s/\@ALB/$ALB/g;
-      $$key =~s/\@VLT/$VLT/g; $$key =~s/\@WHT/$WHT/g; $$key =~s/\@LTB/$LTB/g;
-      $$key =~s/\@USRNM/$info{'username'}/g; $$key =~s/\@SVRNM/$sysinfo{'servername'}/g;
-      $$key =~s/\@SYSNM/$config{'systemname'}/g; $$key =~s/\@MENU/$menu/g;
-      $$key =~s/\@NODE/$info{'node'}/g; $$key =~s/\@CONNECT/$info{'connect'}/g;
-      $$key =~s/\@USER/$info{'handle'}/g; $$key =~s/\@EMAIL/$info{'email'}/g;
-      $$key =~s/\@TIME/$ctime/g; $$key =~s/\@DATE/$cdate/g;
+      $$key =~s/\@SYSTEMCLR/$config{'systemcolor'}/g;
+      $$key =~s/\@USERCLR/$config{'usercolor'}/g;
+      $$key =~s/\@INPUTCLR/$config{'inputcolor'}/g;
+      $$key =~s/\@ERRORCLR/$config{'errorcolor'}/g;
+      $$key =~s/\@THEMECLR/$config{'themecolor'}/g;
+      $$key =~s/\@PROMPTCLR/$config{'promptcolor'}/g;
+      $$key =~s/\@DATACLR/$config{'datacolor'}/g;
+      $$key =~s/\@LINECLR/$config{'linecolor'}/g;
+      $$key =~s/\@USRNM/$info{'username'}/g;
+      $$key =~s/\@SYSNM/$config{'systemname'}/g;
+      $$key =~s/\@MENU/$menu/g;
+      $$key =~s/\@NODE/$info{'node'}/g;
+      $$key =~s/\@CONNECT/$info{'connect'}/g;
+      $$key =~s/\@USER/$info{'handle'}/g;
+      $$key =~s/\@EMAIL/$info{'email'}/g;
+      $$key =~s/\@TIME/$ctime/g;
+      $$key =~s/\@DATE/$cdate/g;
       $$key =~s/\@TOTALCALLS/$config{'totcalls'}/g;
-      $$key =~s/\@DEFAULT/$info{'defchan'}/g; ### Added at the same time as doors
+      $$key =~s/\@DEFAULT/$info{'defchan'}/g;
       $$key =~s/\@PROTO/$info{'proto'}/g;
+      $$key =~s/\@BLK/$BLK/g;
+      $$key =~s/\@RED/$RED/g;
+      $$key =~s/\@GRN/$GRN/g;
+      $$key =~s/\@YLW/$YLW/g;
+      $$key =~s/\@BLU/$BLU/g;
+      $$key =~s/\@MAG/$MAG/g;
+      $$key =~s/\@WHT/$WHT/g;
+      $$key =~s/\@CYN/$CYN/g;
+      $$key =~s/\@BBK/$BBK/g;
+      $$key =~s/\@BRD/$BRD/g;
+      $$key =~s/\@BGN/$BGN/g;
+      $$key =~s/\@BYL/$BYL/g;
+      $$key =~s/\@BBL/$BBL/g;
+      $$key =~s/\@BMG/$BMG/g;
+      $$key =~s/\@BCN/$BCN/g;
+      $$key =~s/\@BWH/$BWH/g;
       $$key =~s/\\n/\n/g; $$key =~s/\\t/\t/g; $$key =~ s/(\$\w+)/$1/eeg;
       $theme{$key}=$$key;
       $$key="";
@@ -273,7 +320,7 @@ sub cbreak {
 }
 
 sub waitkey {
-  $idle=0;
+  $idle=time;
   $idlenotified=0;
   $default=$_[0];
   $key="";
@@ -292,10 +339,10 @@ sub waitkey {
 
     if ($key ne "") {
       unless ($key eq "\n") {
-        print $key;			### Colorize
+        writeline ($config{'inputcolor'}.$key);
       } else {
         $key=$default;
-        print $key;
+        writeline ($config{'inputcolor'}.$key);
       }
       last;
     } else {
@@ -306,14 +353,32 @@ sub waitkey {
 }
 
 sub writeline {
-  print $_[0];
+  $wrline=$_[0];
+  $wrline =~s/\@RST/$RST/g;
+  $wrline =~s/\@BLK/$BLK/g;
+  $wrline =~s/\@RED/$RED/g;
+  $wrline =~s/\@GRN/$GRN/g;
+  $wrline =~s/\@YLW/$YLW/g;
+  $wrline =~s/\@BLU/$BLU/g;
+  $wrline =~s/\@MAG/$MAG/g;
+  $wrline =~s/\@WHT/$WHT/g;
+  $wrline =~s/\@CYN/$CYN/g;
+  $wrline =~s/\@BBK/$BBK/g;
+  $wrline =~s/\@BRD/$BRD/g;
+  $wrline =~s/\@BGN/$BGN/g;
+  $wrline =~s/\@BYL/$BYL/g;
+  $wrline =~s/\@BBL/$BBL/g;
+  $wrline =~s/\@BMG/$BMG/g;
+  $wrline =~s/\@BCN/$BCN/g;
+  $wrline =~s/\@BWH/$BWH/g;
+  print $wrline;
   if ($_[1] eq "1") {
     print "\n";
   }
 }
 
 sub getline {
-  $idle=0;
+  $idle=time;
   $idlenotified=0;
   cbreak("on");
   $input{'type'}=$_[0];
@@ -323,11 +388,11 @@ sub getline {
   if ($_[3]) {
     $result=$input{'text'};
     for (1..$input{'length'}) {
-      print "\e[0;47;30m ";   ### Add to theme file!
+      print "\e[0;47;0m ";   ### Add to theme file!
     }
     print "\e[".$input{'length'}."D";
   }
-  print $input{'text'};
+  writeline ($config{'inputcolor'}.$input{'text'});
   for (;;) {
     start: {
     eval {
@@ -430,10 +495,31 @@ sub getline {
 }
 
 sub colorline {
-  $_[0]=~s/\@LGN/$LGN/g; $_[0]=~s/\@BLK/$BLK/g; $_[0]=~s/\@RED/$RED/g; $_[0]=~s/\@GRN/$GRN/g; $_[0]=~s/\@BRN/$BRN/g;
-  $_[0]=~s/\@BLU/$BLU/g; $_[0]=~s/\@PPL/$PPL/g; $_[0]=~s/\@LGR/$LGN/g; $_[0]=~s/\@GRY/$GRY/g; $_[0]=~s/\@PNK/$PNK/g;
-  $_[0]=~s/\@YLW/$YLW/g; $_[0]=~s/\@ALB/$ALB/g; $_[0]=~s/\@VLT/$VLT/g; $_[0]=~s/\@WHT/$WHT/g; $_[0]=~s/\@LTB/$LTB/g;
-  $_[0]=~s/\@RST/$RST/g; $_[0]=~s/~AT/\@/g;
+  $_[0] =~s/\@SYSTEMCLR/$config{'systemcolor'}/g;
+  $_[0] =~s/\@USERCLR/$config{'usercolor'}/g;
+  $_[0] =~s/\@INPUTCLR/$config{'inputcolor'}/g;
+  $_[0] =~s/\@ERRORCLR/$config{'errorcolor'}/g;
+  $_[0] =~s/\@THEMECLR/$config{'themecolor'}/g;
+  $_[0] =~s/\@PROMPTCLR/$config{'promptcolor'}/g;
+  $_[0] =~s/\@DATACLR/$config{'datacolor'}/g;
+  $_[0] =~s/\@LINECLR/$config{'linecolor'}/g;
+  $_[0] =~s/\@RST/$RST/g;
+  $_[0] =~s/\@BLK/$BLK/g;
+  $_[0] =~s/\@RED/$RED/g;
+  $_[0] =~s/\@GRN/$GRN/g;
+  $_[0] =~s/\@YLW/$YLW/g;
+  $_[0] =~s/\@BLU/$BLU/g;
+  $_[0] =~s/\@MAG/$MAG/g;
+  $_[0] =~s/\@WHT/$WHT/g;
+  $_[0] =~s/\@CYN/$CYN/g;
+  $_[0] =~s/\@BBK/$BBK/g;
+  $_[0] =~s/\@BRD/$BRD/g;
+  $_[0] =~s/\@BGN/$BGN/g;
+  $_[0] =~s/\@BYL/$BYL/g;
+  $_[0] =~s/\@BBL/$BBL/g;
+  $_[0] =~s/\@BMG/$BMG/g;
+  $_[0] =~s/\@BCN/$BCN/g;
+  $_[0] =~s/\@BWH/$BWH/g;
   return $_[0];
 }
 
@@ -448,30 +534,28 @@ sub readfile {
   lockfile("$filename") || errorout ("Unable to open $filename");
   open (file,"<$filename") || errorout ("Unable to open $filename");
   $linecount=1;
-  $menu=uc($menuname);
+  $menu=lc($menuname);
   chomp ($ctime=`date +\%H:\%M`);
   chomp ($cdate=`date +\%Y-\%h-\%d`);
   while (<file>) {
-    s/\@LGN/$LGN/g;	s/\@BLK/$BLK/g;	s/\@RED/$RED/g;	s/\@GRN/$GRN/g;	s/\@BRN/$BRN/g;
-    s/\@BLU/$BLU/g;	s/\@PPL/$PPL/g;	s/\@LGR/$LGN/g;	s/\@GRY/$GRY/g;	s/\@PNK/$PNK/g;
-    s/\@YLW/$YLW/g;	s/\@ALB/$ALB/g;	s/\@VLT/$VLT/g;	s/\@WHT/$WHT/g;	s/\@LTB/$LTB/g;
-    s/\@RST/$RST/g;	s/\@CLR/$CLR/g;	s/~AT/\@/g;
-
-    s/\@SVRNM/$sysinfo{'servername'}/g;
+    s/\@SYSTEMCLR/$config{'systemcolor'}/g;
+    s/\@USERCLR/$config{'usercolor'}/g;
+    s/\@INPUTCLR/$config{'inputcolor'}/g;
+    s/\@ERRORCLR/$config{'errorcolor'}/g;
+    s/\@THEMECLR/$config{'themecolor'}/g;
+    s/\@PROMPTCLR/$config{'promptcolor'}/g;
+    s/\@DATACLR/$config{'datacolor'}/g;
+    s/\@LINECLR/$config{'linecolor'}/g;
     s/\@SYSNM/$config{'systemname'}/g;
     s/\@NODE/$info{'node'}/g;
     s/\@CONNECT/$info{'connect'}/g;
-
     s/\@HOST/$sysinfo{'host'}/g;
     s/\@IP/$sysinfo{'ip'}/g;
     s/\@USERS/$sysinfo{'users'}/g;
     s/\@TIME/$ctime/g;	s/\@DATE/$cdate/g;
-
-    s/\@DEFAULT/$info{'defchan'}/g; ### Added at the same time as doors
-
-
+    s/\@DEFAULT/$info{'defchan'}/g;
     s/\@PROTO/$info{'proto'}/g;
-    s/\@USER/$info{'handle'}/g;		### Userinfo
+    s/\@USER/$info{'handle'}/g;
     s/\@RNAME/$info{'rname'}/g;
     s/\@DOB/$info{'dob'}/g;
     s/\@PHONE/$info{'phonenumber'}/g;
@@ -483,6 +567,25 @@ sub readfile {
     s/\@EMAIL/$info{'email'}/g;
     s/\@DND/$info{'dnd'}/g;
     s/\@BANNED/$info{'banned'}/g;
+    s/\@CLR/$CLR/g;
+    s/\@RST/$RST/g;
+    s/\@BLK/$BLK/g;
+    s/\@RED/$RED/g;
+    s/\@GRN/$GRN/g;
+    s/\@YLW/$YLW/g;
+    s/\@BLU/$BLU/g;
+    s/\@MAG/$MAG/g;
+    s/\@WHT/$WHT/g;
+    s/\@CYN/$CYN/g;
+    s/\@BBK/$BBK/g;
+    s/\@BRD/$BRD/g;
+    s/\@BGN/$BGN/g;
+    s/\@BYL/$BYL/g;
+    s/\@BBL/$BBL/g;
+    s/\@BMG/$BMG/g;
+    s/\@BCN/$BCN/g;
+    s/\@BWH/$BWH/g;
+    s/~AT/\@/g;
 
     if ($info{'ansi'} eq 1) {
       $ansi="Y";
@@ -504,7 +607,7 @@ sub readfile {
     }
 
     if ($gotapage eq "1") {
-      print $WHT.": ".$result;
+      writeline($RST.$config{'inputcolor'}.$config{'promptchr'}." ".$result);
     }
 
     unless ($pause eq "1") {
@@ -585,7 +688,7 @@ sub hi {
        while (<in>) {
         chomp $_;
         if ($_ =~/$info{'connect'}/i) {
-          writeline ($WHT."\nIP ".$YLW.$info{'connect'}.$WHT." is already logged on ..",1);
+          writeline ($config{'systemcolor'}."\nIP ".$config{'usercolor'}.$info{'connect'}.$config{'systemcolor'}." is already logged on ..",1);
           ($kpid,$kip)=split(/:/,$_);
           logger("WARN: Duplicate IP ".$info{'connect'}." connected. Killing PID ".$kpid);
 	        kill 15,$kpid;
@@ -594,7 +697,7 @@ sub hi {
       }
 
 
-      print out getppid.":".$info{'connect'}."\n";
+      print out getppid."".$config{'promptcolor'}.":".$info{'connect'}."\n";
       close(out);
       unlockfile("$config{'home'}$config{'data'}/iplist_");
       close(in);
@@ -610,9 +713,9 @@ sub hi {
        print "\e[2J\e[0H";
     }
     if ($config{'headers'} eq 1) {
-      @OPENING=split(//,"\n$sysinfo{'servername'} $sysinfo{'version'}\n$sysinfo{'copyright'}")
+      @OPENING=split(//,"\nConnected to ".$config{'systemname'})
     }
-    push (@OPENING,"\n\nAuto-sensing .");
+    push (@OPENING,"\nAuto-sensing .");
     for (0..scalar(@OPENING)) {
      select(undef, undef, undef, 0.010);
      print shift(@OPENING);
@@ -694,8 +797,8 @@ sub hi {
       while(<in>) {
         chomp $_;
           if ($info{'connect'} =~/$_/i) {
-            writeline ($WHT."\nHost ".$YLW.$info{'connect'}.$WHT." has been ".$RED."banned".$WHT.", terminating connection ..",1);
-	          logger("WARN: Banned User connected from: ".$info{'connect'});
+            writeline ($config{'systemcolor'}."\nHost ".$config{'usercolor'}.$info{'connect'}.$config{'systemcolor'}." has been ".$config{'errorcolor'}."banned".$config{'systemcolor'}.", terminating connection ..",1);
+	          logger("WARN: Banned User connected from".$config{'promptcolor'}.": ".$info{'connect'});
 	          close(in);
             unlockfile("$config{'home'}$config{'data'}/banned_ip");
             bye();
@@ -745,9 +848,9 @@ sub bulletins {
   }
   unlockfile("$bullidx");
   if (scalar(@bulls) > "0") {
-    writeline($LGN."Found ".$LTB.scalar(@bulls).$LGN." bulletin(s)!",1);
+    writeline($config{'themecolor'}."Found ".$config{'datacolor'}.scalar(@bulls).$config{'themecolor'}." bulletin(s)!",1);
   } else {
-    writeline($LGN."No new bulletins are available today.",1);
+    writeline($config{'systemcolor'}."No new bulletins are available today.",1);
     return;
   }
   if ($config{'bulletins'} eq 0) {
@@ -795,12 +898,12 @@ sub bullmenu {
         chomp ($bulls[$_]);
         ($bullid,$bulltext)=split(/\|/,$bulls[$_]);
         if ($bulltext ne "") {
-          writeline($LTB.$bulln.$YLW." ...".$LGN." ".$bulltext,1);
+          writeline($config{'datacolor'}.$bulln.$config{'usercolor'}." ...".$config{'themecolor'}." ".$bulltext,1);
         }
       }
     }
 
-    writeline($LGN."\nEnter Option, or \"".$LTB."Q".$LGN."\" to quit: ");
+    writeline($config{'themecolor'}."\nEnter Option, or \"".$config{'datacolor'}."Q".$config{'themecolor'}."\" to quit".$config{'promptcolor'}.": ");
     $result=getline(text,,1);
     unless ($result =~/^[Qq]$/ || $result eq "") {
       iamat($info{'handle'},"Reading a bulletin");

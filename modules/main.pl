@@ -11,7 +11,7 @@ sub pageall {
     $snode=~s/^\/.*\///g;
     lockfile("$config{'home'}$config{'messages'}/$snode.page");
     open(out,">>$config{'home'}$config{'messages'}/$snode.page");
-    print out "\n\@LTB[\@YLW".$info{'handle'}."\@LTB] \@WHT".$msg."\n";
+    print out "\n\@DATACLR[\@USERCLR".$info{'handle'}."\@DATACLR] \@SYSTEMCLR".$msg."\n";
     close (out);
     unlockfile("$config{'home'}$config{'messages'}/$snode.page");
   }
@@ -61,6 +61,7 @@ sub telechannel {
       ($chanid,$chanown,$channelname) = split(/\|/,$chan);
       if ("$channelname" eq "$channel") {
         $chanexists=1;
+        $channel=$channelname;
         last;
       }
     }
@@ -80,13 +81,13 @@ sub telechannel {
           mkdir ("$config{'home'}$config{'messages'}/teleconf/$chanid/messages");
         }
 
-        writeline($WHT."\nCreating channel ".$YLW.$channel.$WHT." ..",1);
-        writeline($WHT."Assigned ".$YLW.$info{'handle'}.$WHT." as owner ..",1);
+        writeline($BWH."\nCreating channel ".$config{'usercolor'}.$channel.$BWH." ..",1);
+        writeline($BWH."Assigned ".$config{'usercolor'}.$info{'handle'}.$BWH." as owner ..",1);
       } else {
-        writeline($WHT."\nYou are not authorized to create channels.",1);
+        writeline($BWH."\nYou are not authorized to create channels.",1);
         unlockfile("$config{'home'}$config{'messages'}/teleconf/channels");
         $canjoin=0;
-        writeline($WHT."Entering channel ".$YLW.$config{'defchannel'},1);
+        writeline($BWH."Entering channel ".$config{'usercolor'}.$config{'defchannel'},1);
         telechannel($config{'defchannel'});
       }
     }
@@ -129,8 +130,8 @@ sub telechannel {
       foreach $item(@chanban) {
         chomp $item;
         if ($item eq $info{'handle'}) {
-          writeline ($WHT."You are not allowed to join ".$YLW.$channel.$WHT." ..",1);
-          writeline($WHT."Entering channel ".$YLW.$config{'defchannel'},1);
+          writeline ($BWH."You are not allowed to join ".$config{'usercolor'}.$channel.$BWH." ..",1);
+          writeline($BWH."Entering channel ".$config{'usercolor'}.$config{'defchannel'},1);
           unlink ("$config{'home'}$config{'messages'}/teleconf/$chanid/users/$info{'node'}");
           telechannel($config{'defchannel'});
         }
@@ -167,9 +168,9 @@ sub telechannel {
     }
 
     unless ($canjoin eq 1) {
-      writeline ($WHT."You are not allowed to enter channel ".$YLW.$channel.$WHT." ..",1);
+      writeline ($BWH."You are not allowed to enter channel ".$config{'usercolor'}.$channel.$BWH." ..",1);
       $canjoin=0;
-      writeline($WHT."Entering channel ".$YLW.$config{'defchannel'},1);
+      writeline($BWH."Entering channel ".$config{'usercolor'}.$config{'defchannel'},1);
       telechannel($config{'defchannel'});
     }
   }
@@ -250,26 +251,26 @@ sub teleconf {
     mkdir ("$config{'home'}$config{'messages'}/teleconf");
   }
   unless ($info{'defchan'} ne "") {
-    writeline ($WHT."Joining the ".$PPL.$config{'defchannel'}.$WHT." channel ..");
+    writeline ($BWH."Joining the ".$config{'datacolor'}.$config{'defchannel'}.$BWH." channel ..");
     telechannel($config{'defchannel'});
   } else {
-    writeline ($WHT."Joining the ".$PPL.$info{'defchan'}.$WHT." channel ..");
+    writeline ($BWH."Joining the ".$config{'datacolor'}.$info{'defchan'}.$BWH." channel ..");
     telechannel($info{'defchan'});
   }
   if ( $config{'systemname'} ) {
-    writeline ($YLW."\n\n".$config{'systemname'},1);
+    writeline ($config{'usercolor'}."\n\n".$config{'systemname'},1);
   } else {
     writeline ("\n\n");
   }
  channel: {
   if (-e "$config{'home'}$config{'messages'}/teleconf/$chanid/allow") {
-    $private=" (".$PPL."PRIVATE".$LGN.")";
+    $private=" (".$config{'datacolor'}."PRIVATE".$config{'themecolor'}.")";
   } else {
     $private="";
   }
 
   if (-e "$config{'home'}$config{'messages'}/teleconf/$chanid/ssh") {
-    $private=$private." (".$PPL."ENC".$LGN.")";
+    $private=$private." (".$config{'datacolor'}."ENC".$config{'themecolor'}.")";
   }
 
   if (-e "$config{'home'}$config{'messages'}/teleconf/$chanid/message") {
@@ -279,10 +280,10 @@ sub teleconf {
     writeline($RST,1);
   }
 
-  writeline ($LGN."You are in the ".$PPL.$channel.$LGN." channel".$private.".\n".$RST.$channelusers."\n");
+  writeline ($config{'themecolor'}."You are in the ".$config{'datacolor'}.$channel.$config{'themecolor'}." channel".$private.".\n".$RST.$channelusers."\n");
 
   if ($channel =~/$config{'defchannel'}/) {
-    writeline($YLW."Press \"".$LTB.$config{'help'}.$YLW."\" for a list of commands.\n");
+    writeline($config{'usercolor'}."Press \"".$config{'datacolor'}.$config{'help'}.$config{'usercolor'}."\" for a list of commands.\n");
   }
 
   telemain: {
@@ -290,7 +291,7 @@ sub teleconf {
     if ($info{'banned'} eq "Y") {
       $leaving="1";
       telesend("was banned from the system!");
-      writeline($RED."You have been banned from this system, disconnecting.");
+      writeline($config{'errorcolor'}."You have been banned from this system, disconnecting.");
       $leaving="0";
       $atmenu="0";
       $inteleconf="0";
@@ -299,7 +300,7 @@ sub teleconf {
       goto leave;
     }
 
-    writeline($theme{'prompt'});
+    writeline($RST.$config{'inputcolor'}.$config{'promptchr'}." ");
     $atmenu="1";
     $inteleconf="1";
     doevents();
@@ -326,19 +327,19 @@ sub teleconf {
 
     if ($chatline =~/^\/[Hh][Ii][Dd][Ee]$/ || $chatline =~/^\/[Hh]$/) {
       if ($channel eq $config{'defchannel'}) {
-        writeline ($WHT."Can not hide the ".$YLW.$config{'defchannel'}.$WHT." channel ..",1);
+        writeline ($BWH."Can not hide the ".$config{'usercolor'}.$config{'defchannel'}.$BWH." channel ..",1);
         goto telemain;
       }
       if ($info{'handle'} eq $chanown) {
         unless (-e "$config{'home'}$config{'messages'}/teleconf/$chanid/hidden") {
-          writeline ($WHT."Channel ".$YLW.$channel.$WHT." hidden ..",1);
+          writeline ($BWH."Channel ".$config{'usercolor'}.$channel.$BWH." hidden ..",1);
           lockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/hidden");
           open (out,">$config{'home'}$config{'messages'}/teleconf/$chanid/hidden");
            print out "1";
           close (out);
           unlockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/hidden");
         } else {
-          writeline ($WHT."Channel ".$YLW.$channel.$WHT." is no longer hidden ..",1);
+          writeline ($BWH."Channel ".$config{'usercolor'}.$channel.$BWH." is no longer hidden ..",1);
           unlink ("$config{'home'}$config{'messages'}/teleconf/$chanid/hidden");
           goto telemain;
         }
@@ -364,10 +365,10 @@ sub teleconf {
       ($junk,$setcommand)=split(/\s/,$chatline);
       if ($setcommand =~/DEFAULT/i) {
         if ($info{'defchan'} =~/$channel/) {
-           writeline($WHT."Reset  ".$PPL.$config{'defchannel'}.$WHT." as your favorite.",1);
+           writeline($BWH."Reset  ".$config{'datacolor'}.$config{'defchannel'}.$BWH." as your favorite.",1);
            $info{'defchan'}=$config{'defchannel'};
         } else {
-           writeline($WHT."Saved ".$PPL.$channel.$WHT." as your favorite.",1);
+           writeline($BWH."Saved ".$config{'datacolor'}.$channel.$BWH." as your favorite.",1);
            $info{'defchan'}=$channel;
            updateuser();
        }
@@ -413,7 +414,7 @@ sub teleconf {
         writeline($RST,1);
         goto telemain;
       }
-      writeline($WHT."Unknown ".$YLW."SET".$WHT." command",1);
+      writeline($BWH."Unknown ".$config{'usercolor'}."SET".$BWH." command",1);
       goto telemain;
     }
 
@@ -423,19 +424,19 @@ sub teleconf {
       $banuser=lc($banuser);
 
       if ($banuser eq "") {
-        writeline ($WHT."Action cancelled ..",1);
+        writeline ($BWH."Action cancelled ..",1);
         goto telemain;
       }
 
       if ($channel eq $config{'defchannel'}) {
-        writeline ($WHT."Can not (un)ban users in the ".$YLW.$config{'defchannel'}.$WHT." channel ..",1);
+        writeline ($BWH."Can not (un)ban users in the ".$config{'usercolor'}.$config{'defchannel'}.$BWH." channel ..",1);
         goto telemain;
       }
 
       if ($info{'handle'} eq $chanown) {
        $unallned=0;
        if ($banuser eq $info{'handle'}) {
-         writeline ($WHT."You can not ban yourself from a channel ..", 1);
+         writeline ($BWH."You can not ban yourself from a channel ..", 1);
          goto telemain;
        }
        if (-e "$config{'home'}$config{'messages'}/teleconf/$chanid/banned") {
@@ -446,7 +447,7 @@ sub teleconf {
          while (<in>) {
            chomp $_;
            if ($_ eq $banuser) {
-             writeline ($WHT."User ".$YLW.$banuser.$WHT." is no longer banned from ".$YLW.$channel.$WHT." ..",1);
+             writeline ($BWH."User ".$config{'usercolor'}.$banuser.$BWH." is no longer banned from ".$config{'usercolor'}.$channel.$BWH." ..",1);
              $unallned=1;
              next;
            } else {
@@ -463,7 +464,7 @@ sub teleconf {
            goto telemain;
          }
        }
-       writeline ($WHT."User ".$YLW.$banuser.$WHT." now banned from ".$YLW.$channel.$WHT." ..",1);
+       writeline ($BWH."User ".$config{'usercolor'}.$banuser.$BWH." now banned from ".$config{'usercolor'}.$channel.$BWH." ..",1);
        lockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/banned");
        open (out,">>$config{'home'}$config{'messages'}/teleconf/$chanid/banned");
         print out $banuser."\n";
@@ -475,7 +476,7 @@ sub teleconf {
      }
 
 
-     writeline ($WHT."User ".$YLW.$banuser.$WHT." no longer banned from entering ".$YLW.$channel.$WHT." ..",1);
+     writeline ($BWH."User ".$config{'usercolor'}.$banuser.$BWH." no longer banned from entering ".$config{'usercolor'}.$channel.$BWH." ..",1);
      lockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/banned");
      open (out,">>$config{'home'}$config{'messages'}/teleconf/$chanid/banned");
       print out $banuser."\n";
@@ -486,49 +487,49 @@ sub teleconf {
 
     if ($chatline =~/^\/[Ss][Tt][Aa][Tt][Uu][Ss]$/i || $chatline =~/^\/\$$/ || $chatline =~/^\$$/) {
       if ($op eq 1 || $info{'security'} ge $config{'sec_chanop'}) {
-        writeline($WHT."\nSystem report for channel: ".$PPL.$channel.$WHT."\n",1);
-        writeline($LTB."Channel Owner: ".$LGN.$chanown,1);
+        writeline($BWH."\nSystem report for channel: ".$config{'datacolor'}.$channel.$BWH."\n",1);
+        writeline($config{'datacolor'}."Channel Owner: ".$config{'themecolor'}.$chanown,1);
         if (-e "$config{'home'}$config{'messages'}/teleconf/$chanid/banned") {
           lockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/banned");
           open(in,"<$config{'home'}$config{'messages'}/teleconf/$chanid/banned");
             @rep=<in>;
           close(in);
           unlockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/banned");
-          writeline($LTB."Banned users: ");
+          writeline($config{'datacolor'}."Banned users: ");
           if (scalar(@rep) gt 0) {
             foreach $brep(@rep) {
               chomp $brep;
               unless ($brep =~/$info{'handle'}/) {
-                writeline($LGN.$brep." ");
+                writeline($config{'themecolor'}.$brep." ");
               }
             }
             writeline($RST,1);
           } else {
-            writeline($LGN."None",1);
+            writeline($config{'themecolor'}."None",1);
           }
         }
 
         if (-e "$config{'home'}$config{'messages'}/teleconf/$chanid/allow") {
-          writeline($LTB."Room is ".$LGN."PRIVATE".$RST,1);
+          writeline($config{'datacolor'}."Room is ".$config{'themecolor'}."PRIVATE".$RST,1);
           lockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/allow");
           open(in,"<$config{'home'}$config{'messages'}/teleconf/$chanid/allow");
             @rep=<in>;
           close(in);
           unlockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/allow");
-          writeline($LTB."Allowed users: ");
+          writeline($config{'datacolor'}."Allowed users: ");
           if (scalar(@rep) gt 1) {
             foreach $brep(@rep) {
               chomp $brep;
               unless ($brep =~/$info{'handle'}/) {
-                writeline($LGN.$brep." ");
+                writeline($config{'themecolor'}.$brep." ");
               }
             }
             writeline($RST,1);
           } else {
-            writeline($LGN."None",1);
+            writeline($config{'themecolor'}."None",1);
           }
         } else {
-          writeline($LTB."Room is ".$LGN."PUBLIC",1);
+          writeline($config{'datacolor'}."Room is ".$config{'themecolor'}."PUBLIC",1);
         }
 
         if (-e "$config{'home'}$config{'messages'}/teleconf/$chanid/ops") {
@@ -537,42 +538,42 @@ sub teleconf {
             @rep=<in>;
           close(in);
           unlockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/ops");
-          writeline($LTB."Channel Operators: ");
+          writeline($config{'datacolor'}."Channel Operators: ");
           if (scalar(@rep) gt 0) {
             foreach $brep(@rep) {
               chomp $brep;
-              writeline($LGN.$brep." ");
+              writeline($config{'themecolor'}.$brep." ");
             }
             writeline($RST,1);
           } else {
-            writeline($LGN."None",1);
+            writeline($config{'themecolor'}."None",1);
           }
         } else {
-          writeline($LTB."There are no channel ops other than its owner",1);
+          writeline($config{'datacolor'}."There are no channel ops other than its owner",1);
         }
 
         if (-e "$config{'home'}$config{'messages'}/teleconf/$chanid/hidden") {
-          writeline($LTB."This room is ".$LGN."HIDDEN FROM".$LTB." channel scans",1);
+          writeline($config{'datacolor'}."This room is ".$config{'themecolor'}."HIDDEN FROM".$config{'datacolor'}." channel scans",1);
         } else {
-          writeline($LTB."This room is ".$LGN."SHOWN IN".$LTB." channel scans",1);
+          writeline($config{'datacolor'}."This room is ".$config{'themecolor'}."SHOWN IN".$config{'datacolor'}." channel scans",1);
         }
 
         if (-e "$config{'home'}$config{'messages'}/teleconf/$chanid/ssh") {
-          writeline($LTB."This room requires ".$LGN."SSH".$LTB." connections",1);
+          writeline($config{'datacolor'}."This room requires ".$config{'themecolor'}."SSH".$config{'datacolor'}." connections",1);
         } else {
-          writeline($LTB."This room is open to ".$LGN."UNENCRYPTED".$LTB." connections",1);
+          writeline($config{'datacolor'}."This room is open to ".$config{'themecolor'}."UNENCRYPTED".$config{'datacolor'}." connections",1);
         }
 
         goto telemain;
       } else {
-        writeline ($WHT."You are not a chanop",1);
+        writeline ($BWH."You are not a chanop",1);
         goto telemain;
       }
     }
 
     if ($chatline =~/^\/[Tt][Oo][Pp][Ii][Cc]/ || $chatline =~/^\/[Tt]/) {
       if ($channel eq $config{'defchannel'}) {
-        writeline ($WHT."Can not change the ".$YLW.$config{'defchannel'}.$WHT." channel ..",1);
+        writeline ($BWH."Can not change the ".$config{'usercolor'}.$config{'defchannel'}.$BWH." channel ..",1);
         goto telemain;
       }
 
@@ -580,7 +581,7 @@ sub teleconf {
         lockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/message");
         system("nano -R $config{'home'}$config{'messages'}/teleconf/$chanid/message");
         unlockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/message");
-        writeline($WHT."Set Channel message ..",1);
+        writeline($BWH."Set Channel message ..",1);
         goto channel;
       } else {
         goto telemain;
@@ -589,16 +590,16 @@ sub teleconf {
 
     if ($chatline =~/^\/[Pp][Rr][Ii][Vv][Aa][Tt][Ee]$/ || $chatline =~/^\/[Vv]$/) {
       if ($channel eq $config{'defchannel'}) {
-        writeline ($WHT."Can not change the ".$YLW.$config{'defchannel'}.$WHT." channel ..",1);
+        writeline ($BWH."Can not change the ".$config{'usercolor'}.$config{'defchannel'}.$BWH." channel ..",1);
         goto telemain;
       }
 
       if ($info{'handle'} eq $chanown) {
         if (-e "$config{'home'}$config{'messages'}/teleconf/$chanid/allow") {
-          writeline ($WHT."Channel ".$YLW.$channel.$WHT." is now ".$LTB."PUBLIC".$WHT."..",1);
+          writeline ($BWH."Channel ".$config{'usercolor'}.$channel.$BWH." is now ".$config{'datacolor'}."PUBLIC".$BWH."..",1);
           unlink ("$config{'home'}$config{'messages'}/teleconf/$chanid/allow");
         } else {
-  	 writeline ($WHT."Channel ".$YLW.$channel.$WHT." is now ".$LTB."PRIVATE".$WHT."..",1);
+  	      writeline ($BWH."Channel ".$config{'usercolor'}.$channel.$BWH." is now ".$config{'datacolor'}."PRIVATE".$BWH."..",1);
           lockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/allow");
           open (out,">$config{'home'}$config{'messages'}/teleconf/$chanid/allow");
           print out $info{'handle'}."\n";
@@ -614,21 +615,21 @@ sub teleconf {
 
     if ($chatline =~/^\/[Ss][Ss][Ll]$/ || $chatline =~/^\/[Ee]$/) {
       if ($channel eq $config{'defchannel'}) {
-        writeline ($WHT."Can not change the ".$YLW.$config{'defchannel'}.$WHT." channel ..",1);
+        writeline ($BWH."Can not change the ".$config{'usercolor'}.$config{'defchannel'}.$BWH." channel ..",1);
         goto telemain;
       }
 
       if ($info{'handle'} eq $chanown) {
         if (-e "$config{'home'}$config{'messages'}/teleconf/$chanid/ssh") {
-          writeline ($WHT."Channel ".$YLW.$channel.$WHT." is now ".$LTB."UNENCRYPTED OK".$WHT."..",1);
+          writeline ($BWH."Channel ".$config{'usercolor'}.$channel.$BWH." is now ".$config{'datacolor'}."UNENCRYPTED OK".$BWH."..",1);
           unlink ("$config{'home'}$config{'messages'}/teleconf/$chanid/ssh");
         } else {
          unless ($info{'proto'} =~/SSH/) {
-           writeline ($RED."Warning: Can not change channel properties; you are connected via ".$LTB.$info{'proto'}.$RED."..",1);
+           writeline ($config{'errorcolor'}."Warning: Can not change channel properties; you are connected via ".$config{'datacolor'}.$info{'proto'}.$config{'errorcolor'}."..",1);
            writeline("",1);
            goto channel;
          }
-         writeline ($WHT."Channel ".$YLW.$channel.$WHT." is now ".$LTB."ENCRYPT ONLY".$WHT."..",1);
+         writeline ($BWH."Channel ".$config{'usercolor'}.$channel.$BWH." is now ".$config{'datacolor'}."ENCRYPT ONLY".$BWH."..",1);
           lockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/ssh");
           open (out,">$config{'home'}$config{'messages'}/teleconf/$chanid/ssh");
           print out $info{'handle'}."\n";
@@ -652,24 +653,24 @@ sub teleconf {
       $opuser=lc($opuser);
 
       if ($opuser =~/$info{'handle'}/ && $info{'security'} ge $config{'sec_chanop'}) {
-        writeline ($WHT."You can not un-op yourself ".$info{'handle'}." ..",1);
+        writeline ($BWH."You can not un-op yourself ".$info{'handle'}." ..",1);
         $opuser = "";
       }
 
       if ($opuser eq "") {
-        writeline ($WHT."Action cancelled ..",1);
+        writeline ($BWH."Action cancelled ..",1);
         goto telemain;
       }
 
       if ($channel eq $config{'defchannel'} || $info{'security'} lt $config{'sec_sysop'}) {
-        writeline ($WHT."Can not change ChanOP users in the ".$YLW.$config{'defchannel'}.$WHT." channel ..",1);
+        writeline ($BWH."Can not change ChanOP users in the ".$config{'usercolor'}.$config{'defchannel'}.$BWH." channel ..",1);
         goto telemain;
       }
 
       if ($info{'handle'} eq $chanown) {
         $unallned=0;
         if ($opuser eq $info{'handle'}) {
-          writeline ($WHT."You can not remove ChanOP from yourself ..", 1);
+          writeline ($BWH."You can not remove ChanOP from yourself ..", 1);
           goto telemain;
         }
         if (-e "$config{'home'}$config{'messages'}/teleconf/$chanid/ops") {
@@ -680,7 +681,7 @@ sub teleconf {
           while (<in>) {
             chomp $_;
             if ($_ eq $opuser) {
-              writeline ($WHT."User ".$YLW.$opuser.$WHT." is no longer ChanOP in channel ".$YLW.$channel.$WHT." ..",1);
+              writeline ($BWH."User ".$config{'usercolor'}.$opuser.$BWH." is no longer ChanOP in channel ".$config{'usercolor'}.$channel.$BWH." ..",1);
               $unallned=1;
               next;
             } else {
@@ -697,7 +698,7 @@ sub teleconf {
             goto telemain;
           }
         }
-        writeline ($WHT."User ".$YLW.$opuser.$WHT." ChanOP of channel ".$YLW.$channel.$WHT." ..",1);
+        writeline ($BWH."User ".$config{'usercolor'}.$opuser.$BWH." ChanOP of channel ".$config{'usercolor'}.$channel.$BWH." ..",1);
         lockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/ops");
         open (out,">>$config{'home'}$config{'messages'}/teleconf/$chanid/ops");
          print out $opuser."\n";
@@ -715,24 +716,24 @@ sub teleconf {
       $alluser=lc($alluser);
 
       if ($alluser =~/$info{'handle'}/) {
-        writeline ($WHT."You can not unallow yourself ".$info{'handle'}." ..",1);
+        writeline ($BWH."You can not unallow yourself ".$info{'handle'}." ..",1);
         $alluser = "";
       }
 
       if ($alluser eq "") {
-        writeline ($WHT."Action cancelled ..",1);
+        writeline ($BWH."Action cancelled ..",1);
         goto telemain;
       }
 
       if ($channel eq $config{'defchannel'}) {
-        writeline ($WHT."Can not (un)allow users in the ".$YLW.$config{'defchannel'}.$WHT." channel ..",1);
+        writeline ($BWH."Can not (un)allow users in the ".$config{'usercolor'}.$config{'defchannel'}.$BWH." channel ..",1);
         goto telemain;
       }
 
       if ($info{'handle'} eq $chanown) {
         $unallned=0;
         if ($alluser eq $info{'handle'}) {
-          writeline ($WHT."You can not unallow yourself from a channel ..", 1);
+          writeline ($BWH."You can not unallow yourself from a channel ..", 1);
           goto telemain;
         }
         if (-e "$config{'home'}$config{'messages'}/teleconf/$chanid/allow") {
@@ -743,7 +744,7 @@ sub teleconf {
           while (<in>) {
             chomp $_;
             if ($_ eq $alluser) {
-              writeline ($WHT."User ".$YLW.$alluser.$WHT." is no longer allowed to enter ".$YLW.$channel.$WHT." ..",1);
+              writeline ($BWH."User ".$config{'usercolor'}.$alluser.$BWH." is no longer allowed to enter ".$config{'usercolor'}.$channel.$BWH." ..",1);
               $unallned=1;
               next;
             } else {
@@ -760,7 +761,7 @@ sub teleconf {
             goto telemain;
           }
         }
-        writeline ($WHT."User ".$YLW.$alluser.$WHT." now allowed to enter ".$YLW.$channel.$WHT." ..",1);
+        writeline ($BWH."User ".$config{'usercolor'}.$alluser.$BWH." now allowed to enter ".$config{'usercolor'}.$channel.$BWH." ..",1);
         lockfile("$config{'home'}$config{'messages'}/teleconf/$chanid/allow");
         open (out,">>$config{'home'}$config{'messages'}/teleconf/$chanid/allow");
          print out $alluser."\n";
@@ -803,7 +804,7 @@ sub teleconf {
       if ($channel eq "") {
         $channel=$config{'defchannel'};
       }
-      writeline($WHT."Entering channel ".$YLW.$channel.$WHT." ...\n",1);
+      writeline($BWH."Entering channel ".$config{'usercolor'}.$channel.$BWH." ...\n",1);
       telechannel($channel);
       goto channel;
     }
@@ -833,14 +834,26 @@ sub teleconf {
         $mchoice=$mchoice.$test;
       }
       $chatline=join('',@parts);
-      $chatline =~s/\@LGN/$LGN/g;     $chatline =~s/\@BLK/$BLK/g;
-      $chatline =~s/\@RED/$RED/g;     $chatline =~s/\@GRN/$GRN/g;
-      $chatline =~s/\@BRN/$BRN/g;     $chatline =~s/\@BLU/$BLU/g;
-      $chatline =~s/\@PPL/$PPL/g;     $chatline =~s/\@LGR/$LGN/g;
-      $chatline =~s/\@GRY/$GRY/g;     $chatline =~s/\@PNK/$PNK/g;
-      $chatline =~s/\@YLW/$YLW/g;     $chatline =~s/\@ALB/$ALB/g;
-      $chatline =~s/\@VLT/$VLT/g;     $chatline =~s/\@WHT/$WHT/g;
-      $chatline =~s/\@LTB/$LTB/g;     $chatline =~s/\@RST/$RST/g;
+
+      $chatline =~s/\@BGN/$config{'themecolor'}/g;
+      $chatline =~s/\@BYL/$config{'usercolor'}/g;
+      $chatline =~s/\@BBL/$config{'datacolor'}/g;
+      $chatline =~s/\@RST/$RST/g;
+      $chatline =~s/\@BLK/$BLK/g;
+      $chatline =~s/\@RED/$RED/g;
+      $chatline =~s/\@GRN/$GRN/g;
+      $chatline =~s/\@YLW/$YLW/g;
+      $chatline =~s/\@BLU/$BLU/g;
+      $chatline =~s/\@MAG/$MAG/g;
+      $chatline =~s/\@WHT/$WHT/g;
+      $chatline =~s/\@CYN/$CYN/g;
+      $chatline =~s/\@BBK/$BBK/g;
+      $chatline =~s/\@BRD/$BRD/g;
+      $chatline =~s/\@BGN/$BGN/g;
+      $chatline =~s/\@BYL/$BYL/g;
+      $chatline =~s/\@BMG/$BMG/g;
+      $chatline =~s/\@BCN/$BCN/g;
+      $chatline =~s/\@BWH/$BWH/g;
       telesend($chatline);
       goto telemain;
     }
@@ -848,7 +861,7 @@ sub teleconf {
       writeline($theme{'exita'}.$theme{'exitb'}." ");
       $choice=waitkey("N");
       if ($choice =~/[Yy]/) {
-        writeline ($WHT."\nLogging off..",1);
+        writeline ($BWH."\nLogging off..",1);
         $leaving="1";
         telesend("just left the channel!");
         $leaving="0";
@@ -886,7 +899,7 @@ sub teleconf {
         $leaving="1";
         telesend($mdesc);
         $leaving="0";
-        writeline($WHT.$info{'handle'}." ".$mdesc,1);
+        writeline($BWH.$info{'handle'}." ".$mdesc,1);
         $prevchan=$channel;
         $rescan="1";
         unlink ("$config{'home'}$config{'messages'}/teleconf/$prevchan/users/$info{'node'}");
@@ -904,11 +917,10 @@ sub teleconf {
         }
 
         logger("NOTICE: ".$info{'handle'}." executed ".$mexec);
-
         if ($mspecial =~/internal/) {
           &$mexec();
         }
-
+        $idle=time;
         if ($mspecial =~/external/) {
           $dndmode=$info{'dnd'};
           $info{'dnd'}="1";
@@ -958,7 +970,7 @@ sub telesend {
   @telesendto=`ls $config{'home'}$config{'messages'}/teleconf/$chanid/users 2>/dev/null`;
   if (scalar(@telesendto) eq 1) {
     unless ($leaving eq 1) {
-      writeline ($LGN."There is no one here with you!",1);
+      writeline ($config{'themecolor'}."There is no one here with you!",1);
     }
   } else {
     foreach $channode(@telesendto) {
@@ -968,30 +980,68 @@ sub telesend {
           next;
         }
       }
-      $sendmessage =~s/\@LGN/$LGN/g;     $sendmessage =~s/\@BLK/$BLK/g;
-      $sendmessage =~s/\@RED/$RED/g;     $sendmessage =~s/\@GRN/$GRN/g;
-      $sendmessage =~s/\@BRN/$BRN/g;     $sendmessage =~s/\@BLU/$BLU/g;
-      $sendmessage =~s/\@PPL/$PPL/g;     $sendmessage =~s/\@LGR/$LGN/g;
-      $sendmessage =~s/\@GRY/$GRY/g;     $sendmessage =~s/\@PNK/$PNK/g;
-      $sendmessage =~s/\@YLW/$YLW/g;     $sendmessage =~s/\@ALB/$ALB/g;
-      $sendmessage =~s/\@VLT/$VLT/g;     $sendmessage =~s/\@WHT/$WHT/g;
-      $sendmessage =~s/\@LTB/$LTB/g;     $sendmessage =~s/\@RST/$RST/g;
+      $chatline =~s/\@SYSTEMCLR/$config{'systemcolor'}/g;
+      $chatline =~s/\@USERCLR/$config{'usercolor'}/g;
+      $chatline =~s/\@INPUTCLR/$config{'inputcolor'}/g;
+      $chatline =~s/\@ERRORCLR/$config{'errorcolor'}/g;
+      $chatline =~s/\@THEMECLR/$config{'themecolor'}/g;
+      $chatline =~s/\@PROMPTCLR/$config{'promptcolor'}/g;
+      $chatline =~s/\@DATACLR/$config{'datacolor'}/g;
+      $chatline =~s/\@LINECLR/$config{'linecolor'}/g;
+      $chatline =~s/\@BGN/$BGN/g;
+      $chatline =~s/\@BYL/$BYL/g;
+      $chatline =~s/\@BBL/$BBL/g;
+      $chatline =~s/\@RST/$RST/g;
+      $chatline =~s/\@BLK/$BLK/g;
+      $chatline =~s/\@RED/$RED/g;
+      $chatline =~s/\@GRN/$GRN/g;
+      $chatline =~s/\@YLW/$YLW/g;
+      $chatline =~s/\@BLU/$BLU/g;
+      $chatline =~s/\@MAG/$MAG/g;
+      $chatline =~s/\@WHT/$WHT/g;
+      $chatline =~s/\@CYN/$CYN/g;
+      $chatline =~s/\@BBK/$BBK/g;
+      $chatline =~s/\@BRD/$BRD/g;
+      $chatline =~s/\@BGN/$BGN/g;
+      $chatline =~s/\@BYL/$BYL/g;
+      $chatline =~s/\@BMG/$BMG/g;
+      $chatline =~s/\@BCN/$BCN/g;
+      $chatline =~s/\@BWH/$BWH/g;
 
-      $chatline =~s/\@LGN/$LGN/g;     $chatline =~s/\@BLK/$BLK/g;
-      $chatline =~s/\@RED/$RED/g;     $chatline =~s/\@GRN/$GRN/g;
-      $chatline =~s/\@BRN/$BRN/g;     $chatline =~s/\@BLU/$BLU/g;
-      $chatline =~s/\@PPL/$PPL/g;     $chatline =~s/\@LGR/$LGN/g;
-      $chatline =~s/\@GRY/$GRY/g;     $chatline =~s/\@PNK/$PNK/g;
-      $chatline =~s/\@YLW/$YLW/g;     $chatline =~s/\@ALB/$ALB/g;
-      $chatline =~s/\@VLT/$VLT/g;     $chatline =~s/\@WHT/$WHT/g;
-      $chatline =~s/\@LTB/$LTB/g;     $chatline =~s/\@RST/$RST/g;
+      $sendmessage =~s/\@SYSTEMCLR/$config{'systemcolor'}/g;
+      $sendmessage =~s/\@USERCLR/$config{'usercolor'}/g;
+      $sendmessage =~s/\@INPUTCLR/$config{'inputcolor'}/g;
+      $sendmessage =~s/\@ERRORCLR/$config{'errorcolor'}/g;
+      $sendmessage =~s/\@THEMECLR/$config{'themecolor'}/g;
+      $sendmessage =~s/\@PROMPTCLR/$config{'promptcolor'}/g;
+      $sendmessage =~s/\@DATACLR/$config{'datacolor'}/g;
+      $sendmessage =~s/\@LINECLR/$config{'linecolor'}/g;
+      $sendmessage =~s/\@BGN/$BGN/g;
+      $sendmessage =~s/\@BYL/$BYL/g;
+      $sendmessage =~s/\@BBL/$BBL/g;
+      $sendmessage =~s/\@RST/$RST/g;
+      $sendmessage =~s/\@BLK/$BLK/g;
+      $sendmessage =~s/\@RED/$RED/g;
+      $sendmessage =~s/\@GRN/$GRN/g;
+      $sendmessage =~s/\@YLW/$YLW/g;
+      $sendmessage =~s/\@BLU/$BLU/g;
+      $sendmessage =~s/\@MAG/$MAG/g;
+      $sendmessage =~s/\@WHT/$WHT/g;
+      $sendmessage =~s/\@CYN/$CYN/g;
+      $sendmessage =~s/\@BBK/$BBK/g;
+      $sendmessage =~s/\@BRD/$BRD/g;
+      $sendmessage =~s/\@BGN/$BGN/g;
+      $sendmessage =~s/\@BYL/$BYL/g;
+      $sendmessage =~s/\@BMG/$BMG/g;
+      $sendmessage =~s/\@BCN/$BCN/g;
+      $sendmessage =~s/\@BWH/$BWH/g;
 
       lockfile("$config{'home'}$config{'messages'}/$channode.page");
       open(out,">>$config{'home'}$config{'messages'}/$channode.page");
        unless (defined($sendmessage)) {
-         print out "\@YLW".$info{'handle'}."\@LTB".": "."\@WHT".$chatline."\@WHT"."\n";
+         print out "\@USERCLR".$info{'handle'}."\@DATACLR".": "."\@INPUTCLR".$chatline."\@INPUTCLR"."\n";
        } else {
-         print out "\@WHT".$info{'handle'}." ".$sendmessage."\@WHT"."\n";
+         print out "\@INPUTCLR".$info{'handle'}." ".$sendmessage."\@INPUTCLR"."\n";
        }
       close (out);
       unlockfile("$config{'home'}$config{'messages'}/$channode.page");
@@ -1024,36 +1074,52 @@ sub telewhisper {
        next;
      }
 
-     $pguser=uc($pguser);
-     $user=uc($user);
+     $pguser=lc($pguser);
+     $user=lc($user);
      if ($pguser eq $user) {
         $found=1;
         $pmsg=join(' ',@parts);
      }
 
      if ($found eq "1") {
-
-      $pmsg =~s/\@LGN/$LGN/g;     $pmsg =~s/\@BLK/$BLK/g;
-      $pmsg =~s/\@RED/$RED/g;     $pmsg =~s/\@GRN/$GRN/g;
-      $pmsg =~s/\@BRN/$BRN/g;     $pmsg =~s/\@BLU/$BLU/g;
-      $pmsg =~s/\@PPL/$PPL/g;     $pmsg =~s/\@LGR/$LGN/g;
-      $pmsg =~s/\@GRY/$GRY/g;     $pmsg =~s/\@PNK/$PNK/g;
-      $pmsg =~s/\@YLW/$YLW/g;     $pmsg =~s/\@ALB/$ALB/g;
-      $pmsg =~s/\@VLT/$VLT/g;     $pmsg =~s/\@WHT/$WHT/g;
-      $pmsg =~s/\@LTB/$LTB/g;     $pmsg =~s/\@RST/$RST/g;
+       $pmsg =~s/\@SYSTEMCLR/$config{'systemcolor'}/g;
+       $pmsg =~s/\@USERCLR/$config{'usercolor'}/g;
+       $pmsg =~s/\@INPUTCLR/$config{'inputcolor'}/g;
+       $pmsg =~s/\@ERRORCLR/$config{'errorcolor'}/g;
+       $pmsg =~s/\@THEMECLR/$config{'themecolor'}/g;
+       $pmsg =~s/\@PROMPTCLR/$config{'promptcolor'}/g;
+       $pmsg =~s/\@DATACLR/$config{'datacolor'}/g;
+       $pmsg =~s/\@LINECLR/$config{'linecolor'}/g;
+       $pmsg =~s/\@RST/$RST/g;
+       $pmsg =~s/\@BLK/$BLK/g;
+       $pmsg =~s/\@RED/$RED/g;
+       $pmsg =~s/\@GRN/$GRN/g;
+       $pmsg =~s/\@YLW/$YLW/g;
+       $pmsg =~s/\@BLU/$BLU/g;
+       $pmsg =~s/\@MAG/$MAG/g;
+       $pmsg =~s/\@WHT/$WHT/g;
+       $pmsg =~s/\@CYN/$CYN/g;
+       $pmsg =~s/\@BBK/$BBK/g;
+       $pmsg =~s/\@BRD/$BRD/g;
+       $pmsg =~s/\@BGN/$BGN/g;
+       $pmsg =~s/\@BYL/$BYL/g;
+       $pmsg =~s/\@BMG/$BMG/g;
+       $pmsg =~s/\@BCN/$BCN/g;
+       $pmsg =~s/\@BWH/$BWH/g;
 
       ($discard,$pnode,$discard,$discard,$person,$discard,$discard)=split(/\|/,$nodeinfo);
-      writeline($YLW."You whispered to $person: ".$pmsg,1);
+      writeline($config{'usercolor'}."You whispered to $person: ".$pmsg,1);
       lockfile("$config{'home'}$config{'messages'}/$pnode.page");
       open (out,">>$config{'home'}$config{'messages'}/$pnode.page");
-      print out "\@YLW".$info{'handle'}."\@YLW whispers\@LTB: \@WHT".$pmsg."\n";
+      print out "\@USERCLR".$info{'handle'}."\@USERCLR whispers\@DATACLR: \@SYSTEMCLR".$pmsg."\n";
       close (out);
       unlockfile("$config{'home'}$config{'messages'}/$pnode.page");
+      writeline($RST,1);
       last;
     }
   }
   if ($found ne "1") {
-    writeline($LTB.$pguser.$PPL." is not online",1);
+    writeline($config{'datacolor'}.$pguser.$config{'datacolor'}." is not online",1);
   }
 }
 
@@ -1075,11 +1141,11 @@ $channelname,$chanstat,$chanusers
 .
 
   $channelname="Channel .....";$chanstat="Status";$chanusers="Users";
-  writeline($YLW);
+  writeline($config{'themecolor'});
   $~="chanscan";
   write;
   $~="stdout";
-  writeline($LTB);
+  writeline($config{'datacolor'});
 
   foreach $chan(@channels) {
    $chanenc="";
@@ -1100,13 +1166,12 @@ $channelname,$chanstat,$chanusers
    @scanchanusr=<$config{'home'}$config{'messages'}/teleconf/$chanid/users/*>;
    $chanusers=scalar(@scanchanusr);
 
-  writeline($LTB);
+  writeline($config{'datacolor'});
   $~="chanscan";
   write;
   $~="stdout";
   }
   writeline($RST,1);
-
 }
 
 sub telescan {
@@ -1122,20 +1187,18 @@ sub telescan {
   }
 
   @whosonline=sort {$a <=> $b} @whosonline;
-  ### Add a header/footer later
   writeline("\n");
 
 format telescan =
 @<<< @<<<<<<<<<<<<<<<  .....  @<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 $whonode,$whouser,$whowhere
 .
-
+  writeline($config{'systemcolor'});
   $whonode="Node"; $whouser="User-ID"; $whowhere="Channel";
-  writeline($YLW);
   $~="telescan";
   write;
   $~="stdout";
-  writeline($LTB);
+  writeline($config{'datacolor'});
   foreach $node(@whosonline) {
     chomp ($node);
     ($whonode,$whouser,$whowhere)=split(/\|/,$node);

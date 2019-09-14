@@ -29,7 +29,7 @@ if ($config{'oneliners'} ne "0") {
            $olname=getuname($olid);
          }
          $oline=colorline("$oline");
-         writeline("  ".$WHT.$olname." ".$YLW."says: ".$LGN.$oline,1);
+         writeline("  ".$config{'systemcolor'}.$olname." ".$config{'usercolor'}."says".$config{'promptcolor'}.": ".$config{'themecolor'}.$oline,1);
         }
       close(onlin);
       unlockfile("$config{'home'}$config{'text'}/oneliner");

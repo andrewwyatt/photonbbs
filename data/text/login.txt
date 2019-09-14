@@ -1,2 +1,2 @@
-\n@WHTGreetings, @YLW@USER@WHT, glad to see you back again.
+\n@SYSTEMCLRGreetings, @USERCLR@USER@SYSTEMCLR, glad to see you back again.
 @RST

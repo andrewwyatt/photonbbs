@@ -17,7 +17,7 @@ sub lastcallers{
       if (-e "$config{'home'}$config{'text'}/lastcallbot.$info{'ext'}") {
         readfile("lastcallbot.$info{'ext'}");
       } else {
-        writeline($theme{'lastcallbot'},1);
+        writeline($theme{'lastcallbot'});
       }
       unless ($_[0] =~/nopause/) {
         pause();
@@ -52,6 +52,7 @@ format lastcallers =
 @<<<<<<< @<<<<<<<<<<<<<<<  .....  @<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 $ctime,$whouser,$whowhere
 .
+        writeline($config{'systemcolor'},1);
         open (lastcallers,">>$config{'home'}$config{'text'}/lastcallers");
          $~="lastcallers";
          $whouser=$info{'handle'};
@@ -61,6 +62,5 @@ $ctime,$whouser,$whowhere
         close (out);
       }
     }
-    #undef %lastcalls;
   }
 return 1;

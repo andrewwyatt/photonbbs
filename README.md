@@ -1,6 +1,6 @@
 # PhotonBBS
 Simple chat server for Unix / Linux
-Copyright (C) 2002-2018, Andrew Wyatt
+Copyright (C) 2002-2019, Andrew Wyatt
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@ a built in set of functions that allow the BBS to be extended very simply.
 
 ### Obligatory Screenshot
 
-![alt tag](https://imgur.com/Sd4Izqj.png)
+![alt tag](https://imgur.com/8gGLgnC.png)
 
 Users using PhotonBBS land in a primary "channel" upon logging in and can
 begin immediately communicating with other users or they are free to create
@@ -178,25 +178,35 @@ The BBS software will detect ANSI (.ans) and ASCII (.asc) files of the same name
 
 ### Action Colors
 
-    @RST Reset to terminal color
-    @CLR Clear screen
-    @LGN Light Green
-    @GRN Green
-    @RED Red
-    @BRN Brown
-    @PPL Purple
-    @LGR Light Grey        
-    @GRY Grey
-    @YLW Yellow
-    @VLT Violet            
-    @WHT White
-    @LTB Light Blue        
-    @PNK Pink
-    @BLU Blue              
-    @BLK Black
+    @CLR    - Clear screen (For ANSI files only)  
+    @RST    - Reset terminal color
+    @BLK    - Black
+    @RED    - Red
+    @GRN    - Green
+    @YLW    - Yellow
+    @BLU    - Blue
+    @MAG    - Magenta
+    @WHT    - White (Light Grey)
+    @CYN    - Cyan
+    @BBK    - Bright Black (Grey)
+    @BRD    - Bright Red
+    @BGN    - Bright Green
+    @BYL    - Bright Yellow
+    @BBL    - Bright Blue
+    @BMG    - Bright Magenta
+    @BCN    - Bright Cyan
+    @BWH    - Bright White
 
 ### System Variables
 
+    @SYSTEMCLR   - System output color
+    @USERCLR     - User metadata color
+    @INPUTCLR    - Input color
+    @ERRORCLR    - Error color
+    @THEMECLR    - General theme color
+    @PROMPTCLR   - Prompt color (:?)
+    @DATACLR     - System generated data color
+    @LINECLR     - Line color (Oneliner top/bottom)
     @SYSNM       - BBS name
     @SVRNM       - BBS software name
     @MENU        - Currently selected menu
@@ -213,14 +223,12 @@ The BBS software will detect ANSI (.ans) and ASCII (.asc) files of the same name
     @DOB         - Your date of birth
     @PHONE       - Your phone number
     @LOCAL       - User location
-    @CREDITS     - Number of available credits (unused)
-    @TLEFT       - Time left in minutes (unused)
     @ID          - Users system ID index number
     @SEX         - Your sex (M/F)
     @EMAIL       - Your email address
     @DND         - Do not disturb flag
     @BANNED      - Account ban flag
-    ~AT          - Provides @ Symbol - @RED~ATRED
+    ~AT          - Provides @ Symbol
 
 ## System Bulletins
 

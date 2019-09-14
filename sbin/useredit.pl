@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-# 
+#
 #  User manager for PhotonBBS
 #  (C) 2009 Andrew Wyatt
 #  GNU GPL v2
@@ -15,18 +15,12 @@ if (-e "/etc/default/photonbbs") {
     $value=~s/^\"//;
     $value=~s/\".*$//;
     $config{$key}=$value;
+    print "$config{$key}=$value;\n";
   }
   close(in);
 } else {
   die "Please configure your BBS (/etc/default/photonbbs)";
 }
-
-### System Information
-$sysinfo{'servername'}="PhotonBBS";
-$sysinfo{'version'}="1.6";
-$sysinfo{'copyright'}="(C) 2007-2013 Andrew Wyatt, FEWT Software";
-chomp ($sysinfo{'host'}=`hostname`);
-####
 
 require ($config{'home'}."/modules/framework.pl");
 require ($config{'home'}."/modules/usertools.pl");
@@ -67,7 +61,7 @@ open(in,"<$config{'home'}$config{'data'}/users.dat");
   }
 close(in);
 
-applytheme("mbbs");
+applytheme($config{'theme'});
 $sk=0;
 for (;;) {
   $usridxcnt=scalar(@users);
@@ -103,37 +97,36 @@ for (;;) {
   }
 
   print "\e[2J\e[0;0H";
-  writeline ($WHT.$sysinfo{'servername'}." ".$sysinfo{'version'},1);
-  writeline ($LGN."User Editor - ".$BLU." [ ".$WHT.$info{'id'}.$BLU."/".$WHT.scalar(@users).$BLU." ]",1);
+  writeline ($config{'themecolor'}."User Editor - ".$config{'usercolor'}." [ ".$config{'systemcolor'}.$info{'id'}.$config{'usercolor'}."/".$config{'systemcolor'}.scalar(@users).$config{'usercolor'}." ]",1);
   writeline ("",1);
   writeline ("",1);
-  writeline ($LTB."A. ".$YLW."Handle : ".$WHT.$info{'handle'},1);
-  writeline ($LTB."B. ".$YLW."Real Name : ".$WHT.$info{'rname'},1);
-  writeline ($LTB."C. ".$YLW."D.O.B. : ".$WHT.$info{'dob'},1);
-  writeline ($LTB."D. ".$YLW."Sex : ".$WHT.$info{'sex'},1);
-  writeline ($LTB."E. ".$YLW."Email Address : ".$WHT.$info{'email'},1);
-  writeline ($LTB."F. ".$YLW."Location : ".$WHT.$info{'location'},1);
+  writeline ($config{'datacolor'}."A. ".$config{'usercolor'}."Handle : ".$config{'systemcolor'}.$info{'handle'},1);
+  writeline ($config{'datacolor'}."B. ".$config{'usercolor'}."Real Name : ".$config{'systemcolor'}.$info{'rname'},1);
+  writeline ($config{'datacolor'}."C. ".$config{'usercolor'}."D.O.B. : ".$config{'systemcolor'}.$info{'dob'},1);
+  writeline ($config{'datacolor'}."D. ".$config{'usercolor'}."Sex : ".$config{'systemcolor'}.$info{'sex'},1);
+  writeline ($config{'datacolor'}."E. ".$config{'usercolor'}."Email Address : ".$config{'systemcolor'}.$info{'email'},1);
+  writeline ($config{'datacolor'}."F. ".$config{'usercolor'}."Location : ".$config{'systemcolor'}.$info{'location'},1);
   writeline ("",1);
-  writeline ($LTB."G. ".$YLW."Password : ".$WHT."********",1);
-  writeline ($LTB."H. ".$YLW."Security : ".$WHT.$info{'security'},1);
+  writeline ($config{'datacolor'}."G. ".$config{'usercolor'}."Password : ".$config{'systemcolor'}."********",1);
+  writeline ($config{'datacolor'}."H. ".$config{'usercolor'}."Security : ".$config{'systemcolor'}.$info{'security'},1);
   writeline ("",1);
-  writeline ($LTB."I. ".$YLW."Ansi : ".$WHT.$ansi,1);
-  writeline ($LTB."J. ".$YLW."Do Not Disturb : ".$WHT.$dnd,1);
-  writeline ($LTB."K. ".$YLW."Hidden : ".$WHT.$info{'hidden'},1);
-  writeline ($LTB."L. ".$YLW."Theme : ".$WHT.$info{'theme'},1);
-  writeline ($LTB."M. ".$YLW."Default channel : ".$WHT.$info{'defchan'},1);
-  writeline ($LTB."N. ".$YLW."Account Banned : ".$WHT.$info{'banned'},1);
+  writeline ($config{'datacolor'}."I. ".$config{'usercolor'}."Ansi : ".$config{'systemcolor'}.$ansi,1);
+  writeline ($config{'datacolor'}."J. ".$config{'usercolor'}."Do Not Disturb : ".$config{'systemcolor'}.$dnd,1);
+  writeline ($config{'datacolor'}."K. ".$config{'usercolor'}."Hidden : ".$config{'systemcolor'}.$info{'hidden'},1);
+  writeline ($config{'datacolor'}."L. ".$config{'usercolor'}."Theme : ".$config{'systemcolor'}.$info{'theme'},1);
+  writeline ($config{'datacolor'}."M. ".$config{'usercolor'}."Default channel : ".$config{'systemcolor'}.$info{'defchan'},1);
+  writeline ($config{'datacolor'}."N. ".$config{'usercolor'}."Account Banned : ".$config{'systemcolor'}.$info{'banned'},1);
   writeline ("",1);
-  writeline ($LTB."[. ".$YLW."Previous User",1);
-  writeline ($LTB."]. ".$YLW."Next User",1);
-  writeline ($LGN."Enter Option, or \"".$LTB."Q".$LGN."\" to quit: ");
+  writeline ($config{'datacolor'}."[. ".$config{'usercolor'}."Previous User",1);
+  writeline ($config{'datacolor'}."]. ".$config{'usercolor'}."Next User",1);
+  writeline ($config{'themecolor'}."Enter Option, or \"".$config{'datacolor'}."Q".$config{'themecolor'}."\" to quit: ");
 
   $key="";
   cbreak(on);
   $key=waitkey();
   cbreak(off);
 
-  writeline("",1); 
+  writeline("",1);
 
   $info{'ansi'}=$save{'ansi'};
   $info{'ext'}=$save{'ext'};
@@ -194,7 +187,7 @@ for (;;) {
     chansi();
     next;
   }
- 
+
   if ($key =~/^[Jj]/) {
     chdnd();
     next;
@@ -223,7 +216,7 @@ for (;;) {
 
 sub chtheme {
     opthe: {
-    writeline($LGN."Please enter a new theme to use: ");
+    writeline($config{'themecolor'}."Please enter a new theme to use: ");
     $info{'theme'}=getline(text,20,"",1);
     unless (-e $config{'home'}.$config{'themes'}."/".$info{'theme'}) {
       writeline($RED."That theme does not exist, please choose another.",1);
@@ -234,7 +227,7 @@ sub chtheme {
 }
 
 sub chdefault {
-  writeline($LGN."Please enter a new default channel: ");
+  writeline($config{'themecolor'}."Please enter a new default channel: ");
   $info{'defchan'}=getline(text,20,"",1);
   $info{'defchan'}=uc($info{'defchan'});
   $info{'defchan'}=~s/\ /_/gi;
@@ -243,7 +236,7 @@ sub chdefault {
 
 sub chhandle {
   opnewid: {
-    writeline($LGN."Please enter a new handle: ");
+    writeline($config{'themecolor'}."Please enter a new handle: ");
     $handle=getline(text,16,"",1);
     $handletest=uc($handle);
     if ($handletest =~/New/gi) {
@@ -266,7 +259,7 @@ sub chhandle {
 
 sub chsecurity {
     opsec: {
-    writeline($LGN."Please enter a new security level: ");
+    writeline($config{'themecolor'}."Please enter a new security level: ");
     $info{'security'}=getline(text,3,"",1);
     unless ($info{'security'} gt "0") {
       goto opsec;

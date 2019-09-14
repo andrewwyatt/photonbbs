@@ -274,7 +274,6 @@ sub newuser {
   newid: {
     writeline($theme{'useridprompt'}." ");
     $info{'handle'}=getline(text,16,"",1);
-    #$info{'handle'}=ucfirst($info{'handle'});
     chomp ($info{'handle'});
     $handletest=uc($info{'handle'});
     if ($handletest =~/New/gi) {

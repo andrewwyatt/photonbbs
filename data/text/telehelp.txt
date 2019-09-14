@@ -1,52 +1,55 @@
-@LTB@SYSNM help
+@THEMECLR@SYSNM help
 
-@YLWUser Functions ..
-@LTB/ACTION <ACTIONS>         @LGNPerform <action>                    @YLW...  @LTB/A
-@LTB/WHISPER <WHO> <MESSAGE>  @LGNSend private message                @YLW...  @LTB/W
-@LTB/BROADCAST <MESSAGE>      @LGNSend a message to all (ChanOp Only) @YLW...  @LTB/R
+@USERCLRUser Functions ..
+@THEMECLR/ACTION <ACTIONS>         @BGNPerform <action>                    @USERCLR...  @THEMECLR/A
+@THEMECLR/WHISPER <WHO> <MESSAGE>  @BGNSend private message                @USERCLR...  @THEMECLR/W
+@THEMECLR/BROADCAST <MESSAGE>      @BGNSend a message to all (ChanOp Only) @USERCLR...  @THEMECLR/R
 
-@YLWSystem Commands ..
-@LTB/USERS                    @LGNWho is logged into the system       @YLW...  @LTB #
-@LTB/SCAN                     @LGNLocate chat users                   @YLW...  @LTB/S
-@LTB/CHANNELS                 @LGNShow available channels             @YLW...  @LTB/C
-@LTB/ONELINERS                @LGNWrite on the wall                   @YLW...  @LTB %
-@LTB/BULLETINS                @LGNRead System Bulletins               @YLW...  @LTB @
+@USERCLRSystem Commands ..
+@THEMECLR/USERS                    @BGNWho is logged into the system       @USERCLR...  @THEMECLR #
+@THEMECLR/SCAN                     @BGNLocate chat users                   @USERCLR...  @THEMECLR/S
+@THEMECLR/CHANNELS                 @BGNShow available channels             @USERCLR...  @THEMECLR/C
+@THEMECLR/ONELINERS                @BGNWrite on the wall                   @USERCLR...  @THEMECLR %
+@THEMECLR/BULLETINS                @BGNRead System Bulletins               @USERCLR...  @THEMECLR @
 
-@YLWRoom Commands ..
-@LTB/JOIN <ROOM>              @LGNJoins room <room>                   @YLW...  @LTB/J
-@LTB/BAN <USER>               @LGN(UN)Bans <user> from room           @YLW...  @LTB/B
-@LTB/HIDE                     @LGN(UN)Hides room from channel scan    @YLW...  @LTB/H
-@LTB/OP <USER>                @LGN(UN)Assign a user as a ChanOp       @YLW...  @LTB/O
-@LTB/SSL                      @LGN(UN)Enforce SSH on room             @YLW...  @LTB/E
-@LTB/PRIVATE                  @LGN(UN)Sets a room PRIVATE             @YLW...  @LTB/V
-@LTB/ALLOW <USER>             @LGN(UN)Allow <user(s)> in Private room @YLW...  @LTB/L
-@LTB/TOPIC                    @LGN(UN)Set a channel topic             @YLW...  @LTB/T
-@LTB/STATUS                   @LGNShow room status                    @YLW...  @LTB/$
+@USERCLRRoom Commands ..
+@THEMECLR/JOIN <ROOM>              @BGNJoins room <room>                   @USERCLR...  @THEMECLR/J
+@THEMECLR/BAN <USER>               @BGN(UN)Bans <user> from room           @USERCLR...  @THEMECLR/B
+@THEMECLR/HIDE                     @BGN(UN)Hides room from channel scan    @USERCLR...  @THEMECLR/H
+@THEMECLR/OP <USER>                @BGN(UN)Assign a user as a ChanOp       @USERCLR...  @THEMECLR/O
+@THEMECLR/SSL                      @BGN(UN)Enforce SSH on room             @USERCLR...  @THEMECLR/E
+@THEMECLR/PRIVATE                  @BGN(UN)Sets a room PRIVATE             @USERCLR...  @THEMECLR/V
+@THEMECLR/ALLOW <USER>             @BGN(UN)Allow <user(s)> in Private room @USERCLR...  @THEMECLR/L
+@THEMECLR/TOPIC                    @BGN(UN)Set a channel topic             @USERCLR...  @THEMECLR/T
+@THEMECLR/STATUS                   @BGNShow room status                    @USERCLR...  @THEMECLR/$
 
-@YLWUser Settings ..
-@LTB/INFO                     @LGNDisplay your user settings
-@LTB/SET <COMMAND>            @LGNSet user preferences (SEE BELOW)    @YLW...  @LTB/U
-@LGNCommands:
-  @LTBNAME                    @LGNSet your full name
-  @LTBPASSWORD                @LGNReset your password
-  @LTBEMAIL                   @LGNChange your email address
-  @LTBLOCATION                @LGNSet your call location
-  @LTBPHONE                   @LGNSet your phone number
-  @LTBDOB                     @LGNChange your DOB
-  @LTBSEX                     @LGNChange your Sex
-  @LTBANSI                    @LGNChange your ANSI preference
-  @LTBDEFAULT                 @LGNSets your default channel to the current channel
-  @LTBUNIXPWD                 @LGNChange your local unix password (LOCAL only)
+@USERCLRUser Settings ..
+@THEMECLR/INFO                     @BGNDisplay your user settings
+@THEMECLR/SET <COMMAND>            @BGNSet user preferences (SEE BELOW)    @USERCLR...  @THEMECLR/U
+@BGNCommands:
+  @THEMECLRNAME                    @BGNSet your full name
+  @THEMECLRPASSWORD                @BGNReset your password
+  @THEMECLREMAIL                   @BGNChange your email address
+  @THEMECLRLOCATION                @BGNSet your call location
+  @THEMECLRPHONE                   @BGNSet your phone number
+  @THEMECLRDOB                     @BGNChange your DOB
+  @THEMECLRSEX                     @BGNChange your Sex
+  @THEMECLRANSI                    @BGNChange your ANSI preference
+  @THEMECLRDEFAULT                 @BGNSets your default channel to the current channel
+  @THEMECLRUNIXPWD                 @BGNChange your local unix password (LOCAL only)
 
-@YLWColor .. Add color to chatroom messages, topics, whispers, actions, etc!
-  @LTB~ATLGN @YLW... @LGNLight Green
-  @LTB~ATGRN @YLW... @LGNGreen
-  @LTB~ATRED @YLW... @LGNRed               @YLWExample:@LGN
-  @LTB~ATBRN @YLW... @LGNBrown             /a sent you a ~ATGRN---~ATLGN{~ATGRN-~ATLGN{~ATRED@
-  @LTB~ATPPL @YLW... @LGNPurple            @LGNbecomes
-  @LTB~ATLGR @YLW... @LGNLight Grey        @WHT@USER sent you a @GRN---@LGN{@GRN-@LGN{@RED@@LGN
-  @LTB~ATGRY @YLW... @LGNGrey
-  @LTB~ATYLW @YLW... @LGNYellow
-  @LTB~ATVLT @YLW... @LGNViolet            @LTB~ATWHT @YLW... @LGNWhite
-  @LTB~ATLTB @YLW... @LGNLight Blue        @LTB~ATPNK @YLW... @LGNPink
-  @LTB~ATBLU @YLW... @LGNBlue              @LTB~ATBLK @YLW... @LGNBlack
+@USERCLRColor .. Add color to chatroom messages, topics, whispers, actions, etc!
+
+@THEMECLR~ATBLK @USERCLR... @THEMECLRBlack          @THEMECLR~ATBBK @USERCLR... @THEMECLRBright Black
+@THEMECLR~ATRED @USERCLR... @THEMECLRRed            @THEMECLR~ATBRD @USERCLR... @THEMECLRBright Red
+@THEMECLR~ATGRN @USERCLR... @THEMECLRGreen          @THEMECLR~ATBGN @USERCLR... @THEMECLRBright Green
+@THEMECLR~ATYLW @USERCLR... @THEMECLRYellow         @THEMECLR~ATBLW @USERCLR... @THEMECLRBright Yellow
+@THEMECLR~ATBLU @USERCLR... @THEMECLRBlue           @THEMECLR~ATBBL @USERCLR... @THEMECLRBright Blue
+@THEMECLR~ATMAG @USERCLR... @THEMECLRMagenta        @THEMECLR~ATBMG @USERCLR... @THEMECLRBright Magenta
+@THEMECLR~ATWHT @USERCLR... @THEMECLRWhite          @THEMECLR~ATBWH @USERCLR... @THEMECLRBright White
+@THEMECLR~ATCYN @USERCLR... @THEMECLRCyan           @THEMECLR~ATBCN @USERCLR... @THEMECLRBright Cyan
+
+@THEMECLREx.
+@INPUTCLR/a sent you a ~ATGRN---~ATBGN{~ATGRN-~ATBGN{~ATRED@
+@THEMECLRbecomes
+@USERCLR@USER sent you a @GRN---@BGN{@GRN-@BGN{@RED@@BGN
