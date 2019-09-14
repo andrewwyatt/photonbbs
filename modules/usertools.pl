@@ -241,7 +241,7 @@ sub newuser {
 
   if ($config{'usefullname'} eq "1") {
     fullname: {
-      writeline($theme{'fullname'});
+      writeline($theme{'fullname'}." ");
       $info{'rname'}=getline(text,50,"",1);
       unless ($info{'rname'} =~/\s/i) {
         writeline($theme{'fullnwrong'});
@@ -255,16 +255,16 @@ sub newuser {
       $info{'phonenumber'}=getline(phone,14,"",1);
     }
   }
-  writeline($theme{'locationprompt'});
+  writeline($theme{'locationprompt'}." ");
   $info{'location'}=getline(text,50,"",1);
   email: {
-    writeline($theme{'setemaila'});
+    writeline($theme{'setemaila'}." ");
     $info{'email'}=getline(text,40,"",1);
     unless ($info{'email'} =~/\@/i && $info{'email'} =~/\./i) {
       goto email;
     }
   }
-  writeline($theme{'dobprompt'});
+  writeline($theme{'dobprompt'}." ");
   $info{'dob'}=getline(dob,10,"",1);
   until ($info{'sex'} =~/[M|F]/) {
     writeline("\n".$theme{'mfprompt'}." ");
