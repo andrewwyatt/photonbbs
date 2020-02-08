@@ -44,6 +44,25 @@ then
 fi
 
 ###
+### Create the nodeinfo directory, this is needed for doors to work.
+###
+
+if [ ! -d '/appdata/nodes' ]
+then
+  mkdir -p /appdata/nodes
+fi
+
+###
+### Link the node info directory into the doors directory passed to dosemu
+### to make it available to the doors.
+###
+
+if [ ! -h '/appdata/doors/nodes' ]
+then
+  ln -s /appdata/nodes /appdata/doors/nodes
+fi
+
+###
 ### Dosemu
 ###
 
