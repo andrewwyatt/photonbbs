@@ -1,7 +1,7 @@
 #!/usr/bin/perl
-# 
+#
 #  User manager for PhotonBBS
-#  (C) 2009 Andrew Wyatt
+#  (C) 2009-2020 Andrew Wyatt
 #  GNU GPL v2
 #
 
@@ -23,12 +23,7 @@ if (-e "/etc/default/photonbbs") {
   die "Please configure your BBS (/etc/default/photonbbs)";
 }
 
-### System Information
-$sysinfo{'servername'}="PhotonBBS";
-$sysinfo{'version'}="1.8";
-$sysinfo{'copyright'}="(C) 2007-2013 Andrew Wyatt, FEWT Software";
 chomp ($sysinfo{'host'}=`hostname`);
-####
 
 require ($config{'home'}."/modules/framework.pl");
 require ($config{'home'}."/modules/usertools.pl");
@@ -69,7 +64,7 @@ open(in,"<$config{'home'}$config{'data'}/users.dat");
   }
 close(in);
 
-applytheme("mbbs");
+applytheme($config{'deftheme'});
 
 $info{'ansi'}=$fusiondoor{'ansi'};
 if ($fusiondoor{'ansi'} eq "1") {
@@ -99,7 +94,7 @@ for (;;) {
 
     print "\e[2J\e[0;0H";
     writeline ($WHT.$sysinfo{'servername'}." ".$sysinfo{'version'},1);
-    writeline ($LGN."Bulletin Editor - ".$BLU." [ ".$WHT.scalar(@bulls).$BLU." ]\n",1);
+    writeline ($config{'themecolor'}."Bulletin Editor - ".$BLU." [ ".$WHT.scalar(@bulls).$BLU." ]\n",1);
 
     unless($readit eq 1) {
       for (0..scalar(@bulls)) {
@@ -107,23 +102,23 @@ for (;;) {
         chomp ($bulls[$_]);
         ($bullid,$bulltxt)=split(/\|/,$bulls[$_]);
         if ($bulltxt ne "") {
-          writeline($LTB.$bulln.$YLW." ...".$LGN." ".$bulltxt,1);
+          writeline($config{'datacolor'}.$bulln.$config{'usercolor'}." ...".$config{'themecolor'}." ".$bulltxt,1);
         }
       }
     }
-    writeline ($LGN."\nEnter \"".$LTB."#".$LGN."\" to edit / Delete a bulletin, \"".$LTB."N".$LGN."\"ew, or \"".$LTB."Q".$LGN."\"uit: ");
+    writeline ($config{'themecolor'}."\nEnter \"".$config{'datacolor'}."#".$config{'themecolor'}."\" to edit / Delete a bulletin, \"".$config{'datacolor'}."N".$config{'themecolor'}."\"ew, or \"".$config{'datacolor'}."Q".$config{'themecolor'}."\"uit: ");
 
     $result=getline(text,2,"",1);
     unless ($result =~/^[Qq]$/) {
 
       if ($result =~/[0-9]/i) {
-        writeline ($LGN."Would you like to, or \"".$LTB."E".$LGN."\"dit or \"".$LTB."D".$LGN."\"elete this bulletin: ");
+        writeline ($config{'themecolor'}."Would you like to, or \"".$config{'datacolor'}."E".$config{'themecolor'}."\"dit or \"".$config{'datacolor'}."D".$config{'themecolor'}."\"elete this bulletin: ");
 
         $key="";
         cbreak(on);
         $key=waitkey();
         cbreak(off);
- 
+
         writeline("",1);
 
         $result=$result-1;
@@ -142,7 +137,7 @@ for (;;) {
         }
 
         if ($key =~/^[Dd]$/) {
-          writeline ($LGN."Are you sure? (y/N): ");
+          writeline ($config{'themecolor'}."Are you sure? (y/N): ");
 
           $key="";
           cbreak(on);
@@ -182,7 +177,7 @@ for (;;) {
       }
 
       if ($result =~/^[Nn]$/) {
-        $newtopic=getline(text,71,"\n".$LGN."Title: ");
+        $newtopic=getline(text,71,"\n".$config{'themecolor'}."Title: ");
         if ($newtopic eq "") {
           goto bullmenu;
         }
