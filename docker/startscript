@@ -59,7 +59,7 @@ fi
 
 if [ ! -h '/appdata/doors/nodes' ]
 then
-  ln -s /appdata/nodes /appdata/doors/nodes
+  mkdir -p /appdata/doors/nodes
 fi
 
 ###
