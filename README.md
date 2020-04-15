@@ -113,12 +113,12 @@ Prior to running the BBS, the following software should be installed.
   * rsh (required to connect to TWGS if available)
 
 PhotonBBS should be run as a non-root user.  The default configuration requires
-a user account called 'chat' to be created.
+a user account called 'bbs' to be created.
 
-    $ sudo /usr/sbin/useradd -d /opt/photonbbs -s /opt/photonbbs/bbs.pl chat
-    $ sudo passwd chat
-    $ sudo chown -R chat:chat /opt/photonbbs
-    $ sudo chown -R chat:chat /opt/photonbbs/data
+    $ sudo /usr/sbin/useradd -d /opt/photonbbs -s /opt/photonbbs/bbs.pl bbs
+    $ sudo passwd bbs
+    $ sudo chown -R bbs:bbs /opt/photonbbs
+    $ sudo chown -R bbs:bbs /opt/photonbbs/data
     $ sudo chmod -R 755 /opt/photonbbs
 
 PhotonBBS is distributed with several configuration examples to help you get
