@@ -78,7 +78,6 @@ to all users:
         LOCATION                Set your call location
         PHONE                   Set your phone number
         DOB                     Change your DOB
-        PRONOUN                 Change your Pronoun
         ANSI                    Change your ANSI preference
         DEFAULT                 Set your default channel
         UNIXPWD                 Change your unix password if applicable
