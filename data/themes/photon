@@ -37,7 +37,6 @@ fullnwrong=\n@ERRORCLRYou must enter your full name!\n
 locationprompt=\n@THEMECLRWhat would you like to display as your location (IE: Tampa, FL)@PROMPTCLR:
 phoneprompt=\n@THEMECLRNow enter the telephone number where you can be reached during the day@PROMPTCLR:
 dobprompt=\n@THEMECLRPlease enter your date of birth in "mm/dd/yyyy" format@PROMPTCLR:
-mfprompt=@THEMECLRAre you male, or female@PROMPTCLR?
 useridprompt=\n\n@THEMECLRNow you need need to choose a "@DATACLRUsername@THEMECLR" for yourself.  A username is your identification on the system that other users will know you as.  Usernames support mixed case letters, numbers,periods, and hyphens.\n\n@THEMECLREnter the username you want to be known as@PROMPTCLR:
 invalidid=@ERRORCLR\n\nYou can not use invalid characters in your username\n\n
 usedidprompt=@ERRORCLR\n\nSorry, that username is not available at this time.  How about choosing something else instead@PROMPTCLR?\n\n

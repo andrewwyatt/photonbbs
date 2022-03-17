@@ -266,11 +266,6 @@ sub newuser {
   }
   writeline($theme{'dobprompt'}." ");
   $info{'dob'}=getline(dob,10,"",1);
-  until ($info{'sex'} =~/[M|F]/) {
-    writeline("\n".$theme{'mfprompt'}." ");
-    $info{'sex'}=waitkey("M");
-    $info{'sex'}=uc($info{'sex'});
-  }
   newid: {
     writeline($theme{'useridprompt'}." ");
     $info{'handle'}=getline(text,16,"",1);
@@ -387,16 +382,6 @@ sub chhide {
     }
     close (out);
     unlockfile("$config{'home'}$config{'messages'}/teleconf/TELEPUB_/$info{'node'}");
-  }
-  updateuser();
-}
-
-sub chsex {
-  $info{'sex'}="";
-  until ($info{'sex'} =~/[M|F]/) {
-    writeline($theme{'mfprompt'});
-    $info{'sex'}=waitkey("M");
-    $info{'sex'}=uc($info{'sex'});
   }
   updateuser();
 }

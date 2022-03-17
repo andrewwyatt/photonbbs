@@ -74,7 +74,7 @@ to all users:
         LOCATION                Set your call location
         PHONE                   Set your phone number
         DOB                     Change your DOB
-        SEX                     Change your Sex
+        PRONOUN                 Change your Pronoun
         ANSI                    Change your ANSI preference
         DEFAULT                 Set your default channel
         UNIXPWD                 Change your unix password if applicable
@@ -224,7 +224,7 @@ The BBS software will detect ANSI (.ans) and ASCII (.asc) files of the same name
     @PHONE       - Your phone number
     @LOCAL       - User location
     @ID          - Users system ID index number
-    @SEX         - Your sex (M/F)
+    @PRONOUN     - Your pronoun
     @EMAIL       - Your email address
     @DND         - Do not disturb flag
     @BANNED      - Account ban flag

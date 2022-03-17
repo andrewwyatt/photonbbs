@@ -563,7 +563,6 @@ sub readfile {
     s/\@CREDITS/$info{'credits'}/g;
     s/\@TLEFT/$info{'tlimit'}/g;
     s/\@ID/$info{'id'}/g;
-    s/\@SEX/$info{'sex'}/g;
     s/\@EMAIL/$info{'email'}/g;
     s/\@DND/$info{'dnd'}/g;
     s/\@BANNED/$info{'banned'}/g;

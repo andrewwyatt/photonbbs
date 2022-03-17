@@ -103,19 +103,18 @@ for (;;) {
   writeline ($config{'datacolor'}."A. ".$config{'usercolor'}."Handle : ".$config{'systemcolor'}.$info{'handle'},1);
   writeline ($config{'datacolor'}."B. ".$config{'usercolor'}."Real Name : ".$config{'systemcolor'}.$info{'rname'},1);
   writeline ($config{'datacolor'}."C. ".$config{'usercolor'}."D.O.B. : ".$config{'systemcolor'}.$info{'dob'},1);
-  writeline ($config{'datacolor'}."D. ".$config{'usercolor'}."Sex : ".$config{'systemcolor'}.$info{'sex'},1);
-  writeline ($config{'datacolor'}."E. ".$config{'usercolor'}."Email Address : ".$config{'systemcolor'}.$info{'email'},1);
-  writeline ($config{'datacolor'}."F. ".$config{'usercolor'}."Location : ".$config{'systemcolor'}.$info{'location'},1);
+  writeline ($config{'datacolor'}."D. ".$config{'usercolor'}."Email Address : ".$config{'systemcolor'}.$info{'email'},1);
+  writeline ($config{'datacolor'}."E. ".$config{'usercolor'}."Location : ".$config{'systemcolor'}.$info{'location'},1);
   writeline ("",1);
-  writeline ($config{'datacolor'}."G. ".$config{'usercolor'}."Password : ".$config{'systemcolor'}."********",1);
-  writeline ($config{'datacolor'}."H. ".$config{'usercolor'}."Security : ".$config{'systemcolor'}.$info{'security'},1);
+  writeline ($config{'datacolor'}."F. ".$config{'usercolor'}."Password : ".$config{'systemcolor'}."********",1);
+  writeline ($config{'datacolor'}."G. ".$config{'usercolor'}."Security : ".$config{'systemcolor'}.$info{'security'},1);
   writeline ("",1);
-  writeline ($config{'datacolor'}."I. ".$config{'usercolor'}."Ansi : ".$config{'systemcolor'}.$ansi,1);
-  writeline ($config{'datacolor'}."J. ".$config{'usercolor'}."Do Not Disturb : ".$config{'systemcolor'}.$dnd,1);
-  writeline ($config{'datacolor'}."K. ".$config{'usercolor'}."Hidden : ".$config{'systemcolor'}.$info{'hidden'},1);
-  writeline ($config{'datacolor'}."L. ".$config{'usercolor'}."Theme : ".$config{'systemcolor'}.$info{'theme'},1);
-  writeline ($config{'datacolor'}."M. ".$config{'usercolor'}."Default channel : ".$config{'systemcolor'}.$info{'defchan'},1);
-  writeline ($config{'datacolor'}."N. ".$config{'usercolor'}."Account Banned : ".$config{'systemcolor'}.$info{'banned'},1);
+  writeline ($config{'datacolor'}."H. ".$config{'usercolor'}."Ansi : ".$config{'systemcolor'}.$ansi,1);
+  writeline ($config{'datacolor'}."I. ".$config{'usercolor'}."Do Not Disturb : ".$config{'systemcolor'}.$dnd,1);
+  writeline ($config{'datacolor'}."J. ".$config{'usercolor'}."Hidden : ".$config{'systemcolor'}.$info{'hidden'},1);
+  writeline ($config{'datacolor'}."K. ".$config{'usercolor'}."Theme : ".$config{'systemcolor'}.$info{'theme'},1);
+  writeline ($config{'datacolor'}."L. ".$config{'usercolor'}."Default channel : ".$config{'systemcolor'}.$info{'defchan'},1);
+  writeline ($config{'datacolor'}."M. ".$config{'usercolor'}."Account Banned : ".$config{'systemcolor'}.$info{'banned'},1);
   writeline ("",1);
   writeline ($config{'datacolor'}."[. ".$config{'usercolor'}."Previous User",1);
   writeline ($config{'datacolor'}."]. ".$config{'usercolor'}."Next User",1);
@@ -159,55 +158,50 @@ for (;;) {
   }
 
   if ($key =~/^[Dd]/) {
-    chsex();
-    next;
-  }
-
-  if ($key =~/^[Ee]/) {
     chemail();
     next;
   }
 
-  if ($key =~/^[Ff]/) {
+  if ($key =~/^[Ee]/) {
     chlocal();
     next;
   }
 
-  if ($key =~/^[Gg]/) {
+  if ($key =~/^[Ff]/) {
     chpassword();
     next;
   }
 
-  if ($key =~/^[Hh]/) {
+  if ($key =~/^[Gg]/) {
     chsecurity();
     next;
   }
 
-  if ($key =~/^[Ii]/) {
+  if ($key =~/^[Hh]/) {
     chansi();
     next;
   }
 
-  if ($key =~/^[Jj]/) {
+  if ($key =~/^[Ii]/) {
     chdnd();
     next;
   }
 
-  if ($key =~/^[Kk]/) {
+  if ($key =~/^[Jj]/) {
     #hide
   }
 
-  if ($key =~/^[Ll]/) {
+  if ($key =~/^[Kk]/) {
     chtheme();
     next;
   }
 
-  if ($key =~/^[Mm]/) {
+  if ($key =~/^[Ll]/) {
     chdefault();
     next;
   }
 
-  if ($key =~/^[Nn]/) {
+  if ($key =~/^[Mm]/) {
     chbanned();
     next;
   }

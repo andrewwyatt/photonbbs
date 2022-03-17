@@ -404,11 +404,6 @@ sub teleconf {
         writeline($RST,1);
         goto telemain;
       }
-      if ($setcommand =~/SEX/i) {
-        chsex();
-        writeline($RST,1);
-        goto telemain;
-      }
       if ($setcommand =~/ANSI/i) {
         chansi();
         writeline($RST,1);

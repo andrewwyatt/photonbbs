@@ -33,7 +33,6 @@
   @THEMECLRLOCATION                @BGNSet your call location
   @THEMECLRPHONE                   @BGNSet your phone number
   @THEMECLRDOB                     @BGNChange your DOB
-  @THEMECLRSEX                     @BGNChange your Sex
   @THEMECLRANSI                    @BGNChange your ANSI preference
   @THEMECLRDEFAULT                 @BGNSets your default channel to the current channel
   @THEMECLRUNIXPWD                 @BGNChange your local unix password (LOCAL only)
