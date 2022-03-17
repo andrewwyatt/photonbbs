@@ -1,6 +1,6 @@
 # PhotonBBS
-Simple chat server for Unix / Linux
-Copyright (C) 2002-2019, Andrew Wyatt
+A simple chat server for Unix / Linux
+Copyright (C) 2002-2022, Andrew Wyatt
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -25,6 +25,9 @@ https://github.com/andrewwyatt/photonbbs
 PhotonBBS is a simple UNIX / Linux multi-node chat server written in Perl
 with support for BBS door games.  It was designed to be modular and provides
 a built in set of functions that allow the BBS to be extended very simply.
+
+Demo instance: intergate.fewt.com
+For the best experience connect via telnet using [SyncTERM](https://syncterm.bbsdev.net).
 
 ### Obligatory Screenshot
 
@@ -85,7 +88,7 @@ appears below.
 
 ## Installation
 
-### Docker
+### Installation
 
 PhotonBBS can be deployed from Docker Hub with a single command.
 
@@ -97,62 +100,13 @@ The BBS will be started and listening on port 23 within a minute or two.
 
 PhotonBBS is capable of multinode support across multiple hosts or containers.  If deploying PhotonBBS using NFS for shared storage, caching must be disabled on the NFS client using mount options lookupcache=none and noac.  If this is a shared mountpoint, these options could degrade performance of other applications.
 
-### Manual Installation
-
-To install PhotonBBS, clone the repository and move the folder it creates
-to /opt/photonbbs. Copy config/etc/defaults/photonbbs to /etc/defaults,
-and modify the default options to suit.
-
-Prior to running the BBS, the following software should be installed.
-
-  * telnet-server
-  * xinetd
-  * perl
-  * nano
-  * dosemu (required for BBS doors)
-  * rsh (required to connect to TWGS if available)
-
-PhotonBBS should be run as a non-root user.  The default configuration requires
-a user account called 'bbs' to be created.
-
-    $ sudo /usr/sbin/useradd -d /opt/photonbbs -s /opt/photonbbs/bbs.pl bbs
-    $ sudo passwd bbs
-    $ sudo chown -R bbs:bbs /opt/photonbbs
-    $ sudo chown -R bbs:bbs /opt/photonbbs/data
-    $ sudo chmod -R 755 /opt/photonbbs
-
-PhotonBBS is distributed with several configuration examples to help you get
-started quickly.
-
-    $ sudo cp /opt/photonbbs/configs/etc/default/photonbbs /etc/default
-    $ sudo cp /opt/photonbbs/configs/etc/cron.d/photonbbs /etc/cron.d
-    $ sudo cp /opt/photonbbs/configs/xinet.d/photonbbs /etc/xinetd.d
-
-Add the PhotonBBS service to /etc/services.  If you want to run on port 23, you
-will need to modify /etc/services to change the telnet and PhotonBBS ports. By
-default, PhotonBBS listens on port 27/TCP.
-
-    $ echo "photonbbs        27/tcp" | sudo tee -a /etc/services
-
-After configuring the BBS, restart xinetd to refresh the services.
-
-    $ sudo /etc/init.d/xinetd restart
-
-If running CentOS, ensure the service is started at boot:
-
-    $ sudo chkconfig xinetd on
-
-The following IPTables rules can be used to rate limit connections to port 27:
-
-    -A RH-Firewall-1-INPUT -p tcp -m tcp --dport 27 -m state --state ESTABLISHED,RELATED -j ACCEPT
-    -A RH-Firewall-1-INPUT -p tcp -m tcp --dport 27 -m state --state NEW -m limit --limit 3/min --limit-burst 3 -j ACCEPT
-    -A RH-Firewall-1-INPUT -p tcp -m tcp --dport 27 -j DROP
-
 Once your BBS is configured, connect via telnet and create your sysop account.  After
 logging in and successfully creating the account, you must edit the user dat to grant
 yourself administrative rights to the BBS.
 
-    $ vi /opt/photonbbs/data/users/0.dat
+    $ docker ps
+    $ docker -it exec {CONTAINER ID} /bin/bash
+    # /appdata/sbin/useredit.pl
 
 Change the security level to 500 or higher.  Be sure to not add any additional whitespace to the file.
 
