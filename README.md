@@ -27,6 +27,7 @@ with support for BBS door games.  It was designed to be modular and provides
 a built in set of functions that allow the BBS to be extended very simply.
 
 Demo instance: intergate.fewt.com
+
 For the best experience connect via telnet using [SyncTERM](https://syncterm.bbsdev.net).
 
 ### Obligatory Screenshot
