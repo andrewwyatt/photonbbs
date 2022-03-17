@@ -101,8 +101,10 @@ The BBS will be started and listening on port 23 within a minute or two.
 
 PhotonBBS is capable of multinode support across multiple hosts or containers.  If deploying PhotonBBS using NFS for shared storage, caching must be disabled on the NFS client using mount options lookupcache=none and noac.  If this is a shared mountpoint, these options could degrade performance of other applications.
 
+### Admin Account
+
 Once your BBS is configured, connect via telnet and create your sysop account.  After
-logging in and successfully creating the account, you must edit the user dat to grant
+logging in and successfully creating the account, use the user editor to grant
 yourself administrative rights to the BBS.
 
     $ docker ps
