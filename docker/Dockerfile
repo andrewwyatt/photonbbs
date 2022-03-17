@@ -11,7 +11,7 @@
 ### Note: This container accepts parameters, pass 'bash' to start the container with a shell.
 ###
 
-FROM centos:centos6
+FROM centos:centos7
 WORKDIR /
 
 COPY appdeploy /
