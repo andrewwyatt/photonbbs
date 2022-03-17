@@ -92,7 +92,7 @@ appears below.
 
 PhotonBBS can be deployed from Docker Hub with a single command.
 
-    docker container run -dti --restart unless-stopped --net host --device=/dev/tty0 -v appdata:/appdata:rw -v /dev:/dev -v /lib/modules:/lib/modules --privileged -p 23:23/tcp awyatt/photonbbs
+    docker container run -dti --restart unless-stopped --net host --device=/dev/tty0 -v appdata:/appdata:rw -v /dev:/dev -v /lib/modules:/lib/modules -v /sys/fs/cgroup:/sys/fs/cgroup --privileged -p 23:23/tcp awyatt/photonbbs
 
 The BBS will be started and listening on port 23 within a minute or two.  
 

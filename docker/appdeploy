@@ -61,8 +61,6 @@ systemctl enable rsyslog
 systemctl enable fail2ban
 systemctl enable xinetd
 
-firewall-cmd --permanent --add-port=23/tcp
-
 chmod 755 /startscript
 
 yum clean all

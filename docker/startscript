@@ -107,3 +107,6 @@ then
 fi
 
 exec /usr/sbin/init
+
+firewall-cmd --permanent --add-port=23/tcp
+firewall-cmd --reload
