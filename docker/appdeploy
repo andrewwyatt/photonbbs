@@ -45,6 +45,24 @@ sed -i "s#photonbbs#telnet#g" /etc/fail2ban/filter.d/photonbbs.conf
 #sed -i "s#chat#bbs#g" /etc/xinetd.d/photonbbs
 #sed -i "s#chat#bbs#g" /etc/cron.d/photonbbs
 
+cat <<EOF >/etc/systemd/journald.conf
+[Journal]
+ForwardToSyslog=yes
+MaxLevelSyslog=debug
+EOF
+
+cat <<EOF >>/etc/rsyslog.conf
+module(load="imjournal")
+module(load="mmjsonparse")
+EOF
+
+systemctl enable crond
+systemctl enable rsyslog
+systemctl enable fail2ban
+systemctl enable xinetd
+
+firewall-cmd --permanent --add-port=23/tcp
+
 chmod 755 /startscript
 
 yum clean all

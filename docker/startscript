@@ -1,14 +1,6 @@
 #!/bin/bash
 
 ###
-### Not optimal, but necessary.
-###
-
-service crond start >/dev/null 2>&1
-service rsyslog start >/dev/null 2>&1
-service fail2ban start >/dev/null 2>&1
-
-###
 ### Set up the PhotonBBS data files to be persistent.
 ###
 
@@ -114,8 +106,4 @@ then
   exit 0
 fi
 
-while [ true ]
-do
-  xinetd -dontfork
-  sleep 1
-done
+exec /usr/sbin/init
