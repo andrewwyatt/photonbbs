@@ -17,7 +17,9 @@ WORKDIR /
 COPY appdeploy /
 COPY startscript /
 
+EXPOSE 23
+
 RUN bash /appdeploy
 
-ENTRYPOINT [ "/startscript" ]
+ENTRYPOINT [ "/usr/sbin/init" ]
 CMD []
