@@ -2,8 +2,8 @@
 ### Install the dependencies
 ###
 
-yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-yum -y install tcp_wrappers xinetd telnet-server cronie perl git fail2ban rsyslog nano rsyslogd rsyslog-mmjsonparse
+yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+yum -y install tcp_wrappers xinetd telnet-server cronie perl git fail2ban rsyslog nano rsyslog-mmjsonparse bind-utils procps
 yum -y install http://download1.rpmfusion.org/free/el/updates/6/i386/dosemu-1.4.0.8-15.20130205git.el6.i686.rpm
 
 cd /opt && git clone https://github.com/andrewwyatt/photonbbs.git

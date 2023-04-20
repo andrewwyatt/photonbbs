@@ -96,10 +96,3 @@ fi
 
 chown -R bbs:bbs /appdata
 
-###
-### Enable telnet inbound
-###
-
-firewall-cmd --permanent --add-port=23/tcp
-firewall-cmd --reload
-
