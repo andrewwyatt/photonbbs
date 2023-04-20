@@ -8,7 +8,7 @@ if [ -d '/opt/photonbbs/data' ]
 then
   if [ ! -e '/appdata/.migrated' ]
   then
-    rsync -av /opt/photonbbs/data/* /appdata
+    mv /opt/photonbbs/data/* /appdata
   fi
   rm -rf /opt/photonbbs/data
   ln -s /appdata /opt/photonbbs/data
